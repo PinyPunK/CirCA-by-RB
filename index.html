@@ -2,7 +2,6 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <!-- CONFIGURACIÓN PARA MÓVILES Y ANDROID -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#121212">
     <meta name="mobile-web-app-capable" content="yes">
@@ -10,28 +9,32 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="CirCA by RB">
 
-    <!-- 1. ICONOS DE LA APLICACIÓN PARA ANDROID Y NAVEGADOR -->
-    <!-- Asegúrate de que la imagen se llame exactamente Logo.jpg -->
+    <!-- ICONOS Y MANIFIESTO PARA ANDROID -->
     <link rel="icon" type="image/jpeg" sizes="192x192" href="Logo.jpg">
     <link rel="icon" type="image/jpeg" sizes="512x512" href="Logo.jpg">
     <link rel="apple-touch-icon" href="Logo.jpg">
-    <!-- Enlace donde nuestro JavaScript inyectará el Manifiesto de Android -->
     <link rel="manifest" id="my-manifest-placeholder">
+
+    <!-- LIBRERÍA EXTERNA PARA ESCANEAR CÓDIGOS DE BARRAS Y QR -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     
     <title>CirCA by RB - Gestión Empresarial</title>
     <style>
         /* ==========================================
-           VARIABLES DE COLOR (CIRCA BY RB)
+           1. VARIABLES DE COLOR (CIRCA BY RB)
            ========================================== */
         :root {
             --bg-dark: #121212;
             --bg-panel: #1E1E1E;
+            --bg-card: #252525;
             --gold-main: #C5A059;
             --gold-light: #EED9A4;
             --gold-dark: #8C6D32;
             --text-light: #F5F5F5;
+            --text-muted: #BDBDBD;
             --border-color: #383020;
-            --danger: #d9534f;
+            --danger: #e74c3c;
+            --success: #2ecc71;
         }
 
         * {
@@ -45,50 +48,49 @@
         body {
             background-color: var(--bg-dark);
             color: var(--text-light);
-            padding-bottom: 80px;
+            padding-bottom: 90px;
         }
 
-        /* CABECERA Y ESTILO DEL LOGOTIPO */
+        /* CABECERA */
         header {
             background: linear-gradient(180deg, #0a0a0a 0%, var(--bg-panel) 100%);
             border-bottom: 2px solid var(--gold-main);
-            padding: 18px 15px;
+            padding: 15px;
             text-align: center;
         }
 
-        /* 2. ESTILO VISUAL DEL LOGO EN LA CABECERA */
         .app-logo {
-            width: 90px;
-            height: 90px;
+            width: 85px;
+            height: 85px;
             object-fit: cover;
-            border-radius: 50%; /* Lo recorta en círculo elegante; pon 8px si lo prefieres cuadrado */
+            border-radius: 50%;
             border: 2px solid var(--gold-main);
             box-shadow: 0 4px 12px rgba(197, 160, 89, 0.3);
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         header h1 {
             color: var(--gold-light);
             letter-spacing: 3px;
             font-family: 'Georgia', serif;
-            font-size: 1.5rem;
+            font-size: 1.4rem;
         }
 
         header p {
             color: var(--gold-main);
             font-size: 0.85rem;
-            margin-top: 4px;
+            margin-top: 3px;
         }
 
         .backup-bar {
-            margin-top: 12px;
+            margin-top: 10px;
             display: flex;
             justify-content: center;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
-        .btn-backup {
+        .btn-small {
             background-color: var(--bg-dark);
             color: var(--gold-light);
             border: 1px solid var(--gold-main);
@@ -96,9 +98,15 @@
             border-radius: 4px;
             font-size: 0.75rem;
             cursor: pointer;
+            transition: 0.2s;
         }
 
-        /* MENÚ DE NAVEGACIÓN (DESLIZABLE EN MÓVIL) */
+        .btn-small:hover {
+            background-color: var(--gold-main);
+            color: #000;
+        }
+
+        /* NAVEGACIÓN */
         nav {
             display: flex;
             overflow-x: auto;
@@ -107,13 +115,10 @@
             border-bottom: 1px solid var(--border-color);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 90;
             scrollbar-width: none;
         }
-
-        nav::-webkit-scrollbar {
-            display: none;
-        }
+        nav::-webkit-scrollbar { display: none; }
 
         nav button {
             flex: 0 0 auto;
@@ -133,48 +138,268 @@
             background-color: rgba(197, 160, 89, 0.15);
         }
 
-        /* CONTENEDOR PRINCIPAL */
+        /* CONTENEDOR PRINCIPAL Y BARRA DE HERRAMIENTAS */
         .container {
             max-width: 1250px;
             margin: 15px auto;
             padding: 0 12px;
         }
 
-        .tab-content {
-            display: none;
+        .toolbar {
             background-color: var(--bg-panel);
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            padding: 18px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
         }
 
-        .tab-content.active {
-            display: block;
+        .toolbar-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
         }
 
-        h2 {
+        .toolbar-top h2 {
             color: var(--gold-light);
-            border-bottom: 1px solid var(--gold-dark);
-            padding-bottom: 8px;
-            margin-bottom: 15px;
             font-family: 'Georgia', serif;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
         }
 
-        .info-banner {
-            background-color: rgba(197, 160, 89, 0.12);
-            border-left: 4px solid var(--gold-main);
-            padding: 10px;
-            margin-bottom: 15px;
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--gold-main), var(--gold-dark));
+            color: #000;
+            border: none;
+            padding: 10px 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 10px;
+        }
+
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .filter-item label {
+            font-size: 0.75rem;
+            color: var(--gold-main);
+            margin-bottom: 3px;
+        }
+
+        .filter-item input, .filter-item select {
+            background-color: var(--bg-dark);
+            border: 1px solid var(--gold-dark);
+            color: var(--text-light);
+            padding: 8px 10px;
+            border-radius: 5px;
+            font-size: 0.85rem;
+        }
+
+        /* ==========================================
+           2. DISEÑO DE CUADRÍCULA (CATÁLOGO) Y LISTADOS
+           ========================================== */
+        .catalog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+            gap: 18px;
+        }
+
+        .catalog-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            transition: transform 0.2s;
+        }
+
+        .catalog-card:hover {
+            border-color: var(--gold-main);
+        }
+
+        .catalog-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background-color: #111;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .catalog-body {
+            padding: 12px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+        .badge-disponible { background-color: rgba(46, 204, 113, 0.2); color: var(--success); border: 1px solid var(--success); }
+        .badge-vendido { background-color: rgba(231, 76, 60, 0.2); color: var(--danger); border: 1px solid var(--danger); }
+
+        .catalog-ref {
+            color: var(--gold-main);
             font-size: 0.8rem;
-            color: var(--gold-light);
+            font-weight: bold;
         }
 
-        /* FORMULARIOS ADAPTABLES */
+        .catalog-title {
+            color: var(--gold-light);
+            font-size: 1.05rem;
+            margin: 4px 0 8px 0;
+            font-weight: bold;
+        }
+
+        .catalog-prices {
+            display: flex;
+            justify-content: space-between;
+            background-color: var(--bg-dark);
+            padding: 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+
+        .catalog-details {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.4;
+        }
+
+        .list-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .list-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--gold-main);
+            border-radius: 6px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .list-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .list-card-title {
+            color: var(--gold-light);
+            font-size: 1.05rem;
+            font-weight: bold;
+        }
+
+        .list-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 8px;
+            font-size: 0.85rem;
+        }
+
+        .field-item strong {
+            color: var(--gold-main);
+            display: block;
+            font-size: 0.75rem;
+        }
+
+        .card-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 6px;
+            padding-top: 8px;
+            border-top: 1px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+
+        /* ==========================================
+           3. VENTANA MODAL PARA FORMULARIOS Y ESCÁNER
+           ========================================== */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            justify-content: center;
+            align-items: flex-start;
+            z-index: 200;
+            overflow-y: auto;
+            padding: 20px 10px;
+        }
+
+        .modal-box {
+            background-color: var(--bg-panel);
+            border: 2px solid var(--gold-main);
+            border-radius: 8px;
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+            position: relative;
+            margin: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--gold-dark);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .modal-header h3 {
+            color: var(--gold-light);
+            font-family: 'Georgia', serif;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            color: var(--gold-light);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* FORMULARIOS */
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
             gap: 12px;
             margin-bottom: 18px;
         }
@@ -195,9 +420,9 @@
             background-color: var(--bg-dark);
             border: 1px solid var(--gold-dark);
             color: var(--text-light);
-            padding: 12px;
-            border-radius: 6px;
-            font-size: 16px; 
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 15px;
         }
 
         .form-group input[readonly] {
@@ -206,150 +431,156 @@
             font-weight: bold;
         }
 
+        .input-with-scanner {
+            display: flex;
+            gap: 5px;
+        }
+        .input-with-scanner input { flex: 1; }
+
         .measures-group {
             display: flex;
             align-items: center;
-            gap: 5px;
+            gap: 4px;
         }
-
-        .measures-group input {
-            width: 30%;
-        }
+        .measures-group input { width: 31%; }
 
         .conditional-box {
             grid-column: 1 / -1;
-            background-color: rgba(197, 160, 89, 0.07);
+            background-color: rgba(197, 160, 89, 0.08);
             border: 1px dashed var(--gold-main);
             padding: 12px;
             border-radius: 6px;
-            margin-top: 5px;
             display: none;
         }
 
         .checkbox-label {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             cursor: pointer;
-            margin-top: 10px;
-            padding: 8px 0;
+            margin-top: 18px;
             color: var(--gold-light) !important;
-            font-size: 0.95rem !important;
         }
+        .checkbox-label input { width: 20px; height: 20px; accent-color: var(--gold-main); }
 
-        .checkbox-label input {
-            width: 22px;
-            height: 22px;
-            accent-color: var(--gold-main);
-        }
-
-        button.btn-submit {
+        #reader {
             width: 100%;
-            background: linear-gradient(135deg, var(--gold-main), var(--gold-dark));
-            color: #000;
-            border: none;
-            padding: 14px;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 1rem;
+            max-width: 400px;
+            margin: 0 auto;
         }
 
-        button.btn-delete {
-            background-color: transparent;
-            border: 1px solid var(--danger);
-            color: var(--danger);
-            padding: 6px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-        /* TABLAS */
-        .table-wrapper {
-            overflow-x: auto;
-            margin-top: 20px;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.8rem;
-            min-width: 600px;
-        }
-
-        th, td {
-            border: 1px solid var(--border-color);
-            padding: 10px 8px;
-            text-align: left;
-        }
-
-        th {
-            background-color: rgba(197, 160, 89, 0.2);
-            color: var(--gold-light);
+        .empty-msg {
+            text-align: center;
+            padding: 30px;
+            color: var(--text-muted);
+            font-style: italic;
         }
 
         @media (min-width: 768px) {
             nav { justify-content: center; }
-            button.btn-submit { width: auto; padding: 12px 30px; }
         }
     </style>
 </head>
 <body>
 
 <header>
-    <!-- 3. ETIQUETA IMG QUE MUESTRA EL LOGO EN LA APP -->
-    <img src="Logo.jpg" alt="Logo CirCA by RB" class="app-logo">
+    <img src="Logo.jpg" alt="Logo CirCA by RB" class="app-logo" onerror="this.style.display='none'">
     <h1>CIRCA BY R.B</h1>
     <p id="active-company-display">Empresa activa: CirCA by RB</p>
     <div class="backup-bar">
-        <button class="btn-backup" onclick="exportarDatos()">📥 Guardar copia</button>
-        <button class="btn-backup" onclick="document.getElementById('import-file').click()">📤 Cargar copia</button>
+        <button class="btn-small" onclick="exportarDatos()">📥 Copia Seguridad (JSON)</button>
+        <button class="btn-small" onclick="document.getElementById('import-file').click()">📤 Restaurar Copia</button>
         <input type="file" id="import-file" style="display:none" accept=".json" onchange="importarDatos(event)">
     </div>
 </header>
 
 <nav>
-    <button class="active" onclick="openTab('empresa', this)">1. EMPRESA</button>
-    <button onclick="openTab('catalogo', this)">2. CATÁLOGO</button>
-    <button onclick="openTab('proveedores', this)">3. PROVEEDORES</button>
-    <button onclick="openTab('clientes', this)">4. CLIENTES</button>
-    <button onclick="openTab('compras', this)">5. COMPRAS</button>
-    <button onclick="openTab('ventas', this)">6. VENTAS</button>
-    <button onclick="openTab('gastos', this)">7. GASTOS</button>
+    <button class="active" onclick="switchTab('catalogo', this)">1. CATÁLOGO</button>
+    <button onclick="switchTab('empresa', this)">2. EMPRESA</button>
+    <button onclick="switchTab('proveedores', this)">3. PROVEEDORES</button>
+    <button onclick="switchTab('clientes', this)">4. CLIENTES</button>
+    <button onclick="switchTab('compras', this)">5. COMPRAS</button>
+    <button onclick="switchTab('ventas', this)">6. VENTAS</button>
+    <button onclick="switchTab('gastos', this)">7. GASTOS</button>
 </nav>
 
 <div class="container">
 
-    <!-- 1. EMPRESA -->
-    <section id="empresa" class="tab-content active">
-        <h2>1. Gestión de Empresas</h2>
-        <form id="form-empresa" onsubmit="saveEmpresa(event)">
-            <div class="form-grid">
-                <div class="form-group"><label>Nombre de la Empresa *</label><input type="text" id="emp-nombre" required placeholder="Ej: CirCA by RB"></div>
-                <div class="form-group"><label>NIF / CIF</label><input type="text" id="emp-nif"></div>
-                <div class="form-group"><label>Dirección</label><input type="text" id="emp-dir"></div>
-                <div class="form-group"><label>Teléfono</label><input type="tel" id="emp-tel"></div>
-                <div class="form-group"><label>Correo Electrónico</label><input type="email" id="emp-email"></div>
+    <!-- BARRA DE HERRAMIENTAS COMÚN -->
+    <div class="toolbar">
+        <div class="toolbar-top">
+            <h2 id="section-title">Catálogo de Artículos</h2>
+            <div class="action-buttons">
+                <button class="btn-primary" onclick="openFormModal()">➕ Nuevo Registro</button>
+                <button class="btn-small" onclick="exportSectionCSV()">📊 Excel (Listado)</button>
+                <button class="btn-small" onclick="printSectionPDF()">🖨️ PDF (Listado)</button>
             </div>
-            <button type="submit" class="btn-submit">Crear Nueva Empresa</button>
-        </form>
-        <div class="table-wrapper">
-            <table id="table-empresas">
-                <thead><tr><th>Nombre</th><th>NIF/CIF</th><th>Dirección</th><th>Teléfono</th><th>Correo</th><th>Acción</th></tr></thead>
-                <tbody></tbody>
-            </table>
         </div>
-    </section>
 
-    <!-- 2. CATÁLOGO -->
-    <section id="catalogo" class="tab-content">
-        <h2>2. Catálogo de Artículos</h2>
-        <form id="form-catalogo" onsubmit="saveCatalogo(event)">
+        <!-- FILTROS Y ORDENACIÓN -->
+        <div class="filters-grid">
+            <div class="filter-item">
+                <label>🔍 Buscar en cualquier campo</label>
+                <input type="text" id="filter-search" placeholder="Ref, nombre, SKU, cliente, estado..." oninput="renderCurrentTab()">
+            </div>
+            <div class="filter-item">
+                <label>📅 Fecha Desde</label>
+                <input type="date" id="filter-date-from" onchange="renderCurrentTab()">
+            </div>
+            <div class="filter-item">
+                <label>📅 Fecha Hasta</label>
+                <input type="date" id="filter-date-to" onchange="renderCurrentTab()">
+            </div>
+            <div class="filter-item">
+                <label>↕️ Ordenar por</label>
+                <select id="sort-field" onchange="renderCurrentTab()">
+                    <option value="none">-- Orden de registro --</option>
+                    <option value="fecha">Fecha</option>
+                    <option value="ref">Referencia / Código</option>
+                    <option value="sku">SKU</option>
+                </select>
+            </div>
+            <div class="filter-item">
+                <label>Dirección de orden</label>
+                <select id="sort-dir" onchange="renderCurrentTab()">
+                    <option value="asc">Ascendente (A-Z / Antiguo)</option>
+                    <option value="desc">Descendente (Z-A / Reciente)</option>
+                </select>
+            </div>
+            <div class="filter-item" style="justify-content: flex-end;">
+                <button class="btn-small" onclick="clearFilters()">🧹 Limpiar Filtros</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONTENEDOR DINÁMICO DE CUADRÍCULA O LISTADOS -->
+    <div id="main-list-view"></div>
+
+</div>
+
+<!-- ==========================================
+     MODAL DE FORMULARIOS (CREAR / EDITAR)
+     ========================================== -->
+<div id="form-modal" class="modal-overlay">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h3 id="modal-title">Nuevo Registro</h3>
+            <button class="btn-close" onclick="closeFormModal()">✖</button>
+        </div>
+
+        <!-- FORMULARIO 1: CATÁLOGO -->
+        <form id="form-catalogo" class="tab-form" onsubmit="saveRecord(event, 'catalogo')" style="display:none;">
             <div class="form-grid">
                 <div class="form-group"><label>Referencia *</label><input type="text" id="cat-ref" required></div>
+                <div class="form-group"><label>SKU</label><input type="text" id="cat-sku"></div>
                 <div class="form-group"><label>Nombre *</label><input type="text" id="cat-nombre" required></div>
-                <div class="form-group"><label>Código de Barras</label><input type="text" id="cat-barcode"></div>
+                <div class="form-group">
+                    <label>Código de Barras / QR</label>
+                    <div class="input-with-scanner">
+                        <input type="text" id="cat-barcode">
+                        <button type="button" class="btn-small" onclick="startScanner('cat-barcode')">📷</button>
+                    </div>
+                </div>
                 <div class="form-group"><label>Descripción</label><input type="text" id="cat-desc"></div>
                 <div class="form-group">
                     <label>Medidas (cm x cm x cm)</label>
@@ -363,14 +594,15 @@
                 <div class="form-group"><label>Precio de Venta (€) *</label><input type="number" step="0.01" id="cat-venta" required></div>
                 <div class="form-group"><label>Proveedor</label><input type="text" id="cat-prov"></div>
                 <div class="form-group"><label>Núm. Justificante Compra</label><input type="text" id="cat-justificante"></div>
-                <div class="form-group"><label>Imágenes (Cámara o Galería)</label><input type="file" id="cat-img" multiple accept="image/*"></div>
+                <div class="form-group"><label>Fecha Alta</label><input type="date" id="cat-fecha"></div>
+                <div class="form-group"><label>Foto del Producto</label><input type="file" id="cat-img" accept="image/*" onchange="previewCatalogImage(event)"></div>
                 <div class="form-group">
                     <label class="checkbox-label">
-                        <input type="checkbox" id="cat-vendido" onchange="toggleVendido()"> ¿Artículo vendido?
+                        <input type="checkbox" id="cat-vendido" onchange="toggleBox('cat-vendido', 'box-cat-vendido')"> ¿Artículo Vendido?
                     </label>
                 </div>
 
-                <div id="box-vendido" class="conditional-box">
+                <div id="box-cat-vendido" class="conditional-box">
                     <div class="form-grid">
                         <div class="form-group"><label>Núm. de Factura</label><input type="text" id="cat-factura"></div>
                         <div class="form-group"><label>Importe Total Factura (€)</label><input type="number" step="0.01" id="cat-imp-factura"></div>
@@ -378,125 +610,114 @@
                         <div class="form-group"><label>Localizador de Envío</label><input type="text" id="cat-localizador"></div>
                         <div class="form-group">
                             <label class="checkbox-label">
-                                <input type="checkbox" id="cat-entregado" onchange="toggleEntregado()"> Casilla de Entregado
+                                <input type="checkbox" id="cat-entregado" onchange="toggleBox('cat-entregado', 'box-cat-entrega')"> ¿Entregado?
                             </label>
                         </div>
-                        <div class="form-group" id="box-fecha-entrega" style="display:none;">
-                            <label>Fecha de Entrega</label>
-                            <input type="date" id="cat-fecha-entrega">
+                        <div class="form-group" id="box-cat-entrega" style="display:none;">
+                            <label>Fecha de Entrega</label><input type="date" id="cat-fecha-entrega">
                         </div>
                     </div>
                 </div>
             </div>
-            <button type="submit" class="btn-submit">Guardar en Catálogo</button>
+            <button type="submit" class="btn-primary" style="width:100%">Guardar en Catálogo</button>
         </form>
-        <div class="table-wrapper">
-            <table id="table-catalogo">
-                <thead>
-                    <tr><th>Ref</th><th>Nombre</th><th>Medidas</th><th>Coste</th><th>P. Venta</th><th>Proveedor</th><th>Estado</th><th>Datos Venta/Envío</th><th>Acción</th></tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-    </section>
 
-    <!-- 3. PROVEEDORES -->
-    <section id="proveedores" class="tab-content">
-        <h2>3. Proveedores</h2>
-        <form id="form-proveedores" onsubmit="saveProveedor(event)">
+        <!-- FORMULARIO 2: EMPRESA -->
+        <form id="form-empresa" class="tab-form" onsubmit="saveRecord(event, 'empresa')" style="display:none;">
             <div class="form-grid">
-                <div class="form-group"><label>Código Proveedor *</label><input type="text" id="prov-cod" required></div>
-                <div class="form-group"><label>Nombre *</label><input type="text" id="prov-nom" required></div>
+                <div class="form-group"><label>Código / Ref</label><input type="text" id="emp-ref" placeholder="EMP-01"></div>
+                <div class="form-group"><label>Nombre Comercial / Razón Social *</label><input type="text" id="emp-nombre" required></div>
+                <div class="form-group"><label>NIF / CIF *</label><input type="text" id="emp-nif" placeholder="Ej: B12345678"></div>
+                <div class="form-group"><label>Dirección Fiscal *</label><input type="text" id="emp-dir" placeholder="Calle, CP, Ciudad"></div>
+                <div class="form-group"><label>Teléfono</label><input type="tel" id="emp-tel"></div>
+                <div class="form-group"><label>Correo Electrónico / Web</label><input type="text" id="emp-email"></div>
+                <div class="form-group"><label>Fecha Registro</label><input type="date" id="emp-fecha"></div>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%">Guardar Datos de Empresa</button>
+        </form>
+
+        <!-- FORMULARIO 3: PROVEEDORES -->
+        <form id="form-proveedores" class="tab-form" onsubmit="saveRecord(event, 'proveedores')" style="display:none;">
+            <div class="form-grid">
+                <div class="form-group"><label>Código Proveedor *</label><input type="text" id="prov-ref" required></div>
+                <div class="form-group"><label>Nombre *</label><input type="text" id="prov-nombre" required></div>
                 <div class="form-group"><label>Dirección</label><input type="text" id="prov-dir"></div>
                 <div class="form-group"><label>Teléfono</label><input type="tel" id="prov-tel"></div>
                 <div class="form-group"><label>Correo</label><input type="email" id="prov-email"></div>
                 <div class="form-group"><label>Web</label><input type="text" id="prov-web"></div>
                 <div class="form-group"><label>Importe Facturado (€)</label><input type="number" step="0.01" id="prov-facturado" value="0"></div>
                 <div class="form-group"><label>Importe Pagado (€)</label><input type="number" step="0.01" id="prov-pagado" value="0"></div>
-                <div class="form-group"><label>Subir Documentos</label><input type="file" id="prov-docs" multiple></div>
+                <div class="form-group"><label>Fecha Alta</label><input type="date" id="prov-fecha"></div>
+                <div class="form-group"><label>Documentos Adjuntos</label><input type="file" id="prov-docs" multiple></div>
             </div>
-            <button type="submit" class="btn-submit">Crear Proveedor</button>
+            <button type="submit" class="btn-primary" style="width:100%">Guardar Proveedor</button>
         </form>
-        <div class="table-wrapper">
-            <table id="table-proveedores">
-                <thead><tr><th>Código</th><th>Nombre</th><th>Teléfono</th><th>Correo</th><th>Facturado</th><th>Pagado</th><th>Docs</th><th>Acción</th></tr></thead>
-                <tbody></tbody>
-            </table>
-        </div>
-    </section>
 
-    <!-- 4. CLIENTES -->
-    <section id="clientes" class="tab-content">
-        <h2>4. Clientes</h2>
-        <form id="form-clientes" onsubmit="saveCliente(event)">
+        <!-- FORMULARIO 4: CLIENTES -->
+        <form id="form-clientes" class="tab-form" onsubmit="saveRecord(event, 'clientes')" style="display:none;">
             <div class="form-grid">
-                <div class="form-group"><label>Código Cliente *</label><input type="text" id="cli-cod" required></div>
-                <div class="form-group"><label>Nombre *</label><input type="text" id="cli-nom" required></div>
-                <div class="form-group"><label>Dirección</label><input type="text" id="cli-dir"></div>
+                <div class="form-group"><label>Código Cliente / NIF *</label><input type="text" id="cli-ref" required></div>
+                <div class="form-group"><label>Nombre Completo / Razón Social *</label><input type="text" id="cli-nombre" required></div>
+                <div class="form-group"><label>Dirección Completa</label><input type="text" id="cli-dir"></div>
                 <div class="form-group"><label>Teléfono</label><input type="tel" id="cli-tel"></div>
                 <div class="form-group"><label>Correo</label><input type="email" id="cli-email"></div>
-                <div class="form-group"><label>Web</label><input type="text" id="cli-web"></div>
+                <div class="form-group"><label>Web / País</label><input type="text" id="cli-web"></div>
                 <div class="form-group"><label>Importe Facturado (€)</label><input type="number" step="0.01" id="cli-facturado" value="0"></div>
                 <div class="form-group"><label>Importe Cobrado (€)</label><input type="number" step="0.01" id="cli-cobrado" value="0"></div>
-                <div class="form-group"><label>Subir Documentos</label><input type="file" id="cli-docs" multiple></div>
+                <div class="form-group"><label>Fecha Alta</label><input type="date" id="cli-fecha"></div>
+                <div class="form-group"><label>Documentos Adjuntos</label><input type="file" id="cli-docs" multiple></div>
             </div>
-            <button type="submit" class="btn-submit">Crear Cliente</button>
+            <button type="submit" class="btn-primary" style="width:100%">Guardar Cliente</button>
         </form>
-        <div class="table-wrapper">
-            <table id="table-clientes">
-                <thead><tr><th>Código</th><th>Nombre</th><th>Teléfono</th><th>Correo</th><th>Facturado</th><th>Cobrado</th><th>Docs</th><th>Acción</th></tr></thead>
-                <tbody></tbody>
-            </table>
-        </div>
-    </section>
 
-    <!-- 5. COMPRAS -->
-    <section id="compras" class="tab-content">
-        <h2>5. Registro de Compras</h2>
-        <div class="info-banner">💡 Al guardar una compra, el artículo se añade automáticamente al <strong>Catálogo</strong>.</div>
-        <form id="form-compras" onsubmit="saveCompra(event)">
+        <!-- FORMULARIO 5: COMPRAS -->
+        <form id="form-compras" class="tab-form" onsubmit="saveRecord(event, 'compras')" style="display:none;">
             <div class="form-grid">
                 <div class="form-group"><label>Referencia *</label><input type="text" id="comp-ref" required></div>
-                <div class="form-group"><label>Nombre *</label><input type="text" id="comp-nom" required></div>
+                <div class="form-group"><label>Nombre *</label><input type="text" id="comp-nombre" required></div>
                 <div class="form-group"><label>SKU</label><input type="text" id="comp-sku"></div>
-                <div class="form-group"><label>Código de Barras</label><input type="text" id="comp-barcode"></div>
+                <div class="form-group">
+                    <label>Código de Barras / QR</label>
+                    <div class="input-with-scanner">
+                        <input type="text" id="comp-barcode">
+                        <button type="button" class="btn-small" onclick="startScanner('comp-barcode')">📷</button>
+                    </div>
+                </div>
                 <div class="form-group"><label>Proveedor</label><input type="text" id="comp-prov"></div>
                 <div class="form-group"><label>Precio de Compra (€) *</label><input type="number" step="0.01" id="comp-precio" required></div>
                 <div class="form-group"><label>Justificante de Compra</label><input type="text" id="comp-just"></div>
                 <div class="form-group"><label>Unidades *</label><input type="number" id="comp-uds" value="1" required></div>
+                <div class="form-group"><label>Fecha de Compra</label><input type="date" id="comp-fecha"></div>
                 <div class="form-group">
                     <label>Contabilizado</label>
                     <select id="comp-contab"><option value="No">No</option><option value="Sí">Sí</option></select>
                 </div>
             </div>
-            <button type="submit" class="btn-submit">Registrar Compra</button>
+            <button type="submit" class="btn-primary" style="width:100%">Guardar Compra (Añade al Catálogo)</button>
         </form>
-        <div class="table-wrapper">
-            <table id="table-compras">
-                <thead><tr><th>Ref</th><th>Nombre</th><th>SKU</th><th>Proveedor</th><th>Precio</th><th>Uds</th><th>Justificante</th><th>Contab.</th><th>Acción</th></tr></thead>
-                <tbody></tbody>
-            </table>
-        </div>
-    </section>
 
-    <!-- 6. VENTAS -->
-    <section id="ventas" class="tab-content">
-        <h2>6. Ventas y Cálculo REBU</h2>
-        <form id="form-ventas" onsubmit="saveVenta(event)">
+        <!-- FORMULARIO 6: VENTAS -->
+        <form id="form-ventas" class="tab-form" onsubmit="saveRecord(event, 'ventas')" style="display:none;">
             <div class="form-grid">
                 <div class="form-group" style="grid-column: 1 / -1;">
-                    <label>Seleccionar Artículo del Catálogo</label>
+                    <label>Seleccionar Artículo del Catálogo (Autorrellena y sincroniza al guardar)</label>
                     <select id="ven-select-cat" onchange="autofillVenta()">
                         <option value="">-- Seleccionar artículo --</option>
                     </select>
                 </div>
-                <div class="form-group"><label>Factura (Núm.) *</label><input type="text" id="ven-factura" required></div>
-                <div class="form-group"><label>Fecha *</label><input type="date" id="ven-fecha" required></div>
-                <div class="form-group"><label>Cliente *</label><input type="text" id="ven-cliente" required></div>
-                <div class="form-group"><label>Referencia</label><input type="text" id="ven-ref"></div>
-                <div class="form-group"><label>Nombre Artículo</label><input type="text" id="ven-nom"></div>
+                <div class="form-group"><label>Núm. Factura *</label><input type="text" id="ven-factura" required placeholder="Ej: FAC-2026-001"></div>
+                <div class="form-group"><label>Fecha Venta *</label><input type="date" id="ven-fecha" required></div>
+                <div class="form-group"><label>Cliente *</label><input type="text" id="ven-cliente" required placeholder="Nombre del cliente"></div>
+                <div class="form-group"><label>Referencia *</label><input type="text" id="ven-ref" required></div>
+                <div class="form-group"><label>Nombre Artículo</label><input type="text" id="ven-nombre"></div>
                 <div class="form-group"><label>SKU</label><input type="text" id="ven-sku"></div>
-                <div class="form-group"><label>Código de Barras</label><input type="text" id="ven-barcode"></div>
+                <div class="form-group">
+                    <label>Código de Barras / QR</label>
+                    <div class="input-with-scanner">
+                        <input type="text" id="ven-barcode">
+                        <button type="button" class="btn-small" onclick="startScanner('ven-barcode')">📷</button>
+                    </div>
+                </div>
                 <div class="form-group"><label>Precio Coste (€)</label><input type="number" step="0.01" id="ven-coste" value="0" oninput="calcRebu()"></div>
                 <div class="form-group"><label>Precio de Venta (€) *</label><input type="number" step="0.01" id="ven-precio" value="0" required oninput="updateTotalVenta()"></div>
                 <div class="form-group"><label>Gastos de Envío (€)</label><input type="number" step="0.01" id="ven-envio" value="0" oninput="updateTotalVenta()"></div>
@@ -509,62 +730,68 @@
                     </select>
                 </div>
                 <div class="form-group"><label>Base Imponible REBU</label><input type="text" id="ven-base-rebu" readonly></div>
-                <div class="form-group"><label>REBU (21%)</label><input type="text" id="ven-iva-rebu" readonly></div>
+                <div class="form-group"><label>IVA REBU (21%)</label><input type="text" id="ven-iva-rebu" readonly></div>
+                
+                <!-- CAMPOS DE ENVÍO Y ENTREGA (SE SINCRONIZAN CON CATÁLOGO) -->
+                <div class="form-group"><label>Transporte / Transportista</label><input type="text" id="ven-transp"></div>
+                <div class="form-group"><label>Localizador de Envío</label><input type="text" id="ven-localizador"></div>
                 <div class="form-group">
                     <label class="checkbox-label">
-                        <input type="checkbox" id="ven-pagado" onchange="toggleFechaPago()"> ¿Pagado?
+                        <input type="checkbox" id="ven-entregado" onchange="toggleBox('ven-entregado', 'box-ven-entrega')"> ¿Entregado?
                     </label>
                 </div>
-                <div class="form-group" id="box-fecha-pago" style="display:none;">
-                    <label>Fecha de Pago</label>
-                    <input type="date" id="ven-fecha-pago">
+                <div class="form-group" id="box-ven-entrega" style="display:none;">
+                    <label>Fecha de Entrega</label><input type="date" id="ven-fecha-entrega">
+                </div>
+
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="ven-pagado" onchange="toggleBox('ven-pagado', 'box-ven-pago')"> ¿Pagado?
+                    </label>
+                </div>
+                <div class="form-group" id="box-ven-pago" style="display:none;">
+                    <label>Fecha de Pago</label><input type="date" id="ven-fecha-pago">
                 </div>
                 <div class="form-group">
                     <label>Contabilizado</label>
                     <select id="ven-contab"><option value="No">No</option><option value="Sí">Sí</option></select>
                 </div>
             </div>
-            <button type="submit" class="btn-submit">Registrar Venta</button>
+            <button type="submit" class="btn-primary" style="width:100%">Guardar Venta y Actualizar Catálogo</button>
         </form>
-        <div class="table-wrapper">
-            <table id="table-ventas">
-                <thead>
-                    <tr><th>Factura</th><th>Fecha</th><th>Cliente</th><th>Ref</th><th>Total (€)</th><th>Destino</th><th>Base REBU</th><th>IVA REBU</th><th>Pagado</th><th>Acción</th></tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-        </div>
-    </section>
 
-    <!-- 7. GASTOS -->
-    <section id="gastos" class="tab-content">
-        <h2>7. Control de Gastos</h2>
-        <form id="form-gastos" onsubmit="saveGasto(event)">
+        <!-- FORMULARIO 7: GASTOS -->
+        <form id="form-gastos" class="tab-form" onsubmit="saveRecord(event, 'gastos')" style="display:none;">
             <div class="form-grid">
-                <div class="form-group"><label>Núm. Gasto *</label><input type="text" id="gas-num" required></div>
+                <div class="form-group"><label>Núm. Gasto / Ref *</label><input type="text" id="gas-ref" required></div>
                 <div class="form-group"><label>Fecha *</label><input type="date" id="gas-fecha" required></div>
-                <div class="form-group"><label>Importe Total (€) *</label><input type="number" step="0.01" id="gas-total" required></div>
                 <div class="form-group"><label>Proveedor</label><input type="text" id="gas-prov"></div>
-                <div class="form-group"><label>Descripción</label><input type="text" id="gas-desc"></div>
+                <div class="form-group"><label>Descripción *</label><input type="text" id="gas-nombre" required></div>
                 <div class="form-group"><label>Base Imponible (€)</label><input type="number" step="0.01" id="gas-base" value="0"></div>
                 <div class="form-group"><label>IVA (€)</label><input type="number" step="0.01" id="gas-iva" value="0"></div>
-                <div class="form-group"><label>Justificante (Foto o Archivo)</label><input type="file" id="gas-file"></div>
+                <div class="form-group"><label>Importe Total (€) *</label><input type="number" step="0.01" id="gas-total" required></div>
+                <div class="form-group"><label>Justificante del Gasto</label><input type="file" id="gas-file"></div>
             </div>
-            <button type="submit" class="btn-submit">Guardar Gasto</button>
+            <button type="submit" class="btn-primary" style="width:100%">Guardar Gasto</button>
         </form>
-        <div class="table-wrapper">
-            <table id="table-gastos">
-                <thead><tr><th>Núm.</th><th>Fecha</th><th>Proveedor</th><th>Descripción</th><th>Base</th><th>IVA</th><th>Total (€)</th><th>Archivo</th><th>Acción</th></tr></thead>
-                <tbody></tbody>
-            </table>
-        </div>
-    </section>
+    </div>
+</div>
 
+<!-- MODAL DEL ESCÁNER DE CÓDIGO DE BARRAS Y QR -->
+<div id="scanner-modal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 500px; text-align: center;">
+        <div class="modal-header">
+            <h3>📷 Escanear Código de Barras / QR</h3>
+            <button class="btn-close" onclick="stopScanner()">✖</button>
+        </div>
+        <div id="reader"></div>
+        <p style="margin-top:10px; font-size:0.85rem; color:var(--gold-light);">Apunta con la cámara al código del producto</p>
+    </div>
 </div>
 
 <script>
     /* ==========================================================
-       CONFIGURACIÓN DEL MANIFIESTO PARA ICONO EN ANDROID
+       1. MANIFIESTO ANDROID E INICIALIZACIÓN DE DATOS
        ========================================================== */
     const manifestJSON = {
         "name": "CirCA by RB - Gestión",
@@ -574,95 +801,553 @@
         "background_color": "#121212",
         "theme_color": "#121212",
         "icons": [
-            {
-                "src": new URL("Logo.jpg", window.location.href).href,
-                "sizes": "192x192",
-                "type": "image/jpeg",
-                "purpose": "any maskable"
-            },
-            {
-                "src": new URL("Logo.jpg", window.location.href).href,
-                "sizes": "512x512",
-                "type": "image/jpeg",
-                "purpose": "any maskable"
-            }
+            { "src": new URL("Logo.jpg", window.location.href).href, "sizes": "192x192", "type": "image/jpeg" },
+            { "src": new URL("Logo.jpg", window.location.href).href, "sizes": "512x512", "type": "image/jpeg" }
         ]
     };
+    const blob = new Blob([JSON.stringify(manifestJSON)], {type: 'application/json'});
+    document.querySelector('#my-manifest-placeholder').setAttribute('href', URL.createObjectURL(blob));
 
-    const stringManifest = JSON.stringify(manifestJSON);
-    const blob = new Blob([stringManifest], {type: 'application/json'});
-    const manifestURL = URL.createObjectURL(blob);
-    document.querySelector('#my-manifest-placeholder').setAttribute('href', manifestURL);
+    let currentTab = 'catalogo';
+    let editIndex = null;
+    let tempImageBase64 = '';
 
-    /* ==========================================================
-       BASE DE DATOS Y LÓGICA DE LA APLICACIÓN
-       ========================================================== */
-    let db = JSON.parse(localStorage.getItem('circa_db')) || {
-        empresas: [{ nombre: 'CirCA by RB', nif: '', dir: '', tel: '', email: '' }],
-        catalogo: [], proveedores: [], clientes: [], compras: [], ventas: [], gastos: []
+    let db = JSON.parse(localStorage.getItem('circa_db_v2')) || {
+        empresa: [{ ref: 'EMP-01', nombre: 'CirCA by RB', nif: '', dir: '', tel: '', email: 'www.circabyrb.com', fecha: '2026-01-01' }],
+        catalogo: [],
+        proveedores: [],
+        clientes: [],
+        compras: [],
+        ventas: [],
+        gastos: []
+    };
+
+    const tabTitles = {
+        catalogo: '1. Catálogo de Artículos (Cuadrícula)',
+        empresa: '2. Listado de Empresas',
+        proveedores: '3. Listado de Proveedores',
+        clientes: '4. Listado de Clientes',
+        compras: '5. Listado de Compras',
+        ventas: '6. Listado de Ventas y Facturación',
+        gastos: '7. Listado de Gastos'
     };
 
     function saveDB() {
-        localStorage.setItem('circa_db', JSON.stringify(db));
-        renderAll();
+        localStorage.setItem('circa_db_v2', JSON.stringify(db));
+        if (db.empresa.length > 0) {
+            document.getElementById('active-company-display').innerText = "Empresa activa: " + db.empresa[db.empresa.length - 1].nombre;
+        }
+        renderCurrentTab();
     }
 
-    function deleteItem(collection, index) {
-        db[collection].splice(index, 1);
-        saveDB();
+    /* ==========================================================
+       2. NAVEGACIÓN, FILTROS Y ORDENACIÓN
+       ========================================================== */
+    function switchTab(tab, btn) {
+        currentTab = tab;
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('section-title').innerText = tabTitles[tab];
+        clearFilters();
     }
 
-    function exportarDatos() {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
-        const downloadAnchor = document.createElement('a');
-        downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", "datos_circa_by_rb.json");
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        downloadAnchor.remove();
+    function clearFilters() {
+        document.getElementById('filter-search').value = '';
+        document.getElementById('filter-date-from').value = '';
+        document.getElementById('filter-date-to').value = '';
+        document.getElementById('sort-field').value = 'none';
+        document.getElementById('sort-dir').value = 'asc';
+        renderCurrentTab();
     }
 
-    function importarDatos(event) {
+    function getFilteredAndSortedData() {
+        const query = document.getElementById('filter-search').value.toLowerCase().trim();
+        const dateFrom = document.getElementById('filter-date-from').value;
+        const dateTo = document.getElementById('filter-date-to').value;
+        const sortField = document.getElementById('sort-field').value;
+        const sortDir = document.getElementById('sort-dir').value;
+
+        let list = (db[currentTab] || []).map((item, originalIndex) => ({ ...item, _idx: originalIndex }));
+
+        if (query) {
+            list = list.filter(item =>
+                Object.entries(item).some(([k, val]) =>
+                    k !== 'imgData' && k !== '_idx' && String(val).toLowerCase().includes(query)
+                )
+            );
+        }
+
+        if (dateFrom) {
+            list = list.filter(item => (item.fecha || '') >= dateFrom);
+        }
+        if (dateTo) {
+            list = list.filter(item => (item.fecha || '') <= dateTo);
+        }
+
+        if (sortField !== 'none') {
+            list.sort((a, b) => {
+                let valA = String(a[sortField] || '').toLowerCase();
+                let valB = String(b[sortField] || '').toLowerCase();
+                let cmp = valA.localeCompare(valB, undefined, { numeric: true });
+                return sortDir === 'asc' ? cmp : -cmp;
+            });
+        }
+
+        return list;
+    }
+
+    /* ==========================================================
+       3. RENDERIZADO DE CUADRÍCULA Y LISTADOS
+       ========================================================== */
+    function renderCurrentTab() {
+        const container = document.getElementById('main-list-view');
+        const data = getFilteredAndSortedData();
+
+        if (data.length === 0) {
+            container.innerHTML = `<div class="empty-msg">No hay registros que mostrar en esta sección. Pulsa "➕ Nuevo Registro" para empezar.</div>`;
+            return;
+        }
+
+        // Vista de Cuadrícula para Catálogo
+        if (currentTab === 'catalogo') {
+            container.innerHTML = `<div class="catalog-grid">` + data.map(item => `
+                <div class="catalog-card">
+                    <div>
+                        <img src="${item.imgData || 'Logo.jpg'}" class="catalog-img" alt="${item.nombre}" onerror="this.src='https://via.placeholder.com/300x200/1e1e1e/c5a059?text=CirCA+by+RB'">
+                        <div class="catalog-body">
+                            <span class="badge ${item.vendido === 'Vendido' ? 'badge-vendido' : 'badge-disponible'}">${item.vendido || 'Disponible'}</span>
+                            <div class="catalog-ref">REF: ${item.ref} ${item.sku ? '| SKU: ' + item.sku : ''}</div>
+                            <div class="catalog-title">${item.nombre}</div>
+                            <div class="catalog-prices">
+                                <span>Coste: <strong>${item.coste} €</strong></span>
+                                <span style="color:var(--gold-light)">PVP: <strong>${item.venta} €</strong></span>
+                            </div>
+                            <div class="catalog-details">
+                                <div>📏 Medidas: ${item.medidas}</div>
+                                <div>🏷️ Cód. Barras: ${item.barcode || '-'}</div>
+                                <div>🏢 Prov: ${item.prov || '-'} (Just: ${item.justificante || '-'})</div>
+                                ${item.vendido === 'Vendido' ? `<div style="margin-top:6px; padding-top:6px; border-top:1px dashed var(--border-color); color:var(--gold-light);">📦 <strong>Venta sincronizada:</strong><br>Fact: ${item.factura || '-'} (${item.impFactura || 0}€)<br>Transp: ${item.transp || '-'} [${item.localizador || '-'}]<br>Entregado: ${item.entregado}</div>` : ''}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-actions" style="padding: 10px;">
+                        <button class="btn-small" onclick="openFormModal(${item._idx})" title="Editar">✏️</button>
+                        <button class="btn-small" onclick="exportSingleCSV(${item._idx})" title="Excel Individual">📊</button>
+                        <button class="btn-small" onclick="printSinglePDF(${item._idx})" title="PDF Individual">🖨️</button>
+                        <button class="btn-small" style="border-color:var(--danger); color:var(--danger);" onclick="deleteRecord(${item._idx})" title="Borrar">🗑️</button>
+                    </div>
+                </div>
+            `).join('') + `</div>`;
+            return;
+        }
+
+        // Vista de Listado para el resto de pestañas
+        container.innerHTML = `<div class="list-container">` + data.map(item => {
+            let fieldsHTML = '';
+            let headerTitle = '';
+            let pdfButtonLabel = currentTab === 'ventas' ? '🧾 Factura PDF' : '🖨️ PDF';
+
+            if (currentTab === 'empresa') {
+                headerTitle = `${item.ref || 'EMP'} - ${item.nombre}`;
+                fieldsHTML = `
+                    <div class="field-item"><strong>NIF / CIF</strong>${item.nif || '-'}</div>
+                    <div class="field-item"><strong>Dirección Fiscal</strong>${item.dir || '-'}</div>
+                    <div class="field-item"><strong>Teléfono</strong>${item.tel || '-'}</div>
+                    <div class="field-item"><strong>Email / Web</strong>${item.email || '-'}</div>
+                    <div class="field-item"><strong>Fecha</strong>${item.fecha || '-'}</div>`;
+            } else if (currentTab === 'proveedores') {
+                headerTitle = `${item.ref} - ${item.nombre}`;
+                fieldsHTML = `
+                    <div class="field-item"><strong>Dirección</strong>${item.dir || '-'}</div>
+                    <div class="field-item"><strong>Teléfono</strong>${item.tel || '-'}</div>
+                    <div class="field-item"><strong>Correo / Web</strong>${item.email || '-'} / ${item.web || '-'}</div>
+                    <div class="field-item"><strong>Importe Facturado</strong>${item.facturado} €</div>
+                    <div class="field-item"><strong>Importe Pagado</strong>${item.pagado} €</div>
+                    <div class="field-item"><strong>Documentos</strong>${item.docs || '-'}</div>`;
+            } else if (currentTab === 'clientes') {
+                headerTitle = `${item.ref} - ${item.nombre}`;
+                fieldsHTML = `
+                    <div class="field-item"><strong>Dirección</strong>${item.dir || '-'}</div>
+                    <div class="field-item"><strong>Teléfono</strong>${item.tel || '-'}</div>
+                    <div class="field-item"><strong>Correo / Web</strong>${item.email || '-'} / ${item.web || '-'}</div>
+                    <div class="field-item"><strong>Importe Facturado</strong>${item.facturado} €</div>
+                    <div class="field-item"><strong>Importe Cobrado</strong>${item.cobrado} €</div>
+                    <div class="field-item"><strong>Documentos</strong>${item.docs || '-'}</div>`;
+            } else if (currentTab === 'compras') {
+                headerTitle = `REF: ${item.ref} - ${item.nombre}`;
+                fieldsHTML = `
+                    <div class="field-item"><strong>SKU / Cód. Barras</strong>${item.sku || '-'} / ${item.barcode || '-'}</div>
+                    <div class="field-item"><strong>Proveedor</strong>${item.prov || '-'}</div>
+                    <div class="field-item"><strong>Precio Compra</strong>${item.precio} € (x${item.uds} uds)</div>
+                    <div class="field-item"><strong>Justificante</strong>${item.just || '-'}</div>
+                    <div class="field-item"><strong>Fecha</strong>${item.fecha || '-'}</div>
+                    <div class="field-item"><strong>Contabilizado</strong>${item.contab}</div>`;
+            } else if (currentTab === 'ventas') {
+                headerTitle = `Factura: ${item.factura} | REF: ${item.ref} - ${item.nombre}`;
+                fieldsHTML = `
+                    <div class="field-item"><strong>Fecha / Cliente</strong>${item.fecha} | ${item.cliente}</div>
+                    <div class="field-item"><strong>SKU / Cód. Barras</strong>${item.sku || '-'} / ${item.barcode || '-'}</div>
+                    <div class="field-item"><strong>P. Venta + Envío</strong>${item.precio}€ + ${item.envio}€ = <strong>${item.total}€</strong></div>
+                    <div class="field-item"><strong>Destino y REBU</strong>${item.destino} | Base: ${item.baseRebu} | IVA: ${item.ivaRebu}</div>
+                    <div class="field-item"><strong>Transporte y Localizador</strong>${item.transp || '-'} (${item.localizador || '-'})</div>
+                    <div class="field-item"><strong>Entregado</strong>${item.entregado}</div>
+                    <div class="field-item"><strong>Pagado / Contab.</strong>${item.pagado} | Contab: ${item.contab}</div>`;
+            } else if (currentTab === 'gastos') {
+                headerTitle = `Gasto Nº ${item.ref} - ${item.nombre}`;
+                fieldsHTML = `
+                    <div class="field-item"><strong>Fecha</strong>${item.fecha || '-'}</div>
+                    <div class="field-item"><strong>Proveedor</strong>${item.prov || '-'}</div>
+                    <div class="field-item"><strong>Base Imponible</strong>${item.base} €</div>
+                    <div class="field-item"><strong>IVA</strong>${item.iva} €</div>
+                    <div class="field-item"><strong>Importe Total</strong><strong>${item.total} €</strong></div>
+                    <div class="field-item"><strong>Justificante</strong>${item.file || '-'}</div>`;
+            }
+
+            return `
+            <div class="list-card">
+                <div class="list-card-header">
+                    <span class="list-card-title">${headerTitle}</span>
+                </div>
+                <div class="list-card-grid">${fieldsHTML}</div>
+                <div class="card-actions">
+                    <button class="btn-small" onclick="openFormModal(${item._idx})">✏️ Editar</button>
+                    <button class="btn-small" onclick="exportSingleCSV(${item._idx})">📊 Excel</button>
+                    <button class="btn-small" onclick="printSinglePDF(${item._idx})">${pdfButtonLabel}</button>
+                    <button class="btn-small" style="border-color:var(--danger); color:var(--danger);" onclick="deleteRecord(${item._idx})">🗑️ Borrar</button>
+                </div>
+            </div>`;
+        }).join('') + `</div>`;
+    }
+
+    /* ==========================================================
+       4. GESTIÓN DE FORMULARIOS Y SINCRONIZACIÓN AUTOMÁTICA
+       ========================================================== */
+    function toggleBox(checkId, boxId) {
+        document.getElementById(boxId).style.display = document.getElementById(checkId).checked ? 'block' : 'none';
+    }
+
+    function previewCatalogImage(event) {
         const file = event.target.files[0];
         if (!file) return;
         const reader = new FileReader();
         reader.onload = function(e) {
-            try {
-                db = JSON.parse(e.target.result);
-                saveDB();
-                alert("¡Datos cargados correctamente!");
-            } catch (err) {
-                alert("Error al leer el archivo de copia de seguridad.");
-            }
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const maxW = 400;
+                const scale = maxW / img.width;
+                canvas.width = maxW;
+                canvas.height = img.height * scale;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                tempImageBase64 = canvas.toDataURL('image/jpeg', 0.75);
+            };
+            img.src = e.target.result;
         };
-        reader.readAsText(file);
+        reader.readAsDataURL(file);
     }
 
-    function openTab(tabId, btn) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-        document.getElementById(tabId).classList.add('active');
-        btn.classList.add('active');
+    function openFormModal(index = null) {
+        editIndex = index;
+        tempImageBase64 = '';
+        document.querySelectorAll('.tab-form').forEach(f => { f.style.display = 'none'; f.reset(); });
+        
+        const activeForm = document.getElementById('form-' + currentTab);
+        activeForm.style.display = 'block';
+        document.getElementById('modal-title').innerText = index === null ? `➕ Nuevo Registro (${currentTab.toUpperCase()})` : `✏️ Editar Registro (${currentTab.toUpperCase()})`;
+
+        if (currentTab === 'ventas') {
+            document.getElementById('ven-select-cat').innerHTML = '<option value="">-- Seleccionar artículo --</option>' +
+                db.catalogo.map((x, i) => `<option value="${i}">${x.ref} - ${x.nombre} (${x.venta}€)</option>`).join('');
+        }
+
+        if (index !== null) {
+            const item = db[currentTab][index];
+            if (currentTab === 'catalogo') {
+                document.getElementById('cat-ref').value = item.ref || '';
+                document.getElementById('cat-sku').value = item.sku || '';
+                document.getElementById('cat-nombre').value = item.nombre || '';
+                document.getElementById('cat-barcode').value = item.barcode || '';
+                document.getElementById('cat-desc').value = item.desc || '';
+                const m = (item.medidas || '0x0x0').replace(' cm','').split('x');
+                document.getElementById('cat-m1').value = m[0] || 0;
+                document.getElementById('cat-m2').value = m[1] || 0;
+                document.getElementById('cat-m3').value = m[2] || 0;
+                document.getElementById('cat-coste').value = item.coste || 0;
+                document.getElementById('cat-venta').value = item.venta || 0;
+                document.getElementById('cat-prov').value = item.prov || '';
+                document.getElementById('cat-justificante').value = item.justificante || '';
+                document.getElementById('cat-fecha').value = item.fecha || '';
+                tempImageBase64 = item.imgData || '';
+                document.getElementById('cat-vendido').checked = item.vendido === 'Vendido';
+                toggleBox('cat-vendido', 'box-cat-vendido');
+                document.getElementById('cat-factura').value = item.factura || '';
+                document.getElementById('cat-imp-factura').value = item.impFactura || '';
+                document.getElementById('cat-transp').value = item.transp || '';
+                document.getElementById('cat-localizador').value = item.localizador || '';
+                const isEntregado = item.entregado && item.entregado.startsWith('Sí');
+                document.getElementById('cat-entregado').checked = isEntregado;
+                toggleBox('cat-entregado', 'box-cat-entrega');
+                if (isEntregado) {
+                    const matchFecha = item.entregado.match(/\((.*?)\)/);
+                    if (matchFecha) document.getElementById('cat-fecha-entrega').value = matchFecha[1];
+                }
+            } else if (currentTab === 'empresa') {
+                document.getElementById('emp-ref').value = item.ref || '';
+                document.getElementById('emp-nombre').value = item.nombre || '';
+                document.getElementById('emp-nif').value = item.nif || '';
+                document.getElementById('emp-dir').value = item.dir || '';
+                document.getElementById('emp-tel').value = item.tel || '';
+                document.getElementById('emp-email').value = item.email || '';
+                document.getElementById('emp-fecha').value = item.fecha || '';
+            } else if (currentTab === 'proveedores') {
+                document.getElementById('prov-ref').value = item.ref || '';
+                document.getElementById('prov-nombre').value = item.nombre || '';
+                document.getElementById('prov-dir').value = item.dir || '';
+                document.getElementById('prov-tel').value = item.tel || '';
+                document.getElementById('prov-email').value = item.email || '';
+                document.getElementById('prov-web').value = item.web || '';
+                document.getElementById('prov-facturado').value = item.facturado || 0;
+                document.getElementById('prov-pagado').value = item.pagado || 0;
+                document.getElementById('prov-fecha').value = item.fecha || '';
+            } else if (currentTab === 'clientes') {
+                document.getElementById('cli-ref').value = item.ref || '';
+                document.getElementById('cli-nombre').value = item.nombre || '';
+                document.getElementById('cli-dir').value = item.dir || '';
+                document.getElementById('cli-tel').value = item.tel || '';
+                document.getElementById('cli-email').value = item.email || '';
+                document.getElementById('cli-web').value = item.web || '';
+                document.getElementById('cli-facturado').value = item.facturado || 0;
+                document.getElementById('cli-cobrado').value = item.cobrado || 0;
+                document.getElementById('cli-fecha').value = item.fecha || '';
+            } else if (currentTab === 'compras') {
+                document.getElementById('comp-ref').value = item.ref || '';
+                document.getElementById('comp-nombre').value = item.nombre || '';
+                document.getElementById('comp-sku').value = item.sku || '';
+                document.getElementById('comp-barcode').value = item.barcode || '';
+                document.getElementById('comp-prov').value = item.prov || '';
+                document.getElementById('comp-precio').value = item.precio || 0;
+                document.getElementById('comp-just').value = item.just || '';
+                document.getElementById('comp-uds').value = item.uds || 1;
+                document.getElementById('comp-fecha').value = item.fecha || '';
+                document.getElementById('comp-contab').value = item.contab || 'No';
+            } else if (currentTab === 'ventas') {
+                document.getElementById('ven-factura').value = item.factura || '';
+                document.getElementById('ven-fecha').value = item.fecha || '';
+                document.getElementById('ven-cliente').value = item.cliente || '';
+                document.getElementById('ven-ref').value = item.ref || '';
+                document.getElementById('ven-nombre').value = item.nombre || '';
+                document.getElementById('ven-sku').value = item.sku || '';
+                document.getElementById('ven-barcode').value = item.barcode || '';
+                document.getElementById('ven-coste').value = item.coste || 0;
+                document.getElementById('ven-precio').value = item.precio || 0;
+                document.getElementById('ven-envio').value = item.envio || 0;
+                document.getElementById('ven-total').value = item.total || 0;
+                document.getElementById('ven-destino').value = item.destino || 'UE';
+                document.getElementById('ven-transp').value = item.transp || '';
+                document.getElementById('ven-localizador').value = item.localizador || '';
+                
+                const isVenEntregado = item.entregado && item.entregado.startsWith('Sí');
+                document.getElementById('ven-entregado').checked = isVenEntregado;
+                toggleBox('ven-entregado', 'box-ven-entrega');
+                if (isVenEntregado) {
+                    const mE = item.entregado.match(/\((.*?)\)/);
+                    if (mE) document.getElementById('ven-fecha-entrega').value = mE[1];
+                }
+
+                const isVenPagado = item.pagado && item.pagado.startsWith('Sí');
+                document.getElementById('ven-pagado').checked = isVenPagado;
+                toggleBox('ven-pagado', 'box-ven-pago');
+                if (isVenPagado) {
+                    const mP = item.pagado.match(/\((.*?)\)/);
+                    if (mP) document.getElementById('ven-fecha-pago').value = mP[1];
+                }
+
+                document.getElementById('ven-contab').value = item.contab || 'No';
+                calcRebu();
+            } else if (currentTab === 'gastos') {
+                document.getElementById('gas-ref').value = item.ref || '';
+                document.getElementById('gas-fecha').value = item.fecha || '';
+                document.getElementById('gas-prov').value = item.prov || '';
+                document.getElementById('gas-nombre').value = item.nombre || '';
+                document.getElementById('gas-base').value = item.base || 0;
+                document.getElementById('gas-iva').value = item.iva || 0;
+                document.getElementById('gas-total').value = item.total || 0;
+            }
+        }
+
+        document.getElementById('form-modal').style.display = 'flex';
     }
 
-    function toggleVendido() {
-        document.getElementById('box-vendido').style.display = document.getElementById('cat-vendido').checked ? 'block' : 'none';
+    function closeFormModal() {
+        document.getElementById('form-modal').style.display = 'none';
+        editIndex = null;
     }
 
-    function toggleEntregado() {
-        document.getElementById('box-fecha-entrega').style.display = document.getElementById('cat-entregado').checked ? 'flex' : 'none';
+    function saveRecord(e, tab) {
+        e.preventDefault();
+        let record = {};
+        const today = new Date().toISOString().split('T')[0];
+
+        if (tab === 'catalogo') {
+            const vendido = document.getElementById('cat-vendido').checked;
+            const entregado = document.getElementById('cat-entregado').checked;
+            record = {
+                ref: document.getElementById('cat-ref').value,
+                sku: document.getElementById('cat-sku').value,
+                nombre: document.getElementById('cat-nombre').value,
+                barcode: document.getElementById('cat-barcode').value,
+                desc: document.getElementById('cat-desc').value,
+                medidas: `${document.getElementById('cat-m1').value || 0}x${document.getElementById('cat-m2').value || 0}x${document.getElementById('cat-m3').value || 0} cm`,
+                coste: document.getElementById('cat-coste').value,
+                venta: document.getElementById('cat-venta').value,
+                prov: document.getElementById('cat-prov').value,
+                justificante: document.getElementById('cat-justificante').value,
+                fecha: document.getElementById('cat-fecha').value || today,
+                imgData: tempImageBase64,
+                vendido: vendido ? 'Vendido' : 'Disponible',
+                factura: document.getElementById('cat-factura').value,
+                impFactura: document.getElementById('cat-imp-factura').value,
+                transp: document.getElementById('cat-transp').value,
+                localizador: document.getElementById('cat-localizador').value,
+                entregado: entregado ? `Sí (${document.getElementById('cat-fecha-entrega').value})` : 'No'
+            };
+        } else if (tab === 'empresa') {
+            record = {
+                ref: document.getElementById('emp-ref').value || 'EMP',
+                nombre: document.getElementById('emp-nombre').value,
+                nif: document.getElementById('emp-nif').value,
+                dir: document.getElementById('emp-dir').value,
+                tel: document.getElementById('emp-tel').value,
+                email: document.getElementById('emp-email').value,
+                fecha: document.getElementById('emp-fecha').value || today
+            };
+        } else if (tab === 'proveedores') {
+            const docs = Array.from(document.getElementById('prov-docs').files).map(f => f.name).join(', ');
+            record = {
+                ref: document.getElementById('prov-ref').value,
+                nombre: document.getElementById('prov-nombre').value,
+                dir: document.getElementById('prov-dir').value,
+                tel: document.getElementById('prov-tel').value,
+                email: document.getElementById('prov-email').value,
+                web: document.getElementById('prov-web').value,
+                facturado: document.getElementById('prov-facturado').value,
+                pagado: document.getElementById('prov-pagado').value,
+                fecha: document.getElementById('prov-fecha').value || today,
+                docs: docs || (editIndex !== null ? db.proveedores[editIndex].docs : 'Ninguno')
+            };
+        } else if (tab === 'clientes') {
+            const docs = Array.from(document.getElementById('cli-docs').files).map(f => f.name).join(', ');
+            record = {
+                ref: document.getElementById('cli-ref').value,
+                nombre: document.getElementById('cli-nombre').value,
+                dir: document.getElementById('cli-dir').value,
+                tel: document.getElementById('cli-tel').value,
+                email: document.getElementById('cli-email').value,
+                web: document.getElementById('cli-web').value,
+                facturado: document.getElementById('cli-facturado').value,
+                cobrado: document.getElementById('cli-cobrado').value,
+                fecha: document.getElementById('cli-fecha').value || today,
+                docs: docs || (editIndex !== null ? db.clientes[editIndex].docs : 'Ninguno')
+            };
+        } else if (tab === 'compras') {
+            record = {
+                ref: document.getElementById('comp-ref').value,
+                nombre: document.getElementById('comp-nombre').value,
+                sku: document.getElementById('comp-sku').value,
+                barcode: document.getElementById('comp-barcode').value,
+                prov: document.getElementById('comp-prov').value,
+                precio: document.getElementById('comp-precio').value,
+                just: document.getElementById('comp-just').value,
+                uds: document.getElementById('comp-uds').value,
+                fecha: document.getElementById('comp-fecha').value || today,
+                contab: document.getElementById('comp-contab').value
+            };
+            if (editIndex === null) {
+                db.catalogo.push({
+                    ref: record.ref, sku: record.sku, nombre: record.nombre, barcode: record.barcode,
+                    desc: 'Añadido desde Compras', medidas: '0x0x0 cm', coste: record.precio, venta: 0,
+                    prov: record.prov, justificante: record.just, fecha: record.fecha, imgData: '',
+                    vendido: 'Disponible', factura: '', impFactura: '', transp: '', localizador: '', entregado: 'No'
+                });
+            }
+        } else if (tab === 'ventas') {
+            const pagado = document.getElementById('ven-pagado').checked;
+            const entregado = document.getElementById('ven-entregado').checked;
+            const estadoEntregaTexto = entregado ? `Sí (${document.getElementById('ven-fecha-entrega').value})` : 'No';
+
+            record = {
+                factura: document.getElementById('ven-factura').value,
+                fecha: document.getElementById('ven-fecha').value,
+                cliente: document.getElementById('ven-cliente').value,
+                ref: document.getElementById('ven-ref').value,
+                nombre: document.getElementById('ven-nombre').value,
+                sku: document.getElementById('ven-sku').value,
+                barcode: document.getElementById('ven-barcode').value,
+                coste: document.getElementById('ven-coste').value,
+                precio: document.getElementById('ven-precio').value,
+                envio: document.getElementById('ven-envio').value,
+                total: document.getElementById('ven-total').value,
+                destino: document.getElementById('ven-destino').value,
+                baseRebu: document.getElementById('ven-base-rebu').value,
+                ivaRebu: document.getElementById('ven-iva-rebu').value,
+                transp: document.getElementById('ven-transp').value,
+                localizador: document.getElementById('ven-localizador').value,
+                entregado: estadoEntregaTexto,
+                pagado: pagado ? `Sí (${document.getElementById('ven-fecha-pago').value})` : 'No',
+                contab: document.getElementById('ven-contab').value
+            };
+
+            // MEJORA 1: SINCRONIZAR AUTOMÁTICAMENTE LA FICHA DEL ARTÍCULO EN EL CATÁLOGO
+            const catIdx = db.catalogo.findIndex(item => item.ref === record.ref);
+            if (catIdx !== -1) {
+                db.catalogo[catIdx].vendido = 'Vendido';
+                db.catalogo[catIdx].factura = record.factura;
+                db.catalogo[catIdx].impFactura = record.total;
+                db.catalogo[catIdx].transp = record.transp;
+                db.catalogo[catIdx].localizador = record.localizador;
+                db.catalogo[catIdx].entregado = estadoEntregaTexto;
+            }
+        } else if (tab === 'gastos') {
+            const file = document.getElementById('gas-file').files[0]?.name;
+            record = {
+                ref: document.getElementById('gas-ref').value,
+                fecha: document.getElementById('gas-fecha').value,
+                prov: document.getElementById('gas-prov').value,
+                nombre: document.getElementById('gas-nombre').value,
+                base: document.getElementById('gas-base').value,
+                iva: document.getElementById('gas-iva').value,
+                total: document.getElementById('gas-total').value,
+                file: file || (editIndex !== null ? db.gastos[editIndex].file : 'Sin archivo')
+            };
+        }
+
+        if (editIndex === null) {
+            db[tab].push(record);
+        } else {
+            db[tab][editIndex] = record;
+        }
+
+        closeFormModal();
+        saveDB();
     }
 
-    function toggleFechaPago() {
-        document.getElementById('box-fecha-pago').style.display = document.getElementById('ven-pagado').checked ? 'flex' : 'none';
+    function deleteRecord(index) {
+        if (confirm("¿Seguro que deseas borrar este registro?")) {
+            db[currentTab].splice(index, 1);
+            saveDB();
+        }
     }
 
+    /* ==========================================================
+       5. CÁLCULO DE VENTAS Y REBU
+       ========================================================== */
     function autofillVenta() {
         const index = document.getElementById('ven-select-cat').value;
         if (index === "") return;
         const item = db.catalogo[index];
         document.getElementById('ven-ref').value = item.ref || '';
-        document.getElementById('ven-nom').value = item.nombre || '';
+        document.getElementById('ven-nombre').value = item.nombre || '';
         document.getElementById('ven-sku').value = item.sku || '';
         document.getElementById('ven-barcode').value = item.barcode || '';
         document.getElementById('ven-coste').value = item.coste || 0;
@@ -683,9 +1368,9 @@
         const precioCoste = parseFloat(document.getElementById('ven-coste').value) || 0;
 
         if (destino === 'UE') {
-            const baseImponible = (totalVenta - precioCoste) / 1.21;
-            const rebu = baseImponible * 0.21;
-            document.getElementById('ven-base-rebu').value = baseImponible.toFixed(2) + ' €';
+            const base = (totalVenta - precioCoste) / 1.21;
+            const rebu = base * 0.21;
+            document.getElementById('ven-base-rebu').value = base.toFixed(2) + ' €';
             document.getElementById('ven-iva-rebu').value = rebu.toFixed(2) + ' €';
         } else {
             document.getElementById('ven-base-rebu').value = '0.00 € (Exento)';
@@ -693,171 +1378,289 @@
         }
     }
 
-    function saveEmpresa(e) {
-        e.preventDefault();
-        const emp = {
-            nombre: document.getElementById('emp-nombre').value,
-            nif: document.getElementById('emp-nif').value,
-            dir: document.getElementById('emp-dir').value,
-            tel: document.getElementById('emp-tel').value,
-            email: document.getElementById('emp-email').value
+    /* ==========================================================
+       6. LECTOR DE CÓDIGO DE BARRAS Y QR (CÁMARA)
+       ========================================================== */
+    let html5QrCode = null;
+    let targetBarcodeInput = '';
+
+    function startScanner(inputId) {
+        targetBarcodeInput = inputId;
+        document.getElementById('scanner-modal').style.display = 'flex';
+        html5QrCode = new Html5Qrcode("reader");
+        html5QrCode.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: { width: 250, height: 150 } },
+            (decodedText) => {
+                document.getElementById(targetBarcodeInput).value = decodedText;
+                stopScanner();
+            },
+            (errorMessage) => { }
+        ).catch(err => {
+            alert("No se pudo acceder a la cámara. Asegúrate de dar permiso en el navegador.");
+            stopScanner();
+        });
+    }
+
+    function stopScanner() {
+        if (html5QrCode) {
+            html5QrCode.stop().then(() => {
+                html5QrCode.clear();
+                document.getElementById('scanner-modal').style.display = 'none';
+            }).catch(() => {
+                document.getElementById('scanner-modal').style.display = 'none';
+            });
+        } else {
+            document.getElementById('scanner-modal').style.display = 'none';
+        }
+    }
+
+    /* ==========================================================
+       7. EXPORTACIÓN A EXCEL (.CSV), PDF Y FACTURA OFICIAL
+       ========================================================== */
+    function downloadCSV(rows, filename) {
+        if (!rows || rows.length === 0) return alert("No hay datos para exportar.");
+        const keys = Object.keys(rows[0]).filter(k => k !== 'imgData' && k !== '_idx');
+        const csvContent = "\uFEFF" + [
+            keys.join(";"),
+            ...rows.map(r => keys.map(k => `"${String(r[k] ?? '').replace(/"/g, '""')}"`).join(";"))
+        ].join("\n");
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+    }
+
+    function exportSectionCSV() {
+        const data = getFilteredAndSortedData();
+        downloadCSV(data, `CirCA_${currentTab}_listado.csv`);
+    }
+
+    function exportSingleCSV(index) {
+        const item = db[currentTab][index];
+        downloadCSV([item], `CirCA_${currentTab}_${item.ref || index}.csv`);
+    }
+
+    function printSectionPDF() {
+        const data = getFilteredAndSortedData();
+        openPrintWindow(tabTitles[currentTab], data);
+    }
+
+    // MEJORA 2: Si estamos en Ventas, genera una Factura Oficial con datos de Empresa y Logo
+    function printSinglePDF(index) {
+        const item = db[currentTab][index];
+        if (currentTab === 'ventas') {
+            printInvoicePDF(item);
+        } else {
+            openPrintWindow(`Ficha Individual - ${tabTitles[currentTab]}`, [item]);
+        }
+    }
+
+    function printInvoicePDF(venta) {
+        // 1. Obtener datos de la empresa activa (el último registro de la pestaña Empresa)
+        const emp = db.empresa[db.empresa.length - 1] || {
+            nombre: 'CirCA by RB', nif: '', dir: '', tel: '', email: ''
         };
-        db.empresas.push(emp);
-        document.getElementById('active-company-display').innerText = "Empresa activa: " + emp.nombre;
-        e.target.reset();
-        saveDB();
+
+        // 2. Buscar si el cliente existe en la pestaña Clientes para sacar su dirección y NIF
+        const cli = db.clientes.find(c =>
+            c.nombre.toLowerCase() === (venta.cliente || '').toLowerCase() ||
+            c.ref.toLowerCase() === (venta.cliente || '').toLowerCase()
+        ) || { nombre: venta.cliente, ref: '-', dir: '-', tel: '-', email: '-' };
+
+        // Parámetro ajustable: pon true si quieres mostrar el desglose interno del REBU en la factura
+        const mostrarDesgloseInternoRebu = false;
+        const logoUrl = new URL("Logo.jpg", window.location.href).href;
+
+        const win = window.open('', '_blank');
+        win.document.write(`
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+                <meta charset="UTF-8">
+                <title>Factura_${venta.factura}</title>
+                <style>
+                    body { font-family: 'Georgia', serif; color: #1a1a1a; margin: 0; padding: 35px; background: #fff; }
+                    .invoice-box { max-width: 800px; margin: auto; border: 2px solid #C5A059; padding: 30px; border-radius: 6px; }
+                    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #C5A059; padding-bottom: 20px; margin-bottom: 25px; }
+                    .logo-block { display: flex; align-items: center; gap: 15px; }
+                    .logo-block img { width: 85px; height: 85px; object-fit: cover; border-radius: 50%; border: 2px solid #C5A059; }
+                    .company-details h1 { margin: 0; font-size: 22px; color: #121212; letter-spacing: 2px; }
+                    .company-details p { margin: 3px 0; font-family: 'Segoe UI', sans-serif; font-size: 12px; color: #444; }
+                    .invoice-meta { text-align: right; font-family: 'Segoe UI', sans-serif; }
+                    .invoice-meta h2 { margin: 0 0 8px 0; color: #8C6D32; font-size: 24px; letter-spacing: 1px; }
+                    .invoice-meta p { margin: 4px 0; font-size: 13px; }
+                    .parties { display: flex; justify-content: space-between; gap: 20px; margin-bottom: 25px; font-family: 'Segoe UI', sans-serif; font-size: 13px; }
+                    .party-box { flex: 1; background: #faf8f5; border: 1px solid #e2d5b5; padding: 14px; border-radius: 5px; }
+                    .party-box h3 { margin: 0 0 8px 0; font-size: 13px; color: #8C6D32; text-transform: uppercase; border-bottom: 1px solid #e2d5b5; padding-bottom: 4px; }
+                    .party-box p { margin: 4px 0; }
+                    table { width: 100%; border-collapse: collapse; margin-bottom: 25px; font-family: 'Segoe UI', sans-serif; font-size: 13px; }
+                    th { background-color: #121212; color: #EED9A4; padding: 10px; text-align: left; border: 1px solid #121212; }
+                    td { padding: 12px 10px; border-bottom: 1px solid #ddd; }
+                    .text-right { text-align: right; }
+                    .totals { width: 320px; margin-left: auto; font-family: 'Segoe UI', sans-serif; font-size: 14px; }
+                    .totals-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #eee; }
+                    .totals-row.final { font-size: 17px; font-weight: bold; color: #121212; border-top: 2px solid #C5A059; border-bottom: 2px solid #C5A059; padding: 10px 0; margin-top: 6px; }
+                    .legal-note { margin-top: 30px; padding: 12px; background: #faf8f5; border-left: 4px solid #C5A059; font-family: 'Segoe UI', sans-serif; font-size: 11.5px; color: #444; line-height: 1.5; }
+                </style>
+            </head>
+            <body>
+                <div class="invoice-box">
+                    <div class="header">
+                        <div class="logo-block">
+                            <img src="${logoUrl}" onerror="this.style.display='none'">
+                            <div class="company-details">
+                                <h1>${emp.nombre}</h1>
+                                <p><strong>NIF/CIF:</strong> ${emp.nif || '-'}</p>
+                                <p>${emp.dir || '-'}</p>
+                                <p>Tel: ${emp.tel || '-'} | ${emp.email || ''}</p>
+                            </div>
+                        </div>
+                        <div class="invoice-meta">
+                            <h2>FACTURA</h2>
+                            <p><strong>Nº Factura:</strong> ${venta.factura}</p>
+                            <p><strong>Fecha:</strong> ${venta.fecha}</p>
+                            <p><strong>Destino:</strong> ${venta.destino}</p>
+                        </div>
+                    </div>
+
+                    <div class="parties">
+                        <div class="party-box">
+                            <h3>Datos del Cliente</h3>
+                            <p><strong>Nombre / Razón Social:</strong> ${cli.nombre}</p>
+                            <p><strong>NIF / Código:</strong> ${cli.ref || '-'}</p>
+                            <p><strong>Dirección:</strong> ${cli.dir || '-'}</p>
+                            <p><strong>Contacto:</strong> ${cli.tel || '-'} ${cli.email ? '| ' + cli.email : ''}</p>
+                        </div>
+                        <div class="party-box">
+                            <h3>Información de Envío y Pago</h3>
+                            <p><strong>Transportista:</strong> ${venta.transp || 'No especificado'}</p>
+                            <p><strong>Localizador:</strong> ${venta.localizador || '-'}</p>
+                            <p><strong>Estado Entrega:</strong> ${venta.entregado}</p>
+                            <p><strong>Estado Pago:</strong> ${venta.pagado}</p>
+                        </div>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ref / SKU</th>
+                                <th>Descripción del Artículo</th>
+                                <th class="text-right">Precio Artículo</th>
+                                <th class="text-right">Gastos Envío</th>
+                                <th class="text-right">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>${venta.ref}</strong>${venta.sku ? '<br><small>SKU: ' + venta.sku + '</small>' : ''}</td>
+                                <td>${venta.nombre || 'Pieza de catálogo'}</td>
+                                <td class="text-right">${parseFloat(venta.precio || 0).toFixed(2)} €</td>
+                                <td class="text-right">${parseFloat(venta.envio || 0).toFixed(2)} €</td>
+                                <td class="text-right"><strong>${parseFloat(venta.total || 0).toFixed(2)} €</strong></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="totals">
+                        <div class="totals-row">
+                            <span>Subtotal Artículo:</span>
+                            <span>${parseFloat(venta.precio || 0).toFixed(2)} €</span>
+                        </div>
+                        <div class="totals-row">
+                            <span>Gastos de Envío:</span>
+                            <span>${parseFloat(venta.envio || 0).toFixed(2)} €</span>
+                        </div>
+                        ${mostrarDesgloseInternoRebu && venta.destino === 'UE' ? `
+                        <div class="totals-row">
+                            <span>Base Imponible REBU:</span>
+                            <span>${venta.baseRebu}</span>
+                        </div>
+                        <div class="totals-row">
+                            <span>IVA REBU (21%):</span>
+                            <span>${venta.ivaRebu}</span>
+                        </div>` : ''}
+                        <div class="totals-row final">
+                            <span>TOTAL FACTURA:</span>
+                            <span>${parseFloat(venta.total || 0).toFixed(2)} €</span>
+                        </div>
+                    </div>
+
+                    <div class="legal-note">
+                        ${venta.destino === 'UE' 
+                            ? '<strong>Nota Fiscal:</strong> Operación sujeta al Régimen Especial de los Bienes Usados, Objetos de Arte, Antigüedades y Objetos de Colección (REBU). El IVA está incluido en el precio total sin derecho a deducción.' 
+                            : '<strong>Nota Fiscal:</strong> Exportación / Envío fuera de la Unión Europea exento de REBU.'}
+                    </div>
+                </div>
+                <script>window.onload = function() { window.print(); }<\/script>
+            </body>
+            </html>
+        `);
+        win.document.close();
     }
 
-    function saveCatalogo(e) {
-        e.preventDefault();
-        const files = Array.from(document.getElementById('cat-img').files).map(f => f.name).join(', ');
-        const vendido = document.getElementById('cat-vendido').checked;
-        const entregado = document.getElementById('cat-entregado').checked;
+    function openPrintWindow(title, items) {
+        const logoUrl = new URL("Logo.jpg", window.location.href).href;
+        const win = window.open('', '_blank');
+        const rowsHTML = items.map(item => {
+            const entries = Object.entries(item)
+                .filter(([k]) => k !== 'imgData' && k !== '_idx')
+                .map(([k, v]) => `<div><strong>${k.toUpperCase()}:</strong> ${v || '-'}</div>`)
+                .join('');
+            return `<div class="card">${item.imgData ? `<img src="${item.imgData}" style="max-height:110px; border-radius:6px; margin-bottom:8px;">` : ''}<div class="grid">${entries}</div></div>`;
+        }).join('');
 
-        db.catalogo.push({
-            ref: document.getElementById('cat-ref').value,
-            nombre: document.getElementById('cat-nombre').value,
-            sku: '',
-            barcode: document.getElementById('cat-barcode').value,
-            desc: document.getElementById('cat-desc').value,
-            medidas: `${document.getElementById('cat-m1').value || 0}x${document.getElementById('cat-m2').value || 0}x${document.getElementById('cat-m3').value || 0} cm`,
-            coste: document.getElementById('cat-coste').value,
-            venta: document.getElementById('cat-venta').value,
-            prov: document.getElementById('cat-prov').value,
-            justificante: document.getElementById('cat-justificante').value,
-            img: files || 'Sin imagen',
-            vendido: vendido ? 'Vendido' : 'Disponible',
-            infoVenta: vendido ? `Fact: ${document.getElementById('cat-factura').value} | Total: ${document.getElementById('cat-imp-factura').value}€ | Envío: ${document.getElementById('cat-transp').value} (${document.getElementById('cat-localizador').value}) | Entregado: ${entregado ? document.getElementById('cat-fecha-entrega').value : 'No'}` : '-'
-        });
-        e.target.reset();
-        toggleVendido();
-        saveDB();
+        win.document.write(`
+            <html><head><title>${title}</title>
+            <style>
+                body { font-family: Georgia, serif; padding: 20px; color: #121212; }
+                .top { display: flex; align-items: center; gap: 15px; border-bottom: 2px solid #C5A059; padding-bottom: 10px; margin-bottom: 15px; }
+                .top img { width: 55px; height: 55px; border-radius: 50%; border: 1px solid #C5A059; object-fit: cover; }
+                .card { border: 1px solid #8C6D32; border-radius: 6px; padding: 12px; margin-bottom: 15px; page-break-inside: avoid; }
+                .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-family: sans-serif; font-size: 12px; }
+            </style></head>
+            <body>
+                <div class="top">
+                    <img src="${logoUrl}" onerror="this.style.display='none'">
+                    <h1>CIRCA BY R.B - ${title}</h1>
+                </div>
+                ${rowsHTML}
+                <script>window.onload = function() { window.print(); }<\/script>
+            </body></html>
+        `);
+        win.document.close();
     }
 
-    function saveProveedor(e) {
-        e.preventDefault();
-        const docs = Array.from(document.getElementById('prov-docs').files).map(f => f.name).join(', ');
-        db.proveedores.push({
-            cod: document.getElementById('prov-cod').value,
-            nom: document.getElementById('prov-nom').value,
-            dir: document.getElementById('prov-dir').value,
-            tel: document.getElementById('prov-tel').value,
-            email: document.getElementById('prov-email').value,
-            web: document.getElementById('prov-web').value,
-            facturado: document.getElementById('prov-facturado').value,
-            pagado: document.getElementById('prov-pagado').value,
-            docs: docs || 'Ninguno'
-        });
-        e.target.reset();
-        saveDB();
+    /* ==========================================================
+       8. COPIAS DE SEGURIDAD (JSON)
+       ========================================================== */
+    function exportarDatos() {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+        const a = document.createElement('a');
+        a.href = dataStr;
+        a.download = "datos_circa_by_rb.json";
+        a.click();
     }
 
-    function saveCliente(e) {
-        e.preventDefault();
-        const docs = Array.from(document.getElementById('cli-docs').files).map(f => f.name).join(', ');
-        db.clientes.push({
-            cod: document.getElementById('cli-cod').value,
-            nom: document.getElementById('cli-nom').value,
-            dir: document.getElementById('cli-dir').value,
-            tel: document.getElementById('cli-tel').value,
-            email: document.getElementById('cli-email').value,
-            web: document.getElementById('cli-web').value,
-            facturado: document.getElementById('cli-facturado').value,
-            cobrado: document.getElementById('cli-cobrado').value,
-            docs: docs || 'Ninguno'
-        });
-        e.target.reset();
-        saveDB();
+    function importarDatos(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                db = JSON.parse(e.target.result);
+                saveDB();
+                alert("¡Copia de seguridad cargada con éxito!");
+            } catch (err) {
+                alert("Archivo inválido.");
+            }
+        };
+        reader.readAsText(file);
     }
 
-    function saveCompra(e) {
-        e.preventDefault();
-        const ref = document.getElementById('comp-ref').value;
-        const nom = document.getElementById('comp-nom').value;
-        const sku = document.getElementById('comp-sku').value;
-        const barcode = document.getElementById('comp-barcode').value;
-        const prov = document.getElementById('comp-prov').value;
-        const precio = document.getElementById('comp-precio').value;
-        const uds = document.getElementById('comp-uds').value;
-        const just = document.getElementById('comp-just').value;
-        const contab = document.getElementById('comp-contab').value;
-
-        db.compras.push({ ref, nom, sku, barcode, prov, precio, uds, just, contab });
-        db.catalogo.push({
-            ref, nombre: nom, sku, barcode, desc: 'Desde Compras',
-            medidas: '0x0x0 cm', coste: precio, venta: 0, prov, justificante: just,
-            img: 'Sin imagen', vendido: 'Disponible', infoVenta: '-'
-        });
-        e.target.reset();
-        saveDB();
-    }
-
-    function saveVenta(e) {
-        e.preventDefault();
-        const pagado = document.getElementById('ven-pagado').checked;
-        db.ventas.push({
-            factura: document.getElementById('ven-factura').value,
-            fecha: document.getElementById('ven-fecha').value,
-            cliente: document.getElementById('ven-cliente').value,
-            ref: document.getElementById('ven-ref').value,
-            total: document.getElementById('ven-total').value,
-            destino: document.getElementById('ven-destino').value,
-            baseRebu: document.getElementById('ven-base-rebu').value,
-            ivaRebu: document.getElementById('ven-iva-rebu').value,
-            pagado: pagado ? `Sí (${document.getElementById('ven-fecha-pago').value})` : 'No',
-            contab: document.getElementById('ven-contab').value
-        });
-        e.target.reset();
-        toggleFechaPago();
-        calcRebu();
-        saveDB();
-    }
-
-    function saveGasto(e) {
-        e.preventDefault();
-        const file = document.getElementById('gas-file').files[0]?.name || 'Sin archivo';
-        db.gastos.push({
-            num: document.getElementById('gas-num').value,
-            fecha: document.getElementById('gas-fecha').value,
-            prov: document.getElementById('gas-prov').value,
-            desc: document.getElementById('gas-desc').value,
-            base: document.getElementById('gas-base').value,
-            iva: document.getElementById('gas-iva').value,
-            total: document.getElementById('gas-total').value,
-            file: file
-        });
-        e.target.reset();
-        saveDB();
-    }
-
-    function renderAll() {
-        document.querySelector('#table-empresas tbody').innerHTML = db.empresas.map((x, i) =>
-            `<tr><td>${x.nombre}</td><td>${x.nif}</td><td>${x.dir}</td><td>${x.tel}</td><td>${x.email}</td><td><button class="btn-delete" onclick="deleteItem('empresas', ${i})">🗑️</button></td></tr>`).join('');
-
-        document.querySelector('#table-catalogo tbody').innerHTML = db.catalogo.map((x, i) =>
-            `<tr><td>${x.ref}</td><td>${x.nombre}</td><td>${x.medidas}</td><td>${x.coste}€</td><td>${x.venta}€</td><td>${x.prov}</td><td>${x.vendido}</td><td>${x.infoVenta}</td><td><button class="btn-delete" onclick="deleteItem('catalogo', ${i})">🗑️</button></td></tr>`).join('');
-
-        document.getElementById('ven-select-cat').innerHTML = '<option value="">-- Seleccionar artículo --</option>' +
-            db.catalogo.map((x, i) => `<option value="${i}">${x.ref} - ${x.nombre} (${x.venta}€)</option>`).join('');
-
-        document.querySelector('#table-proveedores tbody').innerHTML = db.proveedores.map((x, i) =>
-            `<tr><td>${x.cod}</td><td>${x.nom}</td><td>${x.tel}</td><td>${x.email}</td><td>${x.facturado}€</td><td>${x.pagado}€</td><td>${x.docs}</td><td><button class="btn-delete" onclick="deleteItem('proveedores', ${i})">🗑️</button></td></tr>`).join('');
-
-        document.querySelector('#table-clientes tbody').innerHTML = db.clientes.map((x, i) =>
-            `<tr><td>${x.cod}</td><td>${x.nom}</td><td>${x.tel}</td><td>${x.email}</td><td>${x.facturado}€</td><td>${x.cobrado}€</td><td>${x.docs}</td><td><button class="btn-delete" onclick="deleteItem('clientes', ${i})">🗑️</button></td></tr>`).join('');
-
-        document.querySelector('#table-compras tbody').innerHTML = db.compras.map((x, i) =>
-            `<tr><td>${x.ref}</td><td>${x.nom}</td><td>${x.sku}</td><td>${x.prov}</td><td>${x.precio}€</td><td>${x.uds}</td><td>${x.just}</td><td>${x.contab}</td><td><button class="btn-delete" onclick="deleteItem('compras', ${i})">🗑️</button></td></tr>`).join('');
-
-        document.querySelector('#table-ventas tbody').innerHTML = db.ventas.map((x, i) =>
-            `<tr><td>${x.factura}</td><td>${x.fecha}</td><td>${x.cliente}</td><td>${x.ref}</td><td><strong>${x.total}€</strong></td><td>${x.destino}</td><td>${x.baseRebu}</td><td>${x.ivaRebu}</td><td>${x.pagado}</td><td><button class="btn-delete" onclick="deleteItem('ventas', ${i})">🗑️</button></td></tr>`).join('');
-
-        document.querySelector('#table-gastos tbody').innerHTML = db.gastos.map((x, i) =>
-            `<tr><td>${x.num}</td><td>${x.fecha}</td><td>${x.prov}</td><td>${x.desc}</td><td>${x.base}€</td><td>${x.iva}€</td><td>${x.total}€</td><td>${x.file}</td><td><button class="btn-delete" onclick="deleteItem('gastos', ${i})">🗑️</button></td></tr>`).join('');
-    }
-
-    renderAll();
-    calcRebu();
+    renderCurrentTab();
 </script>
 </body>
 </html>
