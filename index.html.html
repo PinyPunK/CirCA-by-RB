@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <!-- CONFIGURACIÓN PARA MÓVILES Y ANDROID -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#121212">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="CirCA by RB">
+
+    <!-- 1. ICONOS DE LA APLICACIÓN PARA ANDROID Y NAVEGADOR -->
+    <!-- Asegúrate de que la imagen se llame exactamente Logo.jpg -->
+    <link rel="icon" type="image/jpeg" sizes="192x192" href="Logo.jpg">
+    <link rel="icon" type="image/jpeg" sizes="512x512" href="Logo.jpg">
+    <link rel="apple-touch-icon" href="Logo.jpg">
+    <!-- Enlace donde nuestro JavaScript inyectará el Manifiesto de Android -->
+    <link rel="manifest" id="my-manifest-placeholder">
+    
+    <title>CirCA by RB - Gestión Empresarial</title>
+    <style>
+        /* ==========================================
+           VARIABLES DE COLOR (CIRCA BY RB)
+           ========================================== */
+        :root {
+            --bg-dark: #121212;
+            --bg-panel: #1E1E1E;
+            --gold-main: #C5A059;
+            --gold-light: #EED9A4;
+            --gold-dark: #8C6D32;
+            --text-light: #F5F5F5;
+            --border-color: #383020;
+            --danger: #d9534f;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            padding-bottom: 80px;
+        }
+
+        /* CABECERA Y ESTILO DEL LOGOTIPO */
+        header {
+            background: linear-gradient(180deg, #0a0a0a 0%, var(--bg-panel) 100%);
+            border-bottom: 2px solid var(--gold-main);
+            padding: 18px 15px;
+            text-align: center;
+        }
+
+        /* 2. ESTILO VISUAL DEL LOGO EN LA CABECERA */
+        .app-logo {
+            width: 90px;
+            height: 90px;
+            object-fit: cover;
+            border-radius: 50%; /* Lo recorta en círculo elegante; pon 8px si lo prefieres cuadrado */
+            border: 2px solid var(--gold-main);
+            box-shadow: 0 4px 12px rgba(197, 160, 89, 0.3);
+            margin-bottom: 8px;
+        }
+
+        header h1 {
+            color: var(--gold-light);
+            letter-spacing: 3px;
+            font-family: 'Georgia', serif;
+            font-size: 1.5rem;
+        }
+
+        header p {
+            color: var(--gold-main);
+            font-size: 0.85rem;
+            margin-top: 4px;
+        }
+
+        .backup-bar {
+            margin-top: 12px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-backup {
+            background-color: var(--bg-dark);
+            color: var(--gold-light);
+            border: 1px solid var(--gold-main);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+
+        /* MENÚ DE NAVEGACIÓN (DESLIZABLE EN MÓVIL) */
+        nav {
+            display: flex;
+            overflow-x: auto;
+            white-space: nowrap;
+            background-color: var(--bg-panel);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            scrollbar-width: none;
+        }
+
+        nav::-webkit-scrollbar {
+            display: none;
+        }
+
+        nav button {
+            flex: 0 0 auto;
+            background: none;
+            border: none;
+            color: var(--text-light);
+            padding: 14px 16px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.85rem;
+            border-bottom: 3px solid transparent;
+        }
+
+        nav button.active {
+            color: var(--gold-light);
+            border-bottom: 3px solid var(--gold-main);
+            background-color: rgba(197, 160, 89, 0.15);
+        }
+
+        /* CONTENEDOR PRINCIPAL */
+        .container {
+            max-width: 1250px;
+            margin: 15px auto;
+            padding: 0 12px;
+        }
+
+        .tab-content {
+            display: none;
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 18px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        h2 {
+            color: var(--gold-light);
+            border-bottom: 1px solid var(--gold-dark);
+            padding-bottom: 8px;
+            margin-bottom: 15px;
+            font-family: 'Georgia', serif;
+            font-size: 1.2rem;
+        }
+
+        .info-banner {
+            background-color: rgba(197, 160, 89, 0.12);
+            border-left: 4px solid var(--gold-main);
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 0.8rem;
+            color: var(--gold-light);
+        }
+
+        /* FORMULARIOS ADAPTABLES */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 0.8rem;
+            color: var(--gold-main);
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .form-group input, .form-group select {
+            background-color: var(--bg-dark);
+            border: 1px solid var(--gold-dark);
+            color: var(--text-light);
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 16px; 
+        }
+
+        .form-group input[readonly] {
+            background-color: #2a2418;
+            color: var(--gold-light);
+            font-weight: bold;
+        }
+
+        .measures-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .measures-group input {
+            width: 30%;
+        }
+
+        .conditional-box {
+            grid-column: 1 / -1;
+            background-color: rgba(197, 160, 89, 0.07);
+            border: 1px dashed var(--gold-main);
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            margin-top: 10px;
+            padding: 8px 0;
+            color: var(--gold-light) !important;
+            font-size: 0.95rem !important;
+        }
+
+        .checkbox-label input {
+            width: 22px;
+            height: 22px;
+            accent-color: var(--gold-main);
+        }
+
+        button.btn-submit {
+            width: 100%;
+            background: linear-gradient(135deg, var(--gold-main), var(--gold-dark));
+            color: #000;
+            border: none;
+            padding: 14px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        button.btn-delete {
+            background-color: transparent;
+            border: 1px solid var(--danger);
+            color: var(--danger);
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* TABLAS */
+        .table-wrapper {
+            overflow-x: auto;
+            margin-top: 20px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            min-width: 600px;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 10px 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: rgba(197, 160, 89, 0.2);
+            color: var(--gold-light);
+        }
+
+        @media (min-width: 768px) {
+            nav { justify-content: center; }
+            button.btn-submit { width: auto; padding: 12px 30px; }
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <!-- 3. ETIQUETA IMG QUE MUESTRA EL LOGO EN LA APP -->
+    <img src="Logo.jpg" alt="Logo CirCA by RB" class="app-logo">
+    <h1>CIRCA BY R.B</h1>
+    <p id="active-company-display">Empresa activa: CirCA by RB</p>
+    <div class="backup-bar">
+        <button class="btn-backup" onclick="exportarDatos()">📥 Guardar copia</button>
+        <button class="btn-backup" onclick="document.getElementById('import-file').click()">📤 Cargar copia</button>
+        <input type="file" id="import-file" style="display:none" accept=".json" onchange="importarDatos(event)">
+    </div>
+</header>
+
+<nav>
+    <button class="active" onclick="openTab('empresa', this)">1. EMPRESA</button>
+    <button onclick="openTab('catalogo', this)">2. CATÁLOGO</button>
+    <button onclick="openTab('proveedores', this)">3. PROVEEDORES</button>
+    <button onclick="openTab('clientes', this)">4. CLIENTES</button>
+    <button onclick="openTab('compras', this)">5. COMPRAS</button>
+    <button onclick="openTab('ventas', this)">6. VENTAS</button>
+    <button onclick="openTab('gastos', this)">7. GASTOS</button>
+</nav>
+
+<div class="container">
+
+    <!-- 1. EMPRESA -->
+    <section id="empresa" class="tab-content active">
+        <h2>1. Gestión de Empresas</h2>
+        <form id="form-empresa" onsubmit="saveEmpresa(event)">
+            <div class="form-grid">
+                <div class="form-group"><label>Nombre de la Empresa *</label><input type="text" id="emp-nombre" required placeholder="Ej: CirCA by RB"></div>
+                <div class="form-group"><label>NIF / CIF</label><input type="text" id="emp-nif"></div>
+                <div class="form-group"><label>Dirección</label><input type="text" id="emp-dir"></div>
+                <div class="form-group"><label>Teléfono</label><input type="tel" id="emp-tel"></div>
+                <div class="form-group"><label>Correo Electrónico</label><input type="email" id="emp-email"></div>
+            </div>
+            <button type="submit" class="btn-submit">Crear Nueva Empresa</button>
+        </form>
+        <div class="table-wrapper">
+            <table id="table-empresas">
+                <thead><tr><th>Nombre</th><th>NIF/CIF</th><th>Dirección</th><th>Teléfono</th><th>Correo</th><th>Acción</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- 2. CATÁLOGO -->
+    <section id="catalogo" class="tab-content">
+        <h2>2. Catálogo de Artículos</h2>
+        <form id="form-catalogo" onsubmit="saveCatalogo(event)">
+            <div class="form-grid">
+                <div class="form-group"><label>Referencia *</label><input type="text" id="cat-ref" required></div>
+                <div class="form-group"><label>Nombre *</label><input type="text" id="cat-nombre" required></div>
+                <div class="form-group"><label>Código de Barras</label><input type="text" id="cat-barcode"></div>
+                <div class="form-group"><label>Descripción</label><input type="text" id="cat-desc"></div>
+                <div class="form-group">
+                    <label>Medidas (cm x cm x cm)</label>
+                    <div class="measures-group">
+                        <input type="number" step="0.1" id="cat-m1" placeholder="L"> x
+                        <input type="number" step="0.1" id="cat-m2" placeholder="A"> x
+                        <input type="number" step="0.1" id="cat-m3" placeholder="Al">
+                    </div>
+                </div>
+                <div class="form-group"><label>Precio de Coste (€) *</label><input type="number" step="0.01" id="cat-coste" required></div>
+                <div class="form-group"><label>Precio de Venta (€) *</label><input type="number" step="0.01" id="cat-venta" required></div>
+                <div class="form-group"><label>Proveedor</label><input type="text" id="cat-prov"></div>
+                <div class="form-group"><label>Núm. Justificante Compra</label><input type="text" id="cat-justificante"></div>
+                <div class="form-group"><label>Imágenes (Cámara o Galería)</label><input type="file" id="cat-img" multiple accept="image/*"></div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="cat-vendido" onchange="toggleVendido()"> ¿Artículo vendido?
+                    </label>
+                </div>
+
+                <div id="box-vendido" class="conditional-box">
+                    <div class="form-grid">
+                        <div class="form-group"><label>Núm. de Factura</label><input type="text" id="cat-factura"></div>
+                        <div class="form-group"><label>Importe Total Factura (€)</label><input type="number" step="0.01" id="cat-imp-factura"></div>
+                        <div class="form-group"><label>Transportista</label><input type="text" id="cat-transp"></div>
+                        <div class="form-group"><label>Localizador de Envío</label><input type="text" id="cat-localizador"></div>
+                        <div class="form-group">
+                            <label class="checkbox-label">
+                                <input type="checkbox" id="cat-entregado" onchange="toggleEntregado()"> Casilla de Entregado
+                            </label>
+                        </div>
+                        <div class="form-group" id="box-fecha-entrega" style="display:none;">
+                            <label>Fecha de Entrega</label>
+                            <input type="date" id="cat-fecha-entrega">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="submit" class="btn-submit">Guardar en Catálogo</button>
+        </form>
+        <div class="table-wrapper">
+            <table id="table-catalogo">
+                <thead>
+                    <tr><th>Ref</th><th>Nombre</th><th>Medidas</th><th>Coste</th><th>P. Venta</th><th>Proveedor</th><th>Estado</th><th>Datos Venta/Envío</th><th>Acción</th></tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- 3. PROVEEDORES -->
+    <section id="proveedores" class="tab-content">
+        <h2>3. Proveedores</h2>
+        <form id="form-proveedores" onsubmit="saveProveedor(event)">
+            <div class="form-grid">
+                <div class="form-group"><label>Código Proveedor *</label><input type="text" id="prov-cod" required></div>
+                <div class="form-group"><label>Nombre *</label><input type="text" id="prov-nom" required></div>
+                <div class="form-group"><label>Dirección</label><input type="text" id="prov-dir"></div>
+                <div class="form-group"><label>Teléfono</label><input type="tel" id="prov-tel"></div>
+                <div class="form-group"><label>Correo</label><input type="email" id="prov-email"></div>
+                <div class="form-group"><label>Web</label><input type="text" id="prov-web"></div>
+                <div class="form-group"><label>Importe Facturado (€)</label><input type="number" step="0.01" id="prov-facturado" value="0"></div>
+                <div class="form-group"><label>Importe Pagado (€)</label><input type="number" step="0.01" id="prov-pagado" value="0"></div>
+                <div class="form-group"><label>Subir Documentos</label><input type="file" id="prov-docs" multiple></div>
+            </div>
+            <button type="submit" class="btn-submit">Crear Proveedor</button>
+        </form>
+        <div class="table-wrapper">
+            <table id="table-proveedores">
+                <thead><tr><th>Código</th><th>Nombre</th><th>Teléfono</th><th>Correo</th><th>Facturado</th><th>Pagado</th><th>Docs</th><th>Acción</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- 4. CLIENTES -->
+    <section id="clientes" class="tab-content">
+        <h2>4. Clientes</h2>
+        <form id="form-clientes" onsubmit="saveCliente(event)">
+            <div class="form-grid">
+                <div class="form-group"><label>Código Cliente *</label><input type="text" id="cli-cod" required></div>
+                <div class="form-group"><label>Nombre *</label><input type="text" id="cli-nom" required></div>
+                <div class="form-group"><label>Dirección</label><input type="text" id="cli-dir"></div>
+                <div class="form-group"><label>Teléfono</label><input type="tel" id="cli-tel"></div>
+                <div class="form-group"><label>Correo</label><input type="email" id="cli-email"></div>
+                <div class="form-group"><label>Web</label><input type="text" id="cli-web"></div>
+                <div class="form-group"><label>Importe Facturado (€)</label><input type="number" step="0.01" id="cli-facturado" value="0"></div>
+                <div class="form-group"><label>Importe Cobrado (€)</label><input type="number" step="0.01" id="cli-cobrado" value="0"></div>
+                <div class="form-group"><label>Subir Documentos</label><input type="file" id="cli-docs" multiple></div>
+            </div>
+            <button type="submit" class="btn-submit">Crear Cliente</button>
+        </form>
+        <div class="table-wrapper">
+            <table id="table-clientes">
+                <thead><tr><th>Código</th><th>Nombre</th><th>Teléfono</th><th>Correo</th><th>Facturado</th><th>Cobrado</th><th>Docs</th><th>Acción</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- 5. COMPRAS -->
+    <section id="compras" class="tab-content">
+        <h2>5. Registro de Compras</h2>
+        <div class="info-banner">💡 Al guardar una compra, el artículo se añade automáticamente al <strong>Catálogo</strong>.</div>
+        <form id="form-compras" onsubmit="saveCompra(event)">
+            <div class="form-grid">
+                <div class="form-group"><label>Referencia *</label><input type="text" id="comp-ref" required></div>
+                <div class="form-group"><label>Nombre *</label><input type="text" id="comp-nom" required></div>
+                <div class="form-group"><label>SKU</label><input type="text" id="comp-sku"></div>
+                <div class="form-group"><label>Código de Barras</label><input type="text" id="comp-barcode"></div>
+                <div class="form-group"><label>Proveedor</label><input type="text" id="comp-prov"></div>
+                <div class="form-group"><label>Precio de Compra (€) *</label><input type="number" step="0.01" id="comp-precio" required></div>
+                <div class="form-group"><label>Justificante de Compra</label><input type="text" id="comp-just"></div>
+                <div class="form-group"><label>Unidades *</label><input type="number" id="comp-uds" value="1" required></div>
+                <div class="form-group">
+                    <label>Contabilizado</label>
+                    <select id="comp-contab"><option value="No">No</option><option value="Sí">Sí</option></select>
+                </div>
+            </div>
+            <button type="submit" class="btn-submit">Registrar Compra</button>
+        </form>
+        <div class="table-wrapper">
+            <table id="table-compras">
+                <thead><tr><th>Ref</th><th>Nombre</th><th>SKU</th><th>Proveedor</th><th>Precio</th><th>Uds</th><th>Justificante</th><th>Contab.</th><th>Acción</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- 6. VENTAS -->
+    <section id="ventas" class="tab-content">
+        <h2>6. Ventas y Cálculo REBU</h2>
+        <form id="form-ventas" onsubmit="saveVenta(event)">
+            <div class="form-grid">
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Seleccionar Artículo del Catálogo</label>
+                    <select id="ven-select-cat" onchange="autofillVenta()">
+                        <option value="">-- Seleccionar artículo --</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Factura (Núm.) *</label><input type="text" id="ven-factura" required></div>
+                <div class="form-group"><label>Fecha *</label><input type="date" id="ven-fecha" required></div>
+                <div class="form-group"><label>Cliente *</label><input type="text" id="ven-cliente" required></div>
+                <div class="form-group"><label>Referencia</label><input type="text" id="ven-ref"></div>
+                <div class="form-group"><label>Nombre Artículo</label><input type="text" id="ven-nom"></div>
+                <div class="form-group"><label>SKU</label><input type="text" id="ven-sku"></div>
+                <div class="form-group"><label>Código de Barras</label><input type="text" id="ven-barcode"></div>
+                <div class="form-group"><label>Precio Coste (€)</label><input type="number" step="0.01" id="ven-coste" value="0" oninput="calcRebu()"></div>
+                <div class="form-group"><label>Precio de Venta (€) *</label><input type="number" step="0.01" id="ven-precio" value="0" required oninput="updateTotalVenta()"></div>
+                <div class="form-group"><label>Gastos de Envío (€)</label><input type="number" step="0.01" id="ven-envio" value="0" oninput="updateTotalVenta()"></div>
+                <div class="form-group"><label>Importe Total Venta (€)</label><input type="number" step="0.01" id="ven-total" value="0" readonly></div>
+                <div class="form-group">
+                    <label>Destino</label>
+                    <select id="ven-destino" onchange="calcRebu()">
+                        <option value="UE">UE (Calcula REBU)</option>
+                        <option value="Otros">Otros (Exento REBU)</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>Base Imponible REBU</label><input type="text" id="ven-base-rebu" readonly></div>
+                <div class="form-group"><label>REBU (21%)</label><input type="text" id="ven-iva-rebu" readonly></div>
+                <div class="form-group">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="ven-pagado" onchange="toggleFechaPago()"> ¿Pagado?
+                    </label>
+                </div>
+                <div class="form-group" id="box-fecha-pago" style="display:none;">
+                    <label>Fecha de Pago</label>
+                    <input type="date" id="ven-fecha-pago">
+                </div>
+                <div class="form-group">
+                    <label>Contabilizado</label>
+                    <select id="ven-contab"><option value="No">No</option><option value="Sí">Sí</option></select>
+                </div>
+            </div>
+            <button type="submit" class="btn-submit">Registrar Venta</button>
+        </form>
+        <div class="table-wrapper">
+            <table id="table-ventas">
+                <thead>
+                    <tr><th>Factura</th><th>Fecha</th><th>Cliente</th><th>Ref</th><th>Total (€)</th><th>Destino</th><th>Base REBU</th><th>IVA REBU</th><th>Pagado</th><th>Acción</th></tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- 7. GASTOS -->
+    <section id="gastos" class="tab-content">
+        <h2>7. Control de Gastos</h2>
+        <form id="form-gastos" onsubmit="saveGasto(event)">
+            <div class="form-grid">
+                <div class="form-group"><label>Núm. Gasto *</label><input type="text" id="gas-num" required></div>
+                <div class="form-group"><label>Fecha *</label><input type="date" id="gas-fecha" required></div>
+                <div class="form-group"><label>Importe Total (€) *</label><input type="number" step="0.01" id="gas-total" required></div>
+                <div class="form-group"><label>Proveedor</label><input type="text" id="gas-prov"></div>
+                <div class="form-group"><label>Descripción</label><input type="text" id="gas-desc"></div>
+                <div class="form-group"><label>Base Imponible (€)</label><input type="number" step="0.01" id="gas-base" value="0"></div>
+                <div class="form-group"><label>IVA (€)</label><input type="number" step="0.01" id="gas-iva" value="0"></div>
+                <div class="form-group"><label>Justificante (Foto o Archivo)</label><input type="file" id="gas-file"></div>
+            </div>
+            <button type="submit" class="btn-submit">Guardar Gasto</button>
+        </form>
+        <div class="table-wrapper">
+            <table id="table-gastos">
+                <thead><tr><th>Núm.</th><th>Fecha</th><th>Proveedor</th><th>Descripción</th><th>Base</th><th>IVA</th><th>Total (€)</th><th>Archivo</th><th>Acción</th></tr></thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </section>
+
+</div>
+
+<script>
+    /* ==========================================================
+       CONFIGURACIÓN DEL MANIFIESTO PARA ICONO EN ANDROID
+       ========================================================== */
+    const manifestJSON = {
+        "name": "CirCA by RB - Gestión",
+        "short_name": "CirCA by RB",
+        "start_url": "./index.html",
+        "display": "standalone",
+        "background_color": "#121212",
+        "theme_color": "#121212",
+        "icons": [
+            {
+                "src": new URL("Logo.jpg", window.location.href).href,
+                "sizes": "192x192",
+                "type": "image/jpeg",
+                "purpose": "any maskable"
+            },
+            {
+                "src": new URL("Logo.jpg", window.location.href).href,
+                "sizes": "512x512",
+                "type": "image/jpeg",
+                "purpose": "any maskable"
+            }
+        ]
+    };
+
+    const stringManifest = JSON.stringify(manifestJSON);
+    const blob = new Blob([stringManifest], {type: 'application/json'});
+    const manifestURL = URL.createObjectURL(blob);
+    document.querySelector('#my-manifest-placeholder').setAttribute('href', manifestURL);
+
+    /* ==========================================================
+       BASE DE DATOS Y LÓGICA DE LA APLICACIÓN
+       ========================================================== */
+    let db = JSON.parse(localStorage.getItem('circa_db')) || {
+        empresas: [{ nombre: 'CirCA by RB', nif: '', dir: '', tel: '', email: '' }],
+        catalogo: [], proveedores: [], clientes: [], compras: [], ventas: [], gastos: []
+    };
+
+    function saveDB() {
+        localStorage.setItem('circa_db', JSON.stringify(db));
+        renderAll();
+    }
+
+    function deleteItem(collection, index) {
+        db[collection].splice(index, 1);
+        saveDB();
+    }
+
+    function exportarDatos() {
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", "datos_circa_by_rb.json");
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+    }
+
+    function importarDatos(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                db = JSON.parse(e.target.result);
+                saveDB();
+                alert("¡Datos cargados correctamente!");
+            } catch (err) {
+                alert("Error al leer el archivo de copia de seguridad.");
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function openTab(tabId, btn) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        btn.classList.add('active');
+    }
+
+    function toggleVendido() {
+        document.getElementById('box-vendido').style.display = document.getElementById('cat-vendido').checked ? 'block' : 'none';
+    }
+
+    function toggleEntregado() {
+        document.getElementById('box-fecha-entrega').style.display = document.getElementById('cat-entregado').checked ? 'flex' : 'none';
+    }
+
+    function toggleFechaPago() {
+        document.getElementById('box-fecha-pago').style.display = document.getElementById('ven-pagado').checked ? 'flex' : 'none';
+    }
+
+    function autofillVenta() {
+        const index = document.getElementById('ven-select-cat').value;
+        if (index === "") return;
+        const item = db.catalogo[index];
+        document.getElementById('ven-ref').value = item.ref || '';
+        document.getElementById('ven-nom').value = item.nombre || '';
+        document.getElementById('ven-sku').value = item.sku || '';
+        document.getElementById('ven-barcode').value = item.barcode || '';
+        document.getElementById('ven-coste').value = item.coste || 0;
+        document.getElementById('ven-precio').value = item.venta || 0;
+        updateTotalVenta();
+    }
+
+    function updateTotalVenta() {
+        const precio = parseFloat(document.getElementById('ven-precio').value) || 0;
+        const envio = parseFloat(document.getElementById('ven-envio').value) || 0;
+        document.getElementById('ven-total').value = (precio + envio).toFixed(2);
+        calcRebu();
+    }
+
+    function calcRebu() {
+        const destino = document.getElementById('ven-destino').value;
+        const totalVenta = parseFloat(document.getElementById('ven-total').value) || 0;
+        const precioCoste = parseFloat(document.getElementById('ven-coste').value) || 0;
+
+        if (destino === 'UE') {
+            const baseImponible = (totalVenta - precioCoste) / 1.21;
+            const rebu = baseImponible * 0.21;
+            document.getElementById('ven-base-rebu').value = baseImponible.toFixed(2) + ' €';
+            document.getElementById('ven-iva-rebu').value = rebu.toFixed(2) + ' €';
+        } else {
+            document.getElementById('ven-base-rebu').value = '0.00 € (Exento)';
+            document.getElementById('ven-iva-rebu').value = '0.00 € (Exento)';
+        }
+    }
+
+    function saveEmpresa(e) {
+        e.preventDefault();
+        const emp = {
+            nombre: document.getElementById('emp-nombre').value,
+            nif: document.getElementById('emp-nif').value,
+            dir: document.getElementById('emp-dir').value,
+            tel: document.getElementById('emp-tel').value,
+            email: document.getElementById('emp-email').value
+        };
+        db.empresas.push(emp);
+        document.getElementById('active-company-display').innerText = "Empresa activa: " + emp.nombre;
+        e.target.reset();
+        saveDB();
+    }
+
+    function saveCatalogo(e) {
+        e.preventDefault();
+        const files = Array.from(document.getElementById('cat-img').files).map(f => f.name).join(', ');
+        const vendido = document.getElementById('cat-vendido').checked;
+        const entregado = document.getElementById('cat-entregado').checked;
+
+        db.catalogo.push({
+            ref: document.getElementById('cat-ref').value,
+            nombre: document.getElementById('cat-nombre').value,
+            sku: '',
+            barcode: document.getElementById('cat-barcode').value,
+            desc: document.getElementById('cat-desc').value,
+            medidas: `${document.getElementById('cat-m1').value || 0}x${document.getElementById('cat-m2').value || 0}x${document.getElementById('cat-m3').value || 0} cm`,
+            coste: document.getElementById('cat-coste').value,
+            venta: document.getElementById('cat-venta').value,
+            prov: document.getElementById('cat-prov').value,
+            justificante: document.getElementById('cat-justificante').value,
+            img: files || 'Sin imagen',
+            vendido: vendido ? 'Vendido' : 'Disponible',
+            infoVenta: vendido ? `Fact: ${document.getElementById('cat-factura').value} | Total: ${document.getElementById('cat-imp-factura').value}€ | Envío: ${document.getElementById('cat-transp').value} (${document.getElementById('cat-localizador').value}) | Entregado: ${entregado ? document.getElementById('cat-fecha-entrega').value : 'No'}` : '-'
+        });
+        e.target.reset();
+        toggleVendido();
+        saveDB();
+    }
+
+    function saveProveedor(e) {
+        e.preventDefault();
+        const docs = Array.from(document.getElementById('prov-docs').files).map(f => f.name).join(', ');
+        db.proveedores.push({
+            cod: document.getElementById('prov-cod').value,
+            nom: document.getElementById('prov-nom').value,
+            dir: document.getElementById('prov-dir').value,
+            tel: document.getElementById('prov-tel').value,
+            email: document.getElementById('prov-email').value,
+            web: document.getElementById('prov-web').value,
+            facturado: document.getElementById('prov-facturado').value,
+            pagado: document.getElementById('prov-pagado').value,
+            docs: docs || 'Ninguno'
+        });
+        e.target.reset();
+        saveDB();
+    }
+
+    function saveCliente(e) {
+        e.preventDefault();
+        const docs = Array.from(document.getElementById('cli-docs').files).map(f => f.name).join(', ');
+        db.clientes.push({
+            cod: document.getElementById('cli-cod').value,
+            nom: document.getElementById('cli-nom').value,
+            dir: document.getElementById('cli-dir').value,
+            tel: document.getElementById('cli-tel').value,
+            email: document.getElementById('cli-email').value,
+            web: document.getElementById('cli-web').value,
+            facturado: document.getElementById('cli-facturado').value,
+            cobrado: document.getElementById('cli-cobrado').value,
+            docs: docs || 'Ninguno'
+        });
+        e.target.reset();
+        saveDB();
+    }
+
+    function saveCompra(e) {
+        e.preventDefault();
+        const ref = document.getElementById('comp-ref').value;
+        const nom = document.getElementById('comp-nom').value;
+        const sku = document.getElementById('comp-sku').value;
+        const barcode = document.getElementById('comp-barcode').value;
+        const prov = document.getElementById('comp-prov').value;
+        const precio = document.getElementById('comp-precio').value;
+        const uds = document.getElementById('comp-uds').value;
+        const just = document.getElementById('comp-just').value;
+        const contab = document.getElementById('comp-contab').value;
+
+        db.compras.push({ ref, nom, sku, barcode, prov, precio, uds, just, contab });
+        db.catalogo.push({
+            ref, nombre: nom, sku, barcode, desc: 'Desde Compras',
+            medidas: '0x0x0 cm', coste: precio, venta: 0, prov, justificante: just,
+            img: 'Sin imagen', vendido: 'Disponible', infoVenta: '-'
+        });
+        e.target.reset();
+        saveDB();
+    }
+
+    function saveVenta(e) {
+        e.preventDefault();
+        const pagado = document.getElementById('ven-pagado').checked;
+        db.ventas.push({
+            factura: document.getElementById('ven-factura').value,
+            fecha: document.getElementById('ven-fecha').value,
+            cliente: document.getElementById('ven-cliente').value,
+            ref: document.getElementById('ven-ref').value,
+            total: document.getElementById('ven-total').value,
+            destino: document.getElementById('ven-destino').value,
+            baseRebu: document.getElementById('ven-base-rebu').value,
+            ivaRebu: document.getElementById('ven-iva-rebu').value,
+            pagado: pagado ? `Sí (${document.getElementById('ven-fecha-pago').value})` : 'No',
+            contab: document.getElementById('ven-contab').value
+        });
+        e.target.reset();
+        toggleFechaPago();
+        calcRebu();
+        saveDB();
+    }
+
+    function saveGasto(e) {
+        e.preventDefault();
+        const file = document.getElementById('gas-file').files[0]?.name || 'Sin archivo';
+        db.gastos.push({
+            num: document.getElementById('gas-num').value,
+            fecha: document.getElementById('gas-fecha').value,
+            prov: document.getElementById('gas-prov').value,
+            desc: document.getElementById('gas-desc').value,
+            base: document.getElementById('gas-base').value,
+            iva: document.getElementById('gas-iva').value,
+            total: document.getElementById('gas-total').value,
+            file: file
+        });
+        e.target.reset();
+        saveDB();
+    }
+
+    function renderAll() {
+        document.querySelector('#table-empresas tbody').innerHTML = db.empresas.map((x, i) =>
+            `<tr><td>${x.nombre}</td><td>${x.nif}</td><td>${x.dir}</td><td>${x.tel}</td><td>${x.email}</td><td><button class="btn-delete" onclick="deleteItem('empresas', ${i})">🗑️</button></td></tr>`).join('');
+
+        document.querySelector('#table-catalogo tbody').innerHTML = db.catalogo.map((x, i) =>
+            `<tr><td>${x.ref}</td><td>${x.nombre}</td><td>${x.medidas}</td><td>${x.coste}€</td><td>${x.venta}€</td><td>${x.prov}</td><td>${x.vendido}</td><td>${x.infoVenta}</td><td><button class="btn-delete" onclick="deleteItem('catalogo', ${i})">🗑️</button></td></tr>`).join('');
+
+        document.getElementById('ven-select-cat').innerHTML = '<option value="">-- Seleccionar artículo --</option>' +
+            db.catalogo.map((x, i) => `<option value="${i}">${x.ref} - ${x.nombre} (${x.venta}€)</option>`).join('');
+
+        document.querySelector('#table-proveedores tbody').innerHTML = db.proveedores.map((x, i) =>
+            `<tr><td>${x.cod}</td><td>${x.nom}</td><td>${x.tel}</td><td>${x.email}</td><td>${x.facturado}€</td><td>${x.pagado}€</td><td>${x.docs}</td><td><button class="btn-delete" onclick="deleteItem('proveedores', ${i})">🗑️</button></td></tr>`).join('');
+
+        document.querySelector('#table-clientes tbody').innerHTML = db.clientes.map((x, i) =>
+            `<tr><td>${x.cod}</td><td>${x.nom}</td><td>${x.tel}</td><td>${x.email}</td><td>${x.facturado}€</td><td>${x.cobrado}€</td><td>${x.docs}</td><td><button class="btn-delete" onclick="deleteItem('clientes', ${i})">🗑️</button></td></tr>`).join('');
+
+        document.querySelector('#table-compras tbody').innerHTML = db.compras.map((x, i) =>
+            `<tr><td>${x.ref}</td><td>${x.nom}</td><td>${x.sku}</td><td>${x.prov}</td><td>${x.precio}€</td><td>${x.uds}</td><td>${x.just}</td><td>${x.contab}</td><td><button class="btn-delete" onclick="deleteItem('compras', ${i})">🗑️</button></td></tr>`).join('');
+
+        document.querySelector('#table-ventas tbody').innerHTML = db.ventas.map((x, i) =>
+            `<tr><td>${x.factura}</td><td>${x.fecha}</td><td>${x.cliente}</td><td>${x.ref}</td><td><strong>${x.total}€</strong></td><td>${x.destino}</td><td>${x.baseRebu}</td><td>${x.ivaRebu}</td><td>${x.pagado}</td><td><button class="btn-delete" onclick="deleteItem('ventas', ${i})">🗑️</button></td></tr>`).join('');
+
+        document.querySelector('#table-gastos tbody').innerHTML = db.gastos.map((x, i) =>
+            `<tr><td>${x.num}</td><td>${x.fecha}</td><td>${x.prov}</td><td>${x.desc}</td><td>${x.base}€</td><td>${x.iva}€</td><td>${x.total}€</td><td>${x.file}</td><td><button class="btn-delete" onclick="deleteItem('gastos', ${i})">🗑️</button></td></tr>`).join('');
+    }
+
+    renderAll();
+    calcRebu();
+</script>
+</body>
+</html>
