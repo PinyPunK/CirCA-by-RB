@@ -18,7 +18,7 @@
     <!-- LIBRERÍA PARA ESCANEAR CÓDIGOS DE BARRAS Y QR -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     
-    <title>CirCA by RB - Gestión Sincronizada Multi-Dispositivo</title>
+    <title>CirCA by RB - Gestión Empresarial</title>
     <style>
         /* ==========================================
            1. VARIABLES DE COLOR (CIRCA BY RB)
@@ -51,43 +51,78 @@
             padding-bottom: 90px;
         }
 
-        /* CABECERA Y ESTADO DE SINCRONIZACIÓN */
+        /* ==========================================
+           2. CABECERA Y BOTÓN DE MENÚ IZQUIERDO
+           ========================================== */
         header {
             background: linear-gradient(180deg, #0a0a0a 0%, var(--bg-panel) 100%);
             border-bottom: 2px solid var(--gold-main);
-            padding: 15px;
+            padding: 12px 15px;
             text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .menu-toggle-btn {
+            position: absolute;
+            left: 15px;
+            top: 20px;
+            background-color: var(--bg-dark);
+            color: var(--gold-light);
+            border: 1px solid var(--gold-main);
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+        }
+
+        .menu-toggle-btn span {
+            font-size: 0.85rem;
+            font-weight: bold;
         }
 
         .app-logo {
-            width: 85px;
-            height: 85px;
+            width: 80px;
+            height: 80px;
             object-fit: cover;
             border-radius: 50%;
             border: 2px solid var(--gold-main);
             box-shadow: 0 4px 12px rgba(197, 160, 89, 0.3);
-            margin-bottom: 6px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .app-logo:hover {
+            transform: scale(1.06);
+            box-shadow: 0 0 18px var(--gold-main);
         }
 
         header h1 {
             color: var(--gold-light);
             letter-spacing: 3px;
             font-family: 'Georgia', serif;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
+            cursor: pointer;
         }
 
         header p {
             color: var(--gold-main);
-            font-size: 0.85rem;
-            margin-top: 3px;
+            font-size: 0.8rem;
+            margin-top: 2px;
         }
 
         .sync-status {
             display: inline-block;
-            margin-top: 6px;
-            padding: 5px 14px;
+            margin-top: 5px;
+            padding: 3px 12px;
             border-radius: 12px;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             font-weight: bold;
             background-color: rgba(255,255,255,0.05);
             border: 1px solid var(--border-color);
@@ -96,60 +131,110 @@
         .sync-offline { color: var(--gold-light); border-color: var(--gold-dark); }
         .sync-error { color: #ff6b6b; border-color: var(--danger); background-color: rgba(231, 76, 60, 0.15); }
 
-        .backup-bar {
-            margin-top: 10px;
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            flex-wrap: wrap;
+        /* ==========================================
+           3. MENÚ LATERAL OCULTO A LA IZQUIERDA (DRAWER)
+           ========================================== */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 250;
+            display: none;
         }
+        .sidebar-overlay.open { display: block; }
 
-        .btn-small {
-            background-color: var(--bg-dark);
-            color: var(--gold-light);
-            border: 1px solid var(--gold-main);
-            padding: 6px 12px;
-            border-radius: 4px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .btn-small:hover {
-            background-color: var(--gold-main);
-            color: #000;
-        }
-
-        /* NAVEGACIÓN */
-        nav {
-            display: flex;
-            overflow-x: auto;
-            white-space: nowrap;
+        .sidebar {
+            position: fixed;
+            top: 0; left: 0;
+            width: 270px;
+            height: 100%;
             background-color: var(--bg-panel);
-            border-bottom: 1px solid var(--border-color);
-            position: sticky;
-            top: 0;
-            z-index: 90;
-            scrollbar-width: none;
+            border-right: 2px solid var(--gold-main);
+            z-index: 260;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            box-shadow: 4px 0 20px rgba(0,0,0,0.8);
         }
-        nav::-webkit-scrollbar { display: none; }
+        .sidebar.open { transform: translateX(0); }
 
-        nav button {
-            flex: 0 0 auto;
+        .sidebar-header {
+            padding: 18px 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #141414;
+        }
+
+        .sidebar-header h3 {
+            color: var(--gold-light);
+            font-family: 'Georgia', serif;
+            font-size: 1.05rem;
+            letter-spacing: 1px;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            padding: 10px 0;
+        }
+
+        .sidebar-nav button {
             background: none;
             border: none;
             color: var(--text-light);
-            padding: 14px 16px;
+            padding: 14px 20px;
+            text-align: left;
+            font-size: 0.95rem;
+            font-weight: 600;
             cursor: pointer;
-            font-weight: bold;
-            font-size: 0.85rem;
-            border-bottom: 3px solid transparent;
+            border-left: 4px solid transparent;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        nav button.active {
-            color: var(--gold-light);
-            border-bottom: 3px solid var(--gold-main);
+        .sidebar-nav button:hover, .sidebar-nav button.active {
             background-color: rgba(197, 160, 89, 0.15);
+            color: var(--gold-light);
+            border-left-color: var(--gold-main);
+        }
+
+        .sidebar-subbtn {
+            padding-left: 38px !important;
+            font-size: 0.88rem !important;
+            color: var(--gold-main) !important;
+        }
+
+        /* SUBPESTAÑAS DENTRO DE ARTÍCULOS */
+        .subtabs-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .subtab-btn {
+            background-color: var(--bg-panel);
+            color: var(--text-light);
+            border: 1px solid var(--gold-dark);
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.9rem;
+            transition: 0.2s;
+        }
+
+        .subtab-btn.active {
+            background: linear-gradient(135deg, var(--gold-main), var(--gold-dark));
+            color: #000;
+            border-color: var(--gold-light);
         }
 
         /* CONTENEDOR PRINCIPAL Y BARRA DE HERRAMIENTAS */
@@ -186,11 +271,7 @@
             font-size: 1.3rem;
         }
 
-        .action-buttons {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
+        .action-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
 
         .btn-primary {
             background: linear-gradient(135deg, var(--gold-main), var(--gold-dark));
@@ -203,23 +284,26 @@
             font-size: 0.9rem;
         }
 
+        .btn-small {
+            background-color: var(--bg-dark);
+            color: var(--gold-light);
+            border: 1px solid var(--gold-main);
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-small:hover { background-color: var(--gold-main); color: #000; }
+
         .filters-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 10px;
         }
 
-        .filter-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .filter-item label {
-            font-size: 0.75rem;
-            color: var(--gold-main);
-            margin-bottom: 3px;
-        }
-
+        .filter-item { display: flex; flex-direction: column; }
+        .filter-item label { font-size: 0.75rem; color: var(--gold-main); margin-bottom: 3px; }
         .filter-item input, .filter-item select {
             background-color: var(--bg-dark);
             border: 1px solid var(--gold-dark);
@@ -230,11 +314,11 @@
         }
 
         /* ==========================================
-           2. CUADRÍCULA DE CATÁLOGO Y LISTADOS
+           4. CUADRÍCULA DE ARTÍCULOS, FICHAS Y LISTADOS
            ========================================== */
         .catalog-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
             gap: 18px;
         }
 
@@ -251,7 +335,7 @@
 
         .catalog-img {
             width: 100%;
-            height: 180px;
+            height: 190px;
             object-fit: cover;
             background-color: #111;
             border-bottom: 1px solid var(--border-color);
@@ -287,20 +371,35 @@
         .badge-disponible { background-color: rgba(46, 204, 113, 0.2); color: var(--success); border: 1px solid var(--success); }
         .badge-vendido { background-color: rgba(231, 76, 60, 0.2); color: var(--danger); border: 1px solid var(--danger); }
 
-        .catalog-ref { color: var(--gold-main); font-size: 0.8rem; font-weight: bold; }
+        .catalog-ref { color: var(--gold-main); font-size: 0.82rem; font-weight: bold; }
         .catalog-title { color: var(--gold-light); font-size: 1.05rem; margin: 4px 0 8px 0; font-weight: bold; }
 
         .catalog-prices {
             display: flex;
             justify-content: space-between;
             background-color: var(--bg-dark);
+            padding: 8px 10px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            font-size: 0.88rem;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Caja para leer la Descripción completa sin recortes */
+        .full-desc-box {
+            background-color: rgba(0,0,0,0.35);
+            border-left: 3px solid var(--gold-main);
             padding: 8px;
             border-radius: 4px;
             margin-bottom: 8px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
+            color: var(--text-light);
+            white-space: pre-wrap;
+            word-break: break-word;
+            line-height: 1.45;
         }
 
-        .catalog-details { font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; }
+        .catalog-details { font-size: 0.76rem; color: var(--text-muted); line-height: 1.45; }
 
         .list-container { display: flex; flex-direction: column; gap: 12px; }
 
@@ -363,8 +462,33 @@
             flex-wrap: wrap;
         }
 
+        /* PANELES DE AJUSTES Y AYUDA */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+            gap: 18px;
+        }
+
+        .settings-card {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--gold-dark);
+            border-radius: 8px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .settings-card h3 {
+            color: var(--gold-light);
+            font-family: 'Georgia', serif;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
         /* ==========================================
-           3. VENTANAS MODALES
+           5. VENTANAS MODALES Y FORMULARIOS
            ========================================== */
         .modal-overlay {
             position: fixed;
@@ -373,7 +497,7 @@
             display: none;
             justify-content: center;
             align-items: flex-start;
-            z-index: 200;
+            z-index: 300;
             overflow-y: auto;
             padding: 20px 10px;
         }
@@ -411,13 +535,19 @@
         .form-group { display: flex; flex-direction: column; }
         .form-group label { font-size: 0.8rem; color: var(--gold-main); margin-bottom: 4px; font-weight: 600; }
 
-        .form-group input, .form-group select {
+        .form-group input, .form-group select, .form-group textarea {
             background-color: var(--bg-dark);
             border: 1px solid var(--gold-dark);
             color: var(--text-light);
             padding: 10px;
             border-radius: 5px;
             font-size: 15px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 90px;
+            line-height: 1.4;
         }
 
         .form-group input[readonly] {
@@ -484,45 +614,58 @@
 
         #reader { width: 100%; max-width: 400px; margin: 0 auto; }
         .empty-msg { text-align: center; padding: 30px; color: var(--text-muted); font-style: italic; }
-
-        @media (min-width: 768px) { nav { justify-content: center; } }
     </style>
 </head>
 <body>
 
+<!-- FONDO OSCURO Y MENÚ LATERAL IZQUIERDO OCULTO -->
+<div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar(false)"></div>
+<aside id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+        <h3>MENÚ CIRCA BY R.B</h3>
+        <button class="btn-close" onclick="toggleSidebar(false)">✖</button>
+    </div>
+    <div class="sidebar-nav">
+        <button id="nav-catalogo" class="active" onclick="switchTab('catalogo')">📦 1. Artículos (Inicio)</button>
+        <button id="nav-fichas" class="sidebar-subbtn" onclick="switchTab('fichas')">↳ 📋 Fichas de Artículos</button>
+        <button id="nav-empresa" onclick="switchTab('empresa')">🏛️ 2. Empresa</button>
+        <button id="nav-proveedores" onclick="switchTab('proveedores')">🚚 3. Proveedores</button>
+        <button id="nav-clientes" onclick="switchTab('clientes')">👥 4. Clientes</button>
+        <button id="nav-compras" onclick="switchTab('compras')">🛍️ 5. Compras</button>
+        <button id="nav-ventas" onclick="switchTab('ventas')">🧾 6. Ventas</button>
+        <button id="nav-gastos" onclick="switchTab('gastos')">💼 7. Gastos</button>
+        <button id="nav-ajustes" onclick="switchTab('ajustes')">⚙️ 8. Ajustes</button>
+        <button id="nav-ayuda" onclick="switchTab('ayuda')">❓ 9. Ayuda</button>
+    </div>
+</aside>
+
+<!-- CABECERA (EL LOGO LLEVA SIEMPRE A LA PANTALLA PRINCIPAL DE ARTÍCULOS) -->
 <header>
-    <img src="Logo.jpg" alt="Logo CirCA by RB" class="app-logo" onerror="this.style.display='none'">
-    <h1>CIRCA BY R.B</h1>
+    <button class="menu-toggle-btn" onclick="toggleSidebar(true)" title="Abrir Menú">
+        ☰ <span>Menú</span>
+    </button>
+    <img src="Logo.jpg" alt="Logo CirCA by RB" class="app-logo" onclick="goHome()" title="Volver a Inicio (Artículos)" onerror="this.style.display='none'">
+    <h1 onclick="goHome()" title="Volver a Inicio (Artículos)">CIRCA BY R.B</h1>
     <p id="active-company-display">Empresa activa: CirCA by RB</p>
     <div>
-        <span id="github-status-badge" class="sync-status sync-offline">💾 Modo Local (Pulsa Configurar GitHub)</span>
-    </div>
-    <div class="backup-bar">
-        <button class="btn-small" style="border-color: var(--success); color: var(--success); font-weight:bold;" onclick="openGitHubModal()">🐙 Configurar GitHub</button>
-        <button class="btn-small" onclick="syncWithGitHub(false, true)">🔄 Sincronizar Ahora</button>
-        <button class="btn-small" onclick="exportarDatos()">📥 Copia JSON</button>
-        <button class="btn-small" onclick="document.getElementById('import-file').click()">📤 Restaurar JSON</button>
-        <input type="file" id="import-file" style="display:none" accept=".json" onchange="importarDatos(event)">
+        <span id="github-status-badge" class="sync-status sync-offline" onclick="switchTab('ajustes')" style="cursor:pointer;">💾 Modo Local (Configurar en Ajustes)</span>
     </div>
 </header>
 
-<nav>
-    <button class="active" onclick="switchTab('catalogo', this)">1. CATÁLOGO</button>
-    <button onclick="switchTab('empresa', this)">2. EMPRESA</button>
-    <button onclick="switchTab('proveedores', this)">3. PROVEEDORES</button>
-    <button onclick="switchTab('clientes', this)">4. CLIENTES</button>
-    <button onclick="switchTab('compras', this)">5. COMPRAS</button>
-    <button onclick="switchTab('ventas', this)">6. VENTAS</button>
-    <button onclick="switchTab('gastos', this)">7. GASTOS</button>
-</nav>
-
 <div class="container">
 
-    <div class="toolbar">
+    <!-- SUBPESTAÑAS VISIBLES CUANDO ESTÁS EN ARTÍCULOS O EN FICHAS -->
+    <div id="articulos-subtabs" class="subtabs-bar">
+        <button id="subtab-catalogo" class="subtab-btn active" onclick="switchTab('catalogo')">📦 Listado de Artículos (Inicio)</button>
+        <button id="subtab-fichas" class="subtab-btn" onclick="switchTab('fichas')">📋 Fichas de Artículos</button>
+    </div>
+
+    <!-- BARRA DE HERRAMIENTAS DE LISTADOS -->
+    <div id="main-toolbar" class="toolbar">
         <div class="toolbar-top">
-            <h2 id="section-title">1. Catálogo de Artículos</h2>
+            <h2 id="section-title">1. Artículos (Pantalla Principal)</h2>
             <div class="action-buttons">
-                <button class="btn-primary" onclick="openFormModal()">➕ Nuevo Registro</button>
+                <button id="btn-add-main" class="btn-primary" onclick="openFormModal()">➕ Añadir Nuevo</button>
                 <button class="btn-small" onclick="exportSectionCSV()">📊 Excel (Listado)</button>
                 <button class="btn-small" onclick="printSectionPDF()">🖨️ PDF (Listado)</button>
             </div>
@@ -530,8 +673,8 @@
 
         <div class="filters-grid">
             <div class="filter-item">
-                <label>🔍 Buscar en cualquier campo</label>
-                <input type="text" id="filter-search" placeholder="Ref, nombre, SKU, cliente, proveedor..." oninput="renderCurrentTab()">
+                <label>🔍 Buscar por cualquier campo</label>
+                <input type="text" id="filter-search" placeholder="SKU, Ref, nombre, descripción, estilo..." oninput="renderCurrentTab()">
             </div>
             <div class="filter-item">
                 <label>📅 Fecha Desde</label>
@@ -563,47 +706,9 @@
         </div>
     </div>
 
+    <!-- CONTENEDOR DINÁMICO DE VISTAS -->
     <div id="main-list-view"></div>
 
-</div>
-
-<!-- ==========================================
-     MODAL DE CONFIGURACIÓN DE SINCRONIZACIÓN GITHUB
-     ========================================== -->
-<div id="github-modal" class="modal-overlay">
-    <div class="modal-box" style="max-width: 580px;">
-        <div class="modal-header">
-            <h3>🐙 Sincronización Multi-Dispositivo con GitHub</h3>
-            <button class="btn-close" onclick="closeGitHubModal()">✖</button>
-        </div>
-        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5;">
-            Introduce estos mismos datos una sola vez en cada dispositivo (móvil, tablet y PC). Todos los dispositivos leerán y fusionarán automáticamente sus datos a través del archivo <code>db.json</code> en tu repositorio.
-        </p>
-        <div class="form-grid">
-            <div class="form-group">
-                <label>Usuario de GitHub *</label>
-                <input type="text" id="gh-owner" value="PinyPunK">
-            </div>
-            <div class="form-group">
-                <label>Repositorio *</label>
-                <input type="text" id="gh-repo" value="CirCA-by-RB">
-            </div>
-            <div class="form-group">
-                <label>Rama (Branch) *</label>
-                <input type="text" id="gh-branch" value="main">
-            </div>
-        </div>
-        <div class="form-group" style="margin-bottom: 15px;">
-            <label>Tu Token Personal de GitHub (Permiso 'repo' o 'Contents: Read & Write') *</label>
-            <input type="password" id="gh-token" placeholder="ghp_... o github_pat_...">
-        </div>
-        <div id="gh-test-msg" style="display:none; padding:10px; border-radius:5px; margin-bottom:12px; font-size:0.82rem;"></div>
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button type="button" class="btn-small" onclick="testGitHubConnection()">🔍 Probar Token</button>
-            <button type="button" class="btn-primary" style="flex:1;" onclick="saveGitHubConfig()">🔗 Guardar y Sincronizar Dispositivo</button>
-            <button type="button" class="btn-small" style="border-color:var(--danger); color:var(--danger);" onclick="disconnectGitHub()">Desconectar</button>
-        </div>
-    </div>
 </div>
 
 <!-- ==========================================
@@ -616,12 +721,12 @@
             <button class="btn-close" onclick="closeFormModal()">✖</button>
         </div>
 
-        <!-- 1. FORMULARIO CATÁLOGO -->
+        <!-- 1. FORMULARIO ARTÍCULOS (CON DESCRIPCIÓN COMPLETA MULTILÍNEA) -->
         <form id="form-catalogo" class="tab-form" onsubmit="saveRecord(event, 'catalogo')" style="display:none;">
             <div class="form-grid">
                 <div class="form-group"><label>Referencia *</label><input type="text" id="cat-ref" required></div>
-                <div class="form-group"><label>SKU</label><input type="text" id="cat-sku"></div>
-                <div class="form-group"><label>Nombre *</label><input type="text" id="cat-nombre" required></div>
+                <div class="form-group"><label>SKU *</label><input type="text" id="cat-sku" placeholder="Ej: SKU-001"></div>
+                <div class="form-group"><label>Nombre del Artículo *</label><input type="text" id="cat-nombre" required></div>
                 <div class="form-group">
                     <label>Código de Barras / QR</label>
                     <div class="input-with-scanner">
@@ -629,7 +734,6 @@
                         <button type="button" class="btn-small" onclick="startScanner('cat-barcode')">📷</button>
                     </div>
                 </div>
-                <div class="form-group"><label>Descripción</label><input type="text" id="cat-desc"></div>
                 <div class="form-group">
                     <label>Medidas (cm x cm x cm)</label>
                     <div class="measures-group">
@@ -654,6 +758,12 @@
                     </select>
                 </div>
 
+                <!-- Campo Descripción Completa -->
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Descripción Completa del Artículo</label>
+                    <textarea id="cat-desc" placeholder="Escribe aquí toda la historia, estado de conservación y detalles completos del artículo..."></textarea>
+                </div>
+
                 <div class="form-group" style="grid-column: 1 / -1;">
                     <label>Subir Imágenes del Producto (Puedes elegir varias fotos)</label>
                     <input type="file" id="cat-img" accept="image/*" multiple onchange="handleMultipleImages(event)">
@@ -675,7 +785,36 @@
                     </div>
                 </div>
             </div>
-            <button type="submit" class="btn-primary" style="width:100%">Guardar en Catálogo</button>
+            <button type="submit" class="btn-primary" style="width:100%">Guardar Artículo</button>
+        </form>
+
+        <!-- 1B. NUEVO FORMULARIO: FICHAS DE ARTÍCULOS -->
+        <form id="form-fichas" class="tab-form" onsubmit="saveRecord(event, 'fichas')" style="display:none;">
+            <div class="form-grid">
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Título de la Ficha *</label>
+                    <input type="text" id="fic-titulo" required placeholder="Ej: Lámpara Space Age Fase años 70">
+                </div>
+                <div class="form-group"><label>Referencia *</label><input type="text" id="fic-ref" required></div>
+                <div class="form-group"><label>Materiales</label><input type="text" id="fic-materiales" placeholder="Ej: Metal cromado, cristal opalino..."></div>
+                <div class="form-group"><label>Dimensiones</label><input type="text" id="fic-dimensiones" placeholder="Ej: 45 cm x 30 cm x 30 cm"></div>
+                <div class="form-group"><label>Periodo</label><input type="text" id="fic-periodo" placeholder="Ej: 1960 - 1969 / Años 70"></div>
+                <div class="form-group"><label>Estilo</label><input type="text" id="fic-estilo" placeholder="Ej: Mid Century, Space Age, Art Decó..."></div>
+                <div class="form-group"><label>Fecha Creación</label><input type="date" id="fic-fecha"></div>
+
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Imagen Ficha (Subir la imagen principal de la ficha del artículo)</label>
+                    <input type="file" id="fic-main-img" accept="image/*" onchange="handleFichaMainImage(event)">
+                    <div id="fic-main-preview" class="preview-images-box"></div>
+                </div>
+
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Fotos Adicionales del Artículo (Puedes subir varias fotos)</label>
+                    <input type="file" id="fic-fotos" accept="image/*" multiple onchange="handleFichaPhotos(event)">
+                    <div id="fic-fotos-preview" class="preview-images-box"></div>
+                </div>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%">Guardar Ficha del Artículo</button>
         </form>
 
         <!-- 2. FORMULARIO EMPRESA -->
@@ -745,7 +884,7 @@
                 </div>
 
                 <div class="multi-item-panel">
-                    <h4>📦 Añadir Artículos a esta Compra (Se añadirán también al Catálogo)</h4>
+                    <h4>📦 Añadir Artículos a esta Compra (Se añadirán también a Artículos)</h4>
                     <div class="form-grid">
                         <div class="form-group"><label>Referencia</label><input type="text" id="c-item-ref"></div>
                         <div class="form-group"><label>Nombre Artículo</label><input type="text" id="c-item-nombre"></div>
@@ -788,9 +927,9 @@
                     <h4>🛒 Añadir Artículos a esta Factura de Venta</h4>
                     <div class="form-grid">
                         <div class="form-group" style="grid-column: 1 / -1;">
-                            <label>Seleccionar del Catálogo (Autorrellena los campos del artículo)</label>
+                            <label>Seleccionar de Artículos (Autorrellena los campos)</label>
                             <select id="ven-select-cat" onchange="autofillVentaItem()">
-                                <option value="">-- Seleccionar artículo del catálogo --</option>
+                                <option value="">-- Seleccionar artículo --</option>
                             </select>
                         </div>
                         <div class="form-group"><label>Referencia</label><input type="text" id="v-item-ref"></div>
@@ -835,7 +974,7 @@
                     <select id="ven-contab"><option value="No">No</option><option value="Sí">Sí</option></select>
                 </div>
             </div>
-            <button type="submit" class="btn-primary" style="width:100%">Guardar Factura de Venta y Sincronizar Catálogo</button>
+            <button type="submit" class="btn-primary" style="width:100%">Guardar Factura de Venta y Sincronizar</button>
         </form>
 
         <!-- 7. FORMULARIO GASTOS -->
@@ -855,6 +994,33 @@
             </div>
             <button type="submit" class="btn-primary" style="width:100%">Guardar Gasto</button>
         </form>
+
+        <!-- 9. FORMULARIO AYUDA (DOCUMENTOS PDF Y VÍDEO TUTORIALES) -->
+        <form id="form-ayuda" class="tab-form" onsubmit="saveRecord(event, 'ayuda')" style="display:none;">
+            <div class="form-grid">
+                <div class="form-group"><label>Título del Recurso *</label><input type="text" id="ayu-titulo" required placeholder="Ej: Manual de Usuario CirCA"></div>
+                <div class="form-group">
+                    <label>Tipo de Recurso</label>
+                    <select id="ayu-tipo">
+                        <option value="Documento PDF">📄 Documento PDF / Manual</option>
+                        <option value="Vídeo Tutorial">🎬 Vídeo Tutorial</option>
+                    </select>
+                </div>
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Enlace URL (Google Drive, YouTube o enlace directo al PDF/Vídeo)</label>
+                    <input type="url" id="ayu-url" placeholder="https://...">
+                </div>
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Subir archivo PDF o documento de referencia</label>
+                    <input type="file" id="ayu-file" accept=".pdf,video/*,image/*" onchange="handleAyudaFile(event)">
+                </div>
+                <div class="form-group" style="grid-column: 1 / -1;">
+                    <label>Descripción / Notas de Ayuda</label>
+                    <textarea id="ayu-desc" placeholder="Explica brevemente qué incluye este manual o vídeo tutorial..."></textarea>
+                </div>
+            </div>
+            <button type="submit" class="btn-primary" style="width:100%">Guardar en Ayuda</button>
+        </form>
     </div>
 </div>
 
@@ -872,7 +1038,7 @@
 
 <script>
     /* ==========================================================
-       1. MANIFIESTO ANDROID E INICIALIZACIÓN DE DATOS
+       1. MANIFIESTO PWA Y EVENTO DE INSTALACIÓN DE LA APP
        ========================================================== */
     const manifestJSON = {
         "name": "CirCA by RB - Gestión",
@@ -889,32 +1055,65 @@
     const blob = new Blob([JSON.stringify(manifestJSON)], {type: 'application/json'});
     document.querySelector('#my-manifest-placeholder').setAttribute('href', URL.createObjectURL(blob));
 
-    const COLLECTIONS = ['empresa', 'catalogo', 'proveedores', 'clientes', 'compras', 'ventas', 'gastos'];
+    let deferredInstallPrompt = null;
+    window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        deferredInstallPrompt = e;
+    });
+
+    async function installAppPWA() {
+        if (deferredInstallPrompt) {
+            deferredInstallPrompt.prompt();
+            const { outcome } = await deferredInstallPrompt.userChoice;
+            if (outcome === 'accepted') deferredInstallPrompt = null;
+        } else {
+            alert("Para instalar la App en tu dispositivo:\n\n📱 En Android (Chrome): Toca el menú de 3 puntos (⋮) arriba a la derecha y selecciona 'Instalar aplicación' o 'Añadir a pantalla de inicio'.\n\n💻 En Ordenador: Haz clic en el icono de instalación (➕ o pantalla) a la derecha de la barra de direcciones.");
+        }
+    }
+
+    function uninstallAppPWA() {
+        if (confirm("¿Deseas desconectar y limpiar los datos temporales de este dispositivo?\n\nNota: Para quitar el icono de tu pantalla de inicio en Android, mantén pulsado el icono de CirCA by RB y selecciona 'Desinstalar'.")) {
+            localStorage.removeItem('circa_db_v2');
+            alert("Datos locales reiniciados. Si tienes GitHub conectado, puedes volver a sincronizarlos cuando quieras.");
+            location.reload();
+        }
+    }
+
+    /* ==========================================================
+       2. INICIALIZACIÓN DE COLECCIONES Y BASE DE DATOS
+       ========================================================== */
+    const COLLECTIONS = ['empresa', 'catalogo', 'fichas', 'proveedores', 'clientes', 'compras', 'ventas', 'gastos', 'ayuda'];
     let currentTab = 'catalogo';
     let editIndex = null;
     let tempImagesArray = [];
+    let tempFichaMainImg = '';
+    let tempFichaFotos = [];
+    let tempAyudaDataUrl = '';
     let tempCompraItems = [];
     let tempVentaItems = [];
 
     let db = JSON.parse(localStorage.getItem('circa_db_v2')) || {
         empresa: [{ _id: 'emp_default', _updatedAt: 1, ref: 'EMP-01', nombre: 'CirCA by RB', nif: '', dir: '', tel: '', email: 'www.circabyrb.com', fecha: '2026-01-01' }],
         catalogo: [],
+        fichas: [],
         proveedores: [],
         clientes: [],
         compras: [],
         ventas: [],
         gastos: [],
+        ayuda: [
+            { _id: 'ayu_default_1', _updatedAt: 1, ref: 'AYU-01', titulo: 'Guía Rápida de Uso - CirCA by RB', tipo: 'Documento PDF', url: '', file: 'Integrado', desc: '1. Pulsa el Logo en cualquier momento para volver al listado principal de Artículos.\n2. Usa el botón Menú (arriba a la izquierda) para navegar por todas las secciones.\n3. En Ajustes puedes conectar la sincronización automática con GitHub.' }
+        ],
         _deletedIds: []
     };
 
-    // Normaliza la base de datos asegurando que cada registro tenga su matrícula única (_id) y marca de tiempo (_updatedAt)
     function normalizeDB(database) {
         if (!database._deletedIds) database._deletedIds = [];
         COLLECTIONS.forEach(col => {
             if (!Array.isArray(database[col])) database[col] = [];
             database[col].forEach((item, idx) => {
                 if (!item._id) {
-                    const key = item.ref || item.factura || item.just || item.nombre || idx;
+                    const key = item.ref || item.factura || item.just || item.titulo || item.nombre || idx;
                     item._id = `${col}_${String(key).replace(/\s+/g, '_')}_${idx}`;
                 }
                 if (!item._updatedAt) item._updatedAt = 1;
@@ -925,25 +1124,79 @@
     db = normalizeDB(db);
 
     const tabTitles = {
-        catalogo: '1. Catálogo de Artículos (Cuadrícula)',
+        catalogo: '1. Artículos (Pantalla Principal)',
+        fichas: '1B. Fichas Técnicas de Artículos',
         empresa: '2. Listado de Empresas',
         proveedores: '3. Listado de Proveedores (Saldos Automáticos)',
         clientes: '4. Listado de Clientes (Saldos Automáticos)',
         compras: '5. Listado de Compras Multi-Artículo',
         ventas: '6. Listado de Ventas y Facturación',
-        gastos: '7. Listado de Gastos'
+        gastos: '7. Listado de Gastos',
+        ajustes: '8. Ajustes del Sistema y Sincronización',
+        ayuda: '9. Centro de Ayuda, Manuales PDF y Vídeo Tutoriales'
     };
 
     /* ==========================================================
-       2. MOTOR DE FUSIÓN Y SINCRONIZACIÓN MULTI-DISPOSITIVO GITHUB
+       3. NAVEGACIÓN: MENÚ LATERAL Y BOTÓN DE INICIO EN EL LOGO
+       ========================================================== */
+    function toggleSidebar(open) {
+        const sb = document.getElementById('sidebar');
+        const ov = document.getElementById('sidebar-overlay');
+        if (open) {
+            sb.classList.add('open');
+            ov.classList.add('open');
+        } else {
+            sb.classList.remove('open');
+            ov.classList.remove('open');
+        }
+    }
+
+    // Al pulsar el Logo vuelve siempre a la pantalla principal de Artículos
+    function goHome() {
+        switchTab('catalogo');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function switchTab(tab) {
+        currentTab = tab;
+        toggleSidebar(false);
+
+        document.querySelectorAll('.sidebar-nav button').forEach(b => b.classList.remove('active'));
+        const activeNav = document.getElementById('nav-' + tab);
+        if (activeNav) activeNav.classList.add('active');
+
+        // Mostrar subpestañas de Artículos / Fichas solo cuando estamos en una de ellas
+        const subtabsBar = document.getElementById('articulos-subtabs');
+        if (tab === 'catalogo' || tab === 'fichas') {
+            subtabsBar.style.display = 'flex';
+            document.getElementById('subtab-catalogo').className = tab === 'catalogo' ? 'subtab-btn active' : 'subtab-btn';
+            document.getElementById('subtab-fichas').className = tab === 'fichas' ? 'subtab-btn active' : 'subtab-btn';
+        } else {
+            subtabsBar.style.display = 'none';
+        }
+
+        // Ocultar barra de filtros si estamos en Ajustes
+        const toolbar = document.getElementById('main-toolbar');
+        toolbar.style.display = tab === 'ajustes' ? 'none' : 'flex';
+
+        document.getElementById('section-title').innerText = tabTitles[tab];
+        const addBtn = document.getElementById('btn-add-main');
+        if (tab === 'fichas') addBtn.innerText = '➕ Añadir nueva';
+        else if (tab === 'ayuda') addBtn.innerText = '➕ Añadir PDF / Tutorial';
+        else addBtn.innerText = '➕ Añadir Nuevo';
+
+        clearFilters();
+    }
+
+    /* ==========================================================
+       4. MOTOR DE SINCRONIZACIÓN MULTI-DISPOSITIVO CON GITHUB
        ========================================================== */
     let githubFileSha = null;
     let githubPollTimer = null;
     let isSyncing = false;
     let pendingPush = false;
-    const SYNC_INTERVAL_MS = 10000; // Parámetro ajustable: comprueba cambios cada 10 segundos (10000 ms)
+    const SYNC_INTERVAL_MS = 10000;
 
-    // Codifica el objeto JSON completo (con imágenes y tildes) a Base64 de forma asíncrona
     function stringToBase64Async(str) {
         return new Promise((resolve, reject) => {
             const b = new Blob([str], { type: 'application/json;charset=utf-8' });
@@ -954,7 +1207,6 @@
         });
     }
 
-    // Decodifica el Base64 recibido de GitHub a texto UTF-8 limpio
     function base64ToUtf8(b64) {
         const clean = b64.replace(/[\r\n\s]/g, '');
         const binary = atob(clean);
@@ -965,7 +1217,6 @@
         return new TextDecoder('utf-8').decode(bytes);
     }
 
-    // Fusión Inteligente (Smart Merge): combina los datos de todos los dispositivos sin sobrescribir cambios ajenos
     function mergeDatabases(local, remote) {
         local = normalizeDB(local);
         remote = normalizeDB(remote);
@@ -1008,20 +1259,6 @@
         badge.innerText = text;
     }
 
-    function openGitHubModal() {
-        const cfg = JSON.parse(localStorage.getItem('circa_gh_config') || '{}');
-        document.getElementById('gh-owner').value = cfg.owner || 'PinyPunK';
-        document.getElementById('gh-repo').value = cfg.repo || 'CirCA-by-RB';
-        document.getElementById('gh-branch').value = cfg.branch || 'main';
-        document.getElementById('gh-token').value = cfg.token || '';
-        document.getElementById('gh-test-msg').style.display = 'none';
-        document.getElementById('github-modal').style.display = 'flex';
-    }
-
-    function closeGitHubModal() {
-        document.getElementById('github-modal').style.display = 'none';
-    }
-
     async function testGitHubConnection() {
         const owner = document.getElementById('gh-owner').value.trim();
         const repo = document.getElementById('gh-repo').value.trim();
@@ -1040,7 +1277,7 @@
             if (!res.ok) throw new Error(`Código ${res.status}: No se encontró el repositorio o el Token es inválido.`);
             const repoData = await res.json();
             if (repoData.permissions && !repoData.permissions.push) {
-                throw new Error("El Token puede leer, pero NO tiene permiso de escritura (push). Marca la casilla 'repo'.");
+                throw new Error("El Token puede leer, pero NO tiene permiso de escritura. Marca la casilla 'repo'.");
             }
             msgBox.style.background = 'rgba(46, 204, 113, 0.2)';
             msgBox.style.color = 'var(--success)';
@@ -1061,19 +1298,18 @@
             return alert("Rellena Usuario, Repositorio y Token de GitHub.");
         }
         localStorage.setItem('circa_gh_config', JSON.stringify({ owner, repo, branch, token }));
-        closeGitHubModal();
         await syncWithGitHub(true, true);
         startAutoSyncTimer();
+        alert("¡Configuración de GitHub guardada y sincronizada!");
     }
 
     function disconnectGitHub() {
         if (githubPollTimer) clearInterval(githubPollTimer);
         localStorage.removeItem('circa_gh_config');
         updateGitHubBadge('offline', '💾 Modo Local (Desconectado de GitHub)');
-        closeGitHubModal();
+        alert("Desconectado de GitHub.");
     }
 
-    // Función Maestra de Sincronización Bidireccional
     async function syncWithGitHub(pushChanges = false, manualTrigger = false) {
         const cfg = JSON.parse(localStorage.getItem('circa_gh_config') || 'null');
         if (!cfg || !cfg.token) return;
@@ -1083,7 +1319,6 @@
             return;
         }
 
-        // Si el usuario tiene un formulario abierto escribiendo, posponemos la lectura automática
         if (!pushChanges && !manualTrigger && document.getElementById('form-modal').style.display === 'flex') return;
 
         isSyncing = true;
@@ -1133,7 +1368,7 @@
                 if (db.empresa && db.empresa.length > 0) {
                     document.getElementById('active-company-display').innerText = "Empresa activa: " + db.empresa[db.empresa.length - 1].nombre;
                 }
-                renderCurrentTab();
+                if (currentTab !== 'ajustes') renderCurrentTab();
                 githubFileSha = remoteSha;
             }
 
@@ -1167,13 +1402,11 @@
             }
 
             const timeStr = new Date().toLocaleTimeString();
-            updateGitHubBadge('online', `🟢 Sincronizado en todos tus dispositivos (${timeStr})`);
+            updateGitHubBadge('online', `🟢 Sincronizado con GitHub (${timeStr})`);
         } catch (err) {
             console.error("Error de sincronización GitHub:", err);
             updateGitHubBadge('error', `⚠️ ${err.message}`);
-            if (manualTrigger) {
-                alert("No se pudo sincronizar con GitHub:\n" + err.message);
-            }
+            if (manualTrigger) alert("No se pudo sincronizar con GitHub:\n" + err.message);
         } finally {
             isSyncing = false;
             if (pendingPush) {
@@ -1186,7 +1419,7 @@
     function startAutoSyncTimer() {
         const cfg = JSON.parse(localStorage.getItem('circa_gh_config') || 'null');
         if (!cfg || !cfg.token) {
-            updateGitHubBadge('offline', '💾 Modo Local (Pulsa Configurar GitHub)');
+            updateGitHubBadge('offline', '💾 Modo Local (Configurar en Ajustes)');
             return;
         }
         if (githubPollTimer) clearInterval(githubPollTimer);
@@ -1194,9 +1427,7 @@
     }
 
     document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') {
-            syncWithGitHub(false, false);
-        }
+        if (document.visibilityState === 'visible') syncWithGitHub(false, false);
     });
     window.addEventListener('online', () => syncWithGitHub(true, false));
 
@@ -1210,11 +1441,10 @@
     }
 
     /* ==========================================================
-       3. CÁLCULO AUTOMÁTICO DE FACTURADO Y PAGADO/COBRADO
+       5. SALDOS AUTOMÁTICOS Y FILTROS
        ========================================================== */
     function getProveedorTotals(provName) {
-        let facturado = 0;
-        let pagado = 0;
+        let facturado = 0, pagado = 0;
         (db.compras || []).forEach(c => {
             if ((c.prov || '').toLowerCase() === (provName || '').toLowerCase()) {
                 const imp = parseFloat(c.total !== undefined ? c.total : (c.precio * (c.uds || 1))) || 0;
@@ -1226,8 +1456,7 @@
     }
 
     function getClienteTotals(cliName) {
-        let facturado = 0;
-        let cobrado = 0;
+        let facturado = 0, cobrado = 0;
         (db.ventas || []).forEach(v => {
             if ((v.cliente || '').toLowerCase() === (cliName || '').toLowerCase()) {
                 const imp = parseFloat(v.total) || 0;
@@ -1248,17 +1477,6 @@
         document.querySelectorAll('.client-select').forEach(sel => sel.innerHTML = cliOptions);
     }
 
-    /* ==========================================================
-       4. NAVEGACIÓN, FILTROS Y ORDENACIÓN
-       ========================================================== */
-    function switchTab(tab, btn) {
-        currentTab = tab;
-        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById('section-title').innerText = tabTitles[tab];
-        clearFilters();
-    }
-
     function clearFilters() {
         document.getElementById('filter-search').value = '';
         document.getElementById('filter-date-from').value = '';
@@ -1269,6 +1487,7 @@
     }
 
     function getFilteredAndSortedData() {
+        if (currentTab === 'ajustes') return [];
         const query = document.getElementById('filter-search').value.toLowerCase().trim();
         const dateFrom = document.getElementById('filter-date-from').value;
         const dateTo = document.getElementById('filter-date-to').value;
@@ -1278,11 +1497,8 @@
         let list = (db[currentTab] || []).map((item, originalIndex) => ({ ...item, _idx: originalIndex }));
 
         if (query) {
-            list = list.filter(item =>
-                JSON.stringify(item).toLowerCase().includes(query)
-            );
+            list = list.filter(item => JSON.stringify(item).toLowerCase().includes(query));
         }
-
         if (dateFrom) list = list.filter(item => (item.fecha || '') >= dateFrom);
         if (dateTo) list = list.filter(item => (item.fecha || '') <= dateTo);
 
@@ -1294,58 +1510,120 @@
                 return sortDir === 'asc' ? cmp : -cmp;
             });
         }
-
         return list;
     }
 
     /* ==========================================================
-       5. RENDERIZADO DE CUADRÍCULA Y LISTADOS
+       6. RENDERIZADO DE PANTALLAS (ARTÍCULOS, FICHAS, AJUSTES, AYUDA...)
        ========================================================== */
-    function changeMainCardImage(cardIdx, imgSrc) {
-        const imgEl = document.getElementById('main-cat-img-' + cardIdx);
+    function changeMainCardImage(prefix, cardIdx, imgSrc) {
+        const imgEl = document.getElementById(`${prefix}-img-${cardIdx}`);
         if (imgEl) imgEl.src = imgSrc;
     }
 
     function renderCurrentTab() {
         const container = document.getElementById('main-list-view');
-        const data = getFilteredAndSortedData();
 
-        if (data.length === 0) {
-            container.innerHTML = `<div class="empty-msg">No hay registros en esta pestaña. Pulsa "➕ Nuevo Registro" para añadir el primero.</div>`;
+        // PESTAÑA 8: AJUSTES
+        if (currentTab === 'ajustes') {
+            const cfg = JSON.parse(localStorage.getItem('circa_gh_config') || '{}');
+            container.innerHTML = `
+                <div class="settings-grid">
+                    <!-- Tarjeta 1: Sincronización GitHub -->
+                    <div class="settings-card">
+                        <h3>🐙 Sincronización en Tiempo Real con GitHub</h3>
+                        <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.4;">
+                            Conecta tus dispositivos al archivo <code>db.json</code> de tu repositorio de GitHub para que todos tus datos se actualicen automáticamente.
+                        </p>
+                        <div class="form-group">
+                            <label>Usuario de GitHub *</label>
+                            <input type="text" id="gh-owner" value="${cfg.owner || 'PinyPunK'}">
+                        </div>
+                        <div class="form-group">
+                            <label>Nombre del Repositorio *</label>
+                            <input type="text" id="gh-repo" value="${cfg.repo || 'CirCA-by-RB'}">
+                        </div>
+                        <div class="form-group">
+                            <label>Rama (Branch) *</label>
+                            <input type="text" id="gh-branch" value="${cfg.branch || 'main'}">
+                        </div>
+                        <div class="form-group">
+                            <label>Token Personal de GitHub (Permiso 'repo') *</label>
+                            <input type="password" id="gh-token" value="${cfg.token || ''}" placeholder="ghp_... o github_pat_...">
+                        </div>
+                        <div id="gh-test-msg" style="display:none; padding:8px; border-radius:4px; font-size:0.8rem;"></div>
+                        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:5px;">
+                            <button class="btn-small" onclick="testGitHubConnection()">🔍 Probar Token</button>
+                            <button class="btn-primary" style="flex:1;" onclick="saveGitHubConfig()">🔗 Guardar y Sincronizar</button>
+                            <button class="btn-small" onclick="syncWithGitHub(false, true)">🔄 Sincronizar Ahora</button>
+                            <button class="btn-small" style="border-color:var(--danger); color:var(--danger);" onclick="disconnectGitHub()">Desconectar</button>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 2: Copias de Seguridad -->
+                    <div class="settings-card">
+                        <h3>💾 Copia de Seguridad y Restauración</h3>
+                        <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.4;">
+                            Descarga una copia completa de todos tus artículos, fichas, clientes, proveedores, compras, ventas y gastos en un archivo seguro <code>.json</code> o restáurala cuando lo necesites.
+                        </p>
+                        <button class="btn-primary" onclick="exportarDatos()">📥 Descargar Copia de Seguridad (JSON)</button>
+                        <button class="btn-small" style="padding:12px; font-weight:bold;" onclick="document.getElementById('import-file').click()">📤 Restaurar Copia de Seguridad</button>
+                        <input type="file" id="import-file" style="display:none" accept=".json" onchange="importarDatos(event)">
+                    </div>
+
+                    <!-- Tarjeta 3: Instalar / Desinstalar APP -->
+                    <div class="settings-card">
+                        <h3>📱 Instalar y Desinstalar la Aplicación</h3>
+                        <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.4;">
+                            Instala <strong>CirCA by RB</strong> en la pantalla de inicio de tu móvil Android o en el escritorio de tu ordenador con su icono oficial.
+                        </p>
+                        <button class="btn-primary" onclick="installAppPWA()">📲 Instalar APP en este Dispositivo</button>
+                        <button class="btn-small" style="border-color:var(--danger); color:var(--danger); padding:10px;" onclick="uninstallAppPWA()">🗑️ Desinstalar / Limpiar Datos Locales</button>
+                    </div>
+                </div>
+            `;
             return;
         }
 
+        const data = getFilteredAndSortedData();
+
+        if (data.length === 0) {
+            container.innerHTML = `<div class="empty-msg">No hay registros en esta sección todavía. Pulsa el botón dorado superior para añadir el primero.</div>`;
+            return;
+        }
+
+        // PESTAÑA 1: ARTÍCULOS (PANTALLA PRINCIPAL CON SKU, COSTE, VENTA Y DESCRIPCIÓN COMPLETA)
         if (currentTab === 'catalogo') {
             container.innerHTML = `<div class="catalog-grid">` + data.map(item => {
                 const imgs = item.imagenes && item.imagenes.length > 0 ? item.imagenes : (item.imgData ? [item.imgData] : ['Logo.jpg']);
                 const thumbsHTML = imgs.length > 1 ? `<div class="thumb-strip">` + imgs.map(src =>
-                    `<img src="${src}" onclick="changeMainCardImage(${item._idx}, '${src}')">`
+                    `<img src="${src}" onclick="changeMainCardImage('cat', ${item._idx}, '${src}')">`
                 ).join('') + `</div>` : '';
 
                 return `
                 <div class="catalog-card">
                     <div>
-                        <img id="main-cat-img-${item._idx}" src="${imgs[0]}" class="catalog-img" alt="${item.nombre}">
+                        <img id="cat-img-${item._idx}" src="${imgs[0]}" class="catalog-img" alt="${item.nombre}">
                         ${thumbsHTML}
                         <div class="catalog-body">
                             <span class="badge ${item.vendido === 'Vendido' ? 'badge-vendido' : 'badge-disponible'}">${item.vendido || 'Disponible'}</span>
-                            <div class="catalog-ref">REF: ${item.ref} ${item.sku ? '| SKU: ' + item.sku : ''}</div>
+                            <div class="catalog-ref">SKU: <strong>${item.sku || '-'}</strong> | REF: ${item.ref}</div>
                             <div class="catalog-title">${item.nombre}</div>
                             <div class="catalog-prices">
-                                <span>Coste: <strong>${item.coste} €</strong></span>
-                                <span style="color:var(--gold-light)">PVP: <strong>${item.venta} €</strong></span>
+                                <span>P. Coste: <strong>${item.coste} €</strong></span>
+                                <span style="color:var(--gold-light)">P. Venta: <strong>${item.venta} €</strong></span>
                             </div>
+                            <div class="full-desc-box"><strong>Descripción:</strong>\n${item.desc || 'Sin descripción registrada.'}</div>
                             <div class="catalog-details">
                                 <div>📏 Medidas: ${item.medidas}</div>
                                 <div>🏷️ Cód. Barras: ${item.barcode || '-'}</div>
                                 <div>🏢 Prov: ${item.prov || '-'} (Just: ${item.justificante || '-'})</div>
-                                <div>🖼️ Fotos: ${imgs.length}</div>
-                                ${item.vendido === 'Vendido' ? `<div style="margin-top:6px; padding-top:6px; border-top:1px dashed var(--border-color); color:var(--gold-light);">📦 <strong>Datos Venta:</strong><br>Fact: ${item.factura || '-'} (${item.impFactura || 0}€)<br>Transp: ${item.transp || '-'} [${item.localizador || '-'}]<br>Entregado: ${item.entregado || 'No'}</div>` : ''}
+                                ${item.vendido === 'Vendido' ? `<div style="margin-top:6px; padding-top:6px; border-top:1px dashed var(--border-color); color:var(--gold-light);">📦 <strong>Venta:</strong> Fact: ${item.factura || '-'} (${item.impFactura || 0}€) | Envío: ${item.transp || '-'} [${item.localizador || '-'}] | Entregado: ${item.entregado || 'No'}</div>` : ''}
                             </div>
                         </div>
                     </div>
                     <div class="card-actions" style="padding: 10px;">
-                        <button class="btn-small" onclick="openFormModal(${item._idx})">✏️</button>
+                        <button class="btn-small" onclick="openFormModal(${item._idx})">✏️ Editar</button>
                         <button class="btn-small" onclick="exportSingleCSV(${item._idx})">📊</button>
                         <button class="btn-small" onclick="printSinglePDF(${item._idx})">🖨️</button>
                         <button class="btn-small" style="border-color:var(--danger); color:var(--danger);" onclick="deleteRecord(${item._idx})">🗑️</button>
@@ -1355,6 +1633,45 @@
             return;
         }
 
+        // PESTAÑA 1B: FICHAS DE ARTÍCULOS
+        if (currentTab === 'fichas') {
+            container.innerHTML = `<div class="catalog-grid">` + data.map(item => {
+                const allImgs = [
+                    ...(item.imagenFicha ? [item.imagenFicha] : []),
+                    ...(item.fotos || [])
+                ];
+                const displayImgs = allImgs.length > 0 ? allImgs : ['Logo.jpg'];
+                const thumbsHTML = displayImgs.length > 1 ? `<div class="thumb-strip">` + displayImgs.map(src =>
+                    `<img src="${src}" onclick="changeMainCardImage('fic', ${item._idx}, '${src}')">`
+                ).join('') + `</div>` : '';
+
+                return `
+                <div class="catalog-card">
+                    <div>
+                        <img id="fic-img-${item._idx}" src="${displayImgs[0]}" class="catalog-img" alt="${item.titulo}">
+                        ${thumbsHTML}
+                        <div class="catalog-body">
+                            <div class="catalog-ref">REF: ${item.ref}</div>
+                            <div class="catalog-title">${item.titulo}</div>
+                            <div class="catalog-details" style="font-size:0.82rem; line-height:1.6;">
+                                <div><strong>🧱 Materiales:</strong> ${item.materiales || '-'}</div>
+                                <div><strong>📐 Dimensiones:</strong> ${item.dimensiones || '-'}</div>
+                                <div><strong>⏳ Periodo:</strong> ${item.periodo || '-'}</div>
+                                <div><strong>✨ Estilo:</strong> ${item.estilo || '-'}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-actions" style="padding: 10px;">
+                        <button class="btn-small" style="border-color:var(--gold-light); font-weight:bold;" onclick="printFichaPDF(${item._idx})">🖨️ Imprimir Ficha</button>
+                        <button class="btn-small" onclick="openFormModal(${item._idx})">✏️</button>
+                        <button class="btn-small" style="border-color:var(--danger); color:var(--danger);" onclick="deleteRecord(${item._idx})">🗑️</button>
+                    </div>
+                </div>`;
+            }).join('') + `</div>`;
+            return;
+        }
+
+        // RESTO DE PESTAÑAS (EMPRESA, PROVEEDORES, CLIENTES, COMPRAS, VENTAS, GASTOS, AYUDA)
         container.innerHTML = `<div class="list-container">` + data.map(item => {
             let fieldsHTML = '';
             let extraBoxHTML = '';
@@ -1421,6 +1738,14 @@
                     <div class="field-item"><strong>IVA</strong>${item.iva} €</div>
                     <div class="field-item"><strong>Importe Total</strong><strong>${item.total} €</strong></div>
                     <div class="field-item"><strong>Justificante</strong>${item.file || '-'}</div>`;
+            } else if (currentTab === 'ayuda') {
+                headerTitle = `${item.tipo === 'Vídeo Tutorial' ? '🎬' : '📄'} ${item.titulo}`;
+                fieldsHTML = `
+                    <div class="field-item"><strong>Tipo</strong>${item.tipo}</div>
+                    <div class="field-item"><strong>Archivo</strong>${item.file || '-'}</div>
+                    ${item.url ? `<div class="field-item"><strong>Enlace Directo</strong><a href="${item.url}" target="_blank" style="color:var(--gold-light);">🔗 Abrir Recurso / Tutorial</a></div>` : ''}
+                    ${item.fileData ? `<div class="field-item"><strong>Documento Guardado</strong><a href="${item.fileData}" download="${item.file || 'documento.pdf'}" style="color:var(--gold-light);">📥 Descargar / Ver PDF</a></div>` : ''}`;
+                extraBoxHTML = `<div class="full-desc-box">${item.desc || ''}</div>`;
             }
 
             return `
@@ -1441,49 +1766,93 @@
     }
 
     /* ==========================================================
-       6. MÚLTIPLES IMÁGENES Y SUB-LISTAS (COMPRAS Y VENTAS)
+       7. GESTIÓN DE IMÁGENES (CATÁLOGO Y FICHAS) Y SUB-LISTAS
        ========================================================== */
     function toggleVendidoCat() {
         const val = document.getElementById('cat-vendido').value;
         document.getElementById('box-cat-vendido').style.display = val === 'Vendido' ? 'block' : 'none';
     }
 
-    function handleMultipleImages(event) {
-        const files = Array.from(event.target.files);
-        files.forEach(file => {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const maxW = 260;
-                    const scale = maxW / img.width;
-                    canvas.width = maxW;
-                    canvas.height = img.height * scale;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    tempImagesArray.push(canvas.toDataURL('image/jpeg', 0.65));
-                    renderImagePreviews();
-                };
-                img.src = e.target.result;
+    function compressImageFile(file, maxW = 280, callback) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const scale = maxW / img.width;
+                canvas.width = maxW;
+                canvas.height = img.height * scale;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                callback(canvas.toDataURL('image/jpeg', 0.68));
             };
-            reader.readAsDataURL(file);
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function handleMultipleImages(event) {
+        Array.from(event.target.files).forEach(file => {
+            compressImageFile(file, 260, (b64) => {
+                tempImagesArray.push(b64);
+                renderImagePreviews();
+            });
         });
     }
 
     function renderImagePreviews() {
-        const box = document.getElementById('cat-preview-box');
-        box.innerHTML = tempImagesArray.map((src, i) => `
+        document.getElementById('cat-preview-box').innerHTML = tempImagesArray.map((src, i) => `
             <div class="preview-thumb">
                 <img src="${src}">
-                <button type="button" onclick="removeTempImage(${i})">✖</button>
+                <button type="button" onclick="tempImagesArray.splice(${i},1); renderImagePreviews();">✖</button>
             </div>
         `).join('');
     }
 
-    function removeTempImage(idx) {
-        tempImagesArray.splice(idx, 1);
-        renderImagePreviews();
+    function handleFichaMainImage(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        compressImageFile(file, 340, (b64) => {
+            tempFichaMainImg = b64;
+            renderFichaPreviews();
+        });
+    }
+
+    function handleFichaPhotos(event) {
+        Array.from(event.target.files).forEach(file => {
+            compressImageFile(file, 260, (b64) => {
+                tempFichaFotos.push(b64);
+                renderFichaPreviews();
+            });
+        });
+    }
+
+    function renderFichaPreviews() {
+        document.getElementById('fic-main-preview').innerHTML = tempFichaMainImg ? `
+            <div class="preview-thumb">
+                <img src="${tempFichaMainImg}">
+                <button type="button" onclick="tempFichaMainImg=''; renderFichaPreviews();">✖</button>
+            </div>` : '';
+
+        document.getElementById('fic-fotos-preview').innerHTML = tempFichaFotos.map((src, i) => `
+            <div class="preview-thumb">
+                <img src="${src}">
+                <button type="button" onclick="tempFichaFotos.splice(${i},1); renderFichaPreviews();">✖</button>
+            </div>
+        `).join('');
+    }
+
+    function handleAyudaFile(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        if (file.size > 1500000) {
+            alert("El archivo supera 1.5 MB. Se guardará el nombre de referencia; para archivos pesados usa el campo de enlace URL (Google Drive / YouTube).");
+            tempAyudaDataUrl = '';
+            return;
+        }
+        const reader = new FileReader();
+        reader.onload = (e) => { tempAyudaDataUrl = e.target.result; };
+        reader.readAsDataURL(file);
     }
 
     function addCompraItem() {
@@ -1550,7 +1919,7 @@
         const coste = parseFloat(document.getElementById('v-item-coste').value) || 0;
         const precio = parseFloat(document.getElementById('v-item-precio').value) || 0;
 
-        if (!ref || !nombre) return alert("Selecciona un artículo del catálogo o escribe su Referencia y Nombre.");
+        if (!ref || !nombre) return alert("Selecciona un artículo o escribe su Referencia y Nombre.");
 
         tempVentaItems.push({ ref, sku, nombre, barcode, coste, precio });
         document.getElementById('ven-select-cat').value = '';
@@ -1606,11 +1975,15 @@
     }
 
     /* ==========================================================
-       7. ABRIR Y GUARDAR FORMULARIOS CON ID Y MARCA DE TIEMPO
+       8. ABRIR Y GUARDAR FORMULARIOS
        ========================================================== */
     function openFormModal(index = null) {
+        if (currentTab === 'ajustes') return;
         editIndex = index;
         tempImagesArray = [];
+        tempFichaMainImg = '';
+        tempFichaFotos = [];
+        tempAyudaDataUrl = '';
         tempCompraItems = [];
         tempVentaItems = [];
 
@@ -1618,19 +1991,18 @@
         document.querySelectorAll('.tab-form').forEach(f => { f.style.display = 'none'; f.reset(); });
 
         const activeForm = document.getElementById('form-' + currentTab);
+        if (!activeForm) return;
         activeForm.style.display = 'block';
-        document.getElementById('modal-title').innerText = index === null ? `➕ Nuevo Registro (${currentTab.toUpperCase()})` : `✏️ Editar Registro (${currentTab.toUpperCase()})`;
+        document.getElementById('modal-title').innerText = index === null ? `➕ Añadir Nuevo (${tabTitles[currentTab]})` : `✏️ Editar Registro (${tabTitles[currentTab]})`;
 
         if (currentTab === 'ventas') {
-            document.getElementById('ven-select-cat').innerHTML = '<option value="">-- Seleccionar artículo del catálogo --</option>' +
+            document.getElementById('ven-select-cat').innerHTML = '<option value="">-- Seleccionar artículo --</option>' +
                 db.catalogo.map((x, i) => `<option value="${i}">${x.ref} - ${x.nombre} (PVP: ${x.venta}€)</option>`).join('');
             renderVentaItems();
         }
         if (currentTab === 'compras') renderCompraItems();
-        if (currentTab === 'catalogo') {
-            renderImagePreviews();
-            toggleVendidoCat();
-        }
+        if (currentTab === 'catalogo') { renderImagePreviews(); toggleVendidoCat(); }
+        if (currentTab === 'fichas') renderFichaPreviews();
 
         if (index !== null) {
             const item = db[currentTab][index];
@@ -1657,6 +2029,17 @@
                 document.getElementById('cat-localizador').value = item.localizador || '';
                 tempImagesArray = item.imagenes ? [...item.imagenes] : (item.imgData ? [item.imgData] : []);
                 renderImagePreviews();
+            } else if (currentTab === 'fichas') {
+                document.getElementById('fic-titulo').value = item.titulo || '';
+                document.getElementById('fic-ref').value = item.ref || '';
+                document.getElementById('fic-materiales').value = item.materiales || '';
+                document.getElementById('fic-dimensiones').value = item.dimensiones || '';
+                document.getElementById('fic-periodo').value = item.periodo || '';
+                document.getElementById('fic-estilo').value = item.estilo || '';
+                document.getElementById('fic-fecha').value = item.fecha || '';
+                tempFichaMainImg = item.imagenFicha || '';
+                tempFichaFotos = item.fotos ? [...item.fotos] : [];
+                renderFichaPreviews();
             } else if (currentTab === 'empresa') {
                 document.getElementById('emp-ref').value = item.ref || '';
                 document.getElementById('emp-nombre').value = item.nombre || '';
@@ -1710,6 +2093,12 @@
                 document.getElementById('gas-base').value = item.base || 0;
                 document.getElementById('gas-iva').value = item.iva || 0;
                 document.getElementById('gas-total').value = item.total || 0;
+            } else if (currentTab === 'ayuda') {
+                document.getElementById('ayu-titulo').value = item.titulo || '';
+                document.getElementById('ayu-tipo').value = item.tipo || 'Documento PDF';
+                document.getElementById('ayu-url').value = item.url || '';
+                document.getElementById('ayu-desc').value = item.desc || '';
+                tempAyudaDataUrl = item.fileData || '';
             }
         }
 
@@ -1752,6 +2141,19 @@
                 localizador: document.getElementById('cat-localizador').value,
                 entregado: entregadoVal === 'Sí' ? `Sí (${fechaEnt || today})` : 'No'
             };
+        } else if (tab === 'fichas') {
+            record = {
+                _id: existingId, _updatedAt: now,
+                titulo: document.getElementById('fic-titulo').value,
+                ref: document.getElementById('fic-ref').value,
+                materiales: document.getElementById('fic-materiales').value,
+                dimensiones: document.getElementById('fic-dimensiones').value,
+                periodo: document.getElementById('fic-periodo').value,
+                estilo: document.getElementById('fic-estilo').value,
+                fecha: document.getElementById('fic-fecha').value || today,
+                imagenFicha: tempFichaMainImg,
+                fotos: tempFichaFotos
+            };
         } else if (tab === 'empresa') {
             record = {
                 _id: existingId, _updatedAt: now,
@@ -1790,9 +2192,7 @@
                 docs: docs || (editIndex !== null ? db.clientes[editIndex].docs : 'Ninguno')
             };
         } else if (tab === 'compras') {
-            if (tempCompraItems.length === 0 && document.getElementById('c-item-ref').value.trim() !== '') {
-                addCompraItem();
-            }
+            if (tempCompraItems.length === 0 && document.getElementById('c-item-ref').value.trim() !== '') addCompraItem();
             if (tempCompraItems.length === 0) return alert("Añade al menos un artículo a la compra pulsando '➕ Añadir Artículo'.");
 
             record = {
@@ -1820,9 +2220,7 @@
                 });
             }
         } else if (tab === 'ventas') {
-            if (tempVentaItems.length === 0 && document.getElementById('v-item-ref').value.trim() !== '') {
-                addVentaItem();
-            }
+            if (tempVentaItems.length === 0 && document.getElementById('v-item-ref').value.trim() !== '') addVentaItem();
             if (tempVentaItems.length === 0) return alert("Añade al menos un artículo a la factura de venta pulsando '➕ Añadir Artículo'.");
 
             const entregadoVal = document.getElementById('ven-entregado').value;
@@ -1878,6 +2276,19 @@
                 total: document.getElementById('gas-total').value,
                 file: file || (editIndex !== null ? db.gastos[editIndex].file : 'Sin archivo')
             };
+        } else if (tab === 'ayuda') {
+            const fileName = document.getElementById('ayu-file').files[0]?.name;
+            record = {
+                _id: existingId, _updatedAt: now,
+                ref: `AYU-${now.toString().slice(-4)}`,
+                titulo: document.getElementById('ayu-titulo').value,
+                tipo: document.getElementById('ayu-tipo').value,
+                url: document.getElementById('ayu-url').value,
+                file: fileName || (editIndex !== null ? db.ayuda[editIndex].file : 'Sin archivo'),
+                fileData: tempAyudaDataUrl,
+                desc: document.getElementById('ayu-desc').value,
+                fecha: today
+            };
         }
 
         if (editIndex === null) {
@@ -1903,7 +2314,7 @@
     }
 
     /* ==========================================================
-       8. LECTOR DE CÓDIGO DE BARRAS Y QR
+       9. LECTOR DE CÓDIGO DE BARRAS Y QR
        ========================================================== */
     let html5QrCode = null;
     let targetBarcodeInput = '';
@@ -1940,17 +2351,207 @@
     }
 
     /* ==========================================================
-       9. EXPORTACIÓN EXCEL (.CSV) Y FACTURA OFICIAL PDF SIN DESGLOSE REBU
+       10. IMPRESIÓN DE FICHA ELEGANTE CIRCA, FACTURA PDF Y EXCEL
        ========================================================== */
+    // Diseño elegante de Ficha con Logo arriba a la izquierda y Título en la misma línea centrado
+    function printFichaPDF(index) {
+        const f = db.fichas[index];
+        const logoUrl = new URL("Logo.jpg", window.location.href).href;
+        const win = window.open('', '_blank');
+
+        const extraPhotosHTML = (f.fotos && f.fotos.length > 0) ? `
+            <div class="photos-section">
+                <h3>GALERÍA DE DETALLES</h3>
+                <div class="photos-grid">
+                    ${f.fotos.map(src => `<img src="${src}">`).join('')}
+                </div>
+            </div>` : '';
+
+        win.document.write(`
+            <!DOCTYPE html>
+            <html lang="es">
+            <head>
+                <meta charset="UTF-8">
+                <title>Ficha_${f.ref}_${f.titulo}</title>
+                <style>
+                    @page { margin: 15mm; }
+                    body {
+                        font-family: 'Georgia', serif;
+                        background-color: #121212;
+                        color: #F5F5F5;
+                        margin: 0;
+                        padding: 25px;
+                        -webkit-print-color-adjust: exact !important;
+                        print-color-adjust: exact !important;
+                    }
+                    .sheet-container {
+                        max-width: 820px;
+                        margin: auto;
+                        background-color: #1A1A1A;
+                        border: 2px solid #C5A059;
+                        border-radius: 10px;
+                        padding: 35px;
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+                    }
+                    /* Cabecera: Logo en parte superior izquierda y Título en la misma línea sobre el centro */
+                    .sheet-header {
+                        display: flex;
+                        align-items: center;
+                        border-bottom: 2px solid #C5A059;
+                        padding-bottom: 20px;
+                        margin-bottom: 28px;
+                    }
+                    .sheet-logo {
+                        width: 90px;
+                        height: 90px;
+                        object-fit: cover;
+                        border-radius: 50%;
+                        border: 2px solid #C5A059;
+                        flex-shrink: 0;
+                    }
+                    .sheet-title-wrap {
+                        flex: 1;
+                        text-align: center;
+                        padding-right: 90px; /* Compensa el ancho del logo para centrado matemático exacto */
+                    }
+                    .sheet-title-wrap h1 {
+                        color: #EED9A4;
+                        font-size: 26px;
+                        letter-spacing: 2px;
+                        margin: 0;
+                        text-transform: uppercase;
+                    }
+                    .sheet-title-wrap p {
+                        color: #C5A059;
+                        font-size: 13px;
+                        margin-top: 6px;
+                        letter-spacing: 1px;
+                    }
+                    .main-content {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: 25px;
+                        align-items: center;
+                        margin-bottom: 25px;
+                    }
+                    .main-image-box {
+                        text-align: center;
+                        background: #121212;
+                        border: 1px solid #8C6D32;
+                        border-radius: 8px;
+                        padding: 12px;
+                    }
+                    .main-image-box img {
+                        width: 100%;
+                        max-height: 310px;
+                        object-fit: contain;
+                        border-radius: 4px;
+                    }
+                    .specs-box {
+                        background: #121212;
+                        border: 1px solid #383020;
+                        border-left: 4px solid #C5A059;
+                        border-radius: 6px;
+                        padding: 20px;
+                    }
+                    .spec-row {
+                        padding: 12px 0;
+                        border-bottom: 1px dashed #383020;
+                        font-family: 'Segoe UI', sans-serif;
+                        font-size: 14px;
+                    }
+                    .spec-row:last-child { border-bottom: none; }
+                    .spec-row strong {
+                        color: #C5A059;
+                        display: block;
+                        font-size: 11px;
+                        text-transform: uppercase;
+                        letter-spacing: 1px;
+                        margin-bottom: 3px;
+                    }
+                    .spec-row span {
+                        color: #F5F5F5;
+                        font-size: 15px;
+                        font-weight: 600;
+                    }
+                    .photos-section {
+                        margin-top: 25px;
+                        border-top: 1px solid #383020;
+                        padding-top: 20px;
+                    }
+                    .photos-section h3 {
+                        color: #EED9A4;
+                        font-size: 14px;
+                        letter-spacing: 2px;
+                        margin-bottom: 14px;
+                        text-align: center;
+                    }
+                    .photos-grid {
+                        display: grid;
+                        grid-template-columns: repeat(3, 1fr);
+                        gap: 12px;
+                    }
+                    .photos-grid img {
+                        width: 100%;
+                        height: 150px;
+                        object-fit: cover;
+                        border-radius: 6px;
+                        border: 1px solid #C5A059;
+                    }
+                    .sheet-footer {
+                        margin-top: 30px;
+                        text-align: center;
+                        font-size: 12px;
+                        color: #C5A059;
+                        border-top: 1px solid #383020;
+                        padding-top: 12px;
+                        letter-spacing: 2px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="sheet-container">
+                    <div class="sheet-header">
+                        <img src="${logoUrl}" class="sheet-logo" onerror="this.style.display='none'">
+                        <div class="sheet-title-wrap">
+                            <h1>${f.titulo}</h1>
+                            <p>REFERENCIA: ${f.ref}</p>
+                        </div>
+                    </div>
+
+                    <div class="main-content">
+                        <div class="main-image-box">
+                            <img src="${f.imagenFicha || (f.fotos && f.fotos[0]) || logoUrl}" alt="${f.titulo}">
+                        </div>
+                        <div class="specs-box">
+                            <div class="spec-row"><strong>Referencia</strong><span>${f.ref || '-'}</span></div>
+                            <div class="spec-row"><strong>Materiales</strong><span>${f.materiales || '-'}</span></div>
+                            <div class="spec-row"><strong>Dimensiones</strong><span>${f.dimensiones || '-'}</span></div>
+                            <div class="spec-row"><strong>Periodo</strong><span>${f.periodo || '-'}</span></div>
+                            <div class="spec-row"><strong>Estilo</strong><span>${f.estilo || '-'}</span></div>
+                        </div>
+                    </div>
+
+                    ${extraPhotosHTML}
+
+                    <div class="sheet-footer">
+                        CIRCA BY R.B — PIEZAS CON HISTORIA Y ESTILO
+                    </div>
+                </div>
+                <script>window.onload = function() { window.print(); }<\/script>
+            </body>
+            </html>
+        `);
+        win.document.close();
+    }
+
     function downloadCSV(rows, filename) {
         if (!rows || rows.length === 0) return alert("No hay datos para exportar.");
         const cleanRows = rows.map(r => {
             const copy = { ...r };
-            delete copy.imagenes;
-            delete copy.imgData;
-            delete copy._idx;
-            delete copy._id;
-            delete copy._updatedAt;
+            delete copy.imagenes; delete copy.imgData; delete copy.imagenFicha;
+            delete copy.fotos; delete copy.fileData; delete copy._idx;
+            delete copy._id; delete copy._updatedAt;
             if (copy.items) copy.items = copy.items.map(i => `${i.ref}(${i.nombre}:${i.precio}€)`).join(' | ');
             return copy;
         });
@@ -1982,18 +2583,15 @@
 
     function printSinglePDF(index) {
         const item = db[currentTab][index];
-        if (currentTab === 'ventas') {
-            printInvoicePDF(item);
-        } else {
-            openPrintWindow(`Ficha Individual - ${tabTitles[currentTab]}`, [item]);
-        }
+        if (currentTab === 'ventas') printInvoicePDF(item);
+        else if (currentTab === 'fichas') printFichaPDF(index);
+        else openPrintWindow(`Ficha Individual - ${tabTitles[currentTab]}`, [item]);
     }
 
     function printInvoicePDF(venta) {
         const emp = db.empresa[db.empresa.length - 1] || {
             nombre: 'CirCA by RB', nif: '', dir: '', tel: '', email: ''
         };
-
         const cli = db.clientes.find(c =>
             c.nombre.toLowerCase() === (venta.cliente || '').toLowerCase()
         ) || { nombre: venta.cliente, ref: '-', dir: '-', tel: '-', email: '-' };
@@ -2086,9 +2684,7 @@
                                 <th class="text-right">Importe</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            ${rowsHTML}
-                        </tbody>
+                        <tbody>${rowsHTML}</tbody>
                     </table>
 
                     <div class="totals">
@@ -2120,7 +2716,7 @@
         const win = window.open('', '_blank');
         const rowsHTML = items.map(item => {
             const entries = Object.entries(item)
-                .filter(([k]) => k !== 'imagenes' && k !== 'imgData' && k !== '_idx' && k !== 'items' && k !== '_id' && k !== '_updatedAt')
+                .filter(([k]) => !['imagenes','imgData','imagenFicha','fotos','fileData','_idx','items','_id','_updatedAt'].includes(k))
                 .map(([k, v]) => `<div><strong>${k.toUpperCase()}:</strong> ${v || '-'}</div>`)
                 .join('');
             return `<div class="card"><div class="grid">${entries}</div></div>`;
@@ -2148,7 +2744,7 @@
     }
 
     /* ==========================================================
-       10. COPIAS DE SEGURIDAD (JSON) E INICIO
+       11. COPIAS DE SEGURIDAD (JSON) E INICIO
        ========================================================== */
     function exportarDatos() {
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
@@ -2167,7 +2763,7 @@
                 const imported = normalizeDB(JSON.parse(e.target.result));
                 db = mergeDatabases(db, imported);
                 saveDB();
-                alert("¡Copia de seguridad fusionada y subida a GitHub!");
+                alert("¡Copia de seguridad fusionada y sincronizada!");
             } catch (err) {
                 alert("Archivo inválido.");
             }
