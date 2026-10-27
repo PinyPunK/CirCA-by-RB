@@ -1,1 +1,1 @@
-{"empresa":[{"_id":"emp_default","_updatedAt":1,"ref":"EMP-01","nombre":"CirCA by RB","nif":"","dir":"","tel":"","email":"www.circabyrb.com","fecha":"2026-01-01"}],"catalogo":[],"proveedores":[],"clientes":[],"compras":[],"ventas":[],"gastos":[],"_deletedIds":[]}
+{"_deletedIds":[],"empresa":[{"_id":"emp_default","_updatedAt":1,"ref":"EMP-01","nombre":"CirCA by RB","nif":"","dir":"","tel":"","email":"www.circabyrb.com","fecha":"2026-01-01"}],"catalogo":[],"proveedores":[],"clientes":[],"compras":[],"ventas":[],"gastos":[]}
