@@ -9,16 +9,16 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="CirCA by RB">
 
-    <!-- ICONOS Y MANIFIESTO PARA ANDROID -->
+    <!-- ICONOS Y MANIFIESTO PARA INSTALACIÓN EN ANDROID -->
     <link rel="icon" type="image/jpeg" sizes="192x192" href="Logo.jpg">
     <link rel="icon" type="image/jpeg" sizes="512x512" href="Logo.jpg">
     <link rel="apple-touch-icon" href="Logo.jpg">
     <link rel="manifest" id="my-manifest-placeholder">
 
-    <!-- LIBRERÍA EXTERNA PARA ESCANEAR CÓDIGOS DE BARRAS Y QR -->
+    <!-- LIBRERÍA PARA ESCANEAR CÓDIGOS DE BARRAS Y QR -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     
-    <title>CirCA by RB - Gestión Empresarial</title>
+    <title>CirCA by RB - Gestión Sincronizada Multi-Dispositivo</title>
     <style>
         /* ==========================================
            1. VARIABLES DE COLOR (CIRCA BY RB)
@@ -51,7 +51,7 @@
             padding-bottom: 90px;
         }
 
-        /* CABECERA */
+        /* CABECERA Y ESTADO DE SINCRONIZACIÓN */
         header {
             background: linear-gradient(180deg, #0a0a0a 0%, var(--bg-panel) 100%);
             border-bottom: 2px solid var(--gold-main);
@@ -81,6 +81,20 @@
             font-size: 0.85rem;
             margin-top: 3px;
         }
+
+        .sync-status {
+            display: inline-block;
+            margin-top: 6px;
+            padding: 5px 14px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            background-color: rgba(255,255,255,0.05);
+            border: 1px solid var(--border-color);
+        }
+        .sync-online { color: var(--success); border-color: var(--success); background-color: rgba(46, 204, 113, 0.1); }
+        .sync-offline { color: var(--gold-light); border-color: var(--gold-dark); }
+        .sync-error { color: #ff6b6b; border-color: var(--danger); background-color: rgba(231, 76, 60, 0.15); }
 
         .backup-bar {
             margin-top: 10px;
@@ -216,7 +230,7 @@
         }
 
         /* ==========================================
-           2. CUADRÍCULA DE CATÁLOGO Y GALERÍA MÚLTIPLE
+           2. CUADRÍCULA DE CATÁLOGO Y LISTADOS
            ========================================== */
         .catalog-grid {
             display: grid;
@@ -288,7 +302,6 @@
 
         .catalog-details { font-size: 0.75rem; color: var(--text-muted); line-height: 1.4; }
 
-        /* TARJETAS DE LISTADO */
         .list-container { display: flex; flex-direction: column; gap: 12px; }
 
         .list-card {
@@ -351,7 +364,7 @@
         }
 
         /* ==========================================
-           3. VENTANA MODAL Y LÍNEAS MULTI-ARTÍCULO
+           3. VENTANAS MODALES
            ========================================== */
         .modal-overlay {
             position: fixed;
@@ -481,9 +494,14 @@
     <img src="Logo.jpg" alt="Logo CirCA by RB" class="app-logo" onerror="this.style.display='none'">
     <h1>CIRCA BY R.B</h1>
     <p id="active-company-display">Empresa activa: CirCA by RB</p>
+    <div>
+        <span id="github-status-badge" class="sync-status sync-offline">💾 Modo Local (Pulsa Configurar GitHub)</span>
+    </div>
     <div class="backup-bar">
-        <button class="btn-small" onclick="exportarDatos()">📥 Copia Seguridad (JSON)</button>
-        <button class="btn-small" onclick="document.getElementById('import-file').click()">📤 Restaurar Copia</button>
+        <button class="btn-small" style="border-color: var(--success); color: var(--success); font-weight:bold;" onclick="openGitHubModal()">🐙 Configurar GitHub</button>
+        <button class="btn-small" onclick="syncWithGitHub(false, true)">🔄 Sincronizar Ahora</button>
+        <button class="btn-small" onclick="exportarDatos()">📥 Copia JSON</button>
+        <button class="btn-small" onclick="document.getElementById('import-file').click()">📤 Restaurar JSON</button>
         <input type="file" id="import-file" style="display:none" accept=".json" onchange="importarDatos(event)">
     </div>
 </header>
@@ -500,7 +518,6 @@
 
 <div class="container">
 
-    <!-- BARRA DE HERRAMIENTAS COMÚN -->
     <div class="toolbar">
         <div class="toolbar-top">
             <h2 id="section-title">1. Catálogo de Artículos</h2>
@@ -546,9 +563,47 @@
         </div>
     </div>
 
-    <!-- CONTENEDOR DINÁMICO DE CUADRÍCULA O LISTADOS -->
     <div id="main-list-view"></div>
 
+</div>
+
+<!-- ==========================================
+     MODAL DE CONFIGURACIÓN DE SINCRONIZACIÓN GITHUB
+     ========================================== -->
+<div id="github-modal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 580px;">
+        <div class="modal-header">
+            <h3>🐙 Sincronización Multi-Dispositivo con GitHub</h3>
+            <button class="btn-close" onclick="closeGitHubModal()">✖</button>
+        </div>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 12px; line-height: 1.5;">
+            Introduce estos mismos datos una sola vez en cada dispositivo (móvil, tablet y PC). Todos los dispositivos leerán y fusionarán automáticamente sus datos a través del archivo <code>db.json</code> en tu repositorio.
+        </p>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Usuario de GitHub *</label>
+                <input type="text" id="gh-owner" value="PinyPunK">
+            </div>
+            <div class="form-group">
+                <label>Repositorio *</label>
+                <input type="text" id="gh-repo" value="CirCA-by-RB">
+            </div>
+            <div class="form-group">
+                <label>Rama (Branch) *</label>
+                <input type="text" id="gh-branch" value="main">
+            </div>
+        </div>
+        <div class="form-group" style="margin-bottom: 15px;">
+            <label>Tu Token Personal de GitHub (Permiso 'repo' o 'Contents: Read & Write') *</label>
+            <input type="password" id="gh-token" placeholder="ghp_... o github_pat_...">
+        </div>
+        <div id="gh-test-msg" style="display:none; padding:10px; border-radius:5px; margin-bottom:12px; font-size:0.82rem;"></div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <button type="button" class="btn-small" onclick="testGitHubConnection()">🔍 Probar Token</button>
+            <button type="button" class="btn-primary" style="flex:1;" onclick="saveGitHubConfig()">🔗 Guardar y Sincronizar Dispositivo</button>
+            <button type="button" class="btn-small" style="border-color:var(--danger); color:var(--danger);" onclick="disconnectGitHub()">Desconectar</button>
+        </div>
+    </div>
 </div>
 
 <!-- ==========================================
@@ -561,7 +616,7 @@
             <button class="btn-close" onclick="closeFormModal()">✖</button>
         </div>
 
-        <!-- 1. FORMULARIO CATÁLOGO (MÚLTIPLES IMÁGENES Y SELECT PROVEEDOR) -->
+        <!-- 1. FORMULARIO CATÁLOGO -->
         <form id="form-catalogo" class="tab-form" onsubmit="saveRecord(event, 'catalogo')" style="display:none;">
             <div class="form-grid">
                 <div class="form-group"><label>Referencia *</label><input type="text" id="cat-ref" required></div>
@@ -599,7 +654,6 @@
                     </select>
                 </div>
 
-                <!-- Galería de múltiples fotos -->
                 <div class="form-group" style="grid-column: 1 / -1;">
                     <label>Subir Imágenes del Producto (Puedes elegir varias fotos)</label>
                     <input type="file" id="cat-img" accept="image/*" multiple onchange="handleMultipleImages(event)">
@@ -638,7 +692,7 @@
             <button type="submit" class="btn-primary" style="width:100%">Guardar Datos de Empresa</button>
         </form>
 
-        <!-- 3. FORMULARIO PROVEEDORES (SALDOS CALCULADOS AUTOMÁTICAMENTE DESDE COMPRAS) -->
+        <!-- 3. FORMULARIO PROVEEDORES -->
         <form id="form-proveedores" class="tab-form" onsubmit="saveRecord(event, 'proveedores')" style="display:none;">
             <div class="form-grid">
                 <div class="form-group"><label>Código Proveedor *</label><input type="text" id="prov-ref" required></div>
@@ -653,7 +707,7 @@
             <button type="submit" class="btn-primary" style="width:100%">Guardar Proveedor</button>
         </form>
 
-        <!-- 4. FORMULARIO CLIENTES (SALDOS CALCULADOS AUTOMÁTICAMENTE DESDE VENTAS) -->
+        <!-- 4. FORMULARIO CLIENTES -->
         <form id="form-clientes" class="tab-form" onsubmit="saveRecord(event, 'clientes')" style="display:none;">
             <div class="form-grid">
                 <div class="form-group"><label>Código Cliente / NIF *</label><input type="text" id="cli-ref" required></div>
@@ -668,7 +722,7 @@
             <button type="submit" class="btn-primary" style="width:100%">Guardar Cliente</button>
         </form>
 
-        <!-- 5. FORMULARIO COMPRAS (MULTI-ARTÍCULO, SELECT PROVEEDOR Y PAGADO SÍ/NO) -->
+        <!-- 5. FORMULARIO COMPRAS -->
         <form id="form-compras" class="tab-form" onsubmit="saveRecord(event, 'compras')" style="display:none;">
             <div class="form-grid">
                 <div class="form-group"><label>Núm. Justificante Compra *</label><input type="text" id="comp-just" required placeholder="Ej: ALB-2026-01"></div>
@@ -690,7 +744,6 @@
                     <input type="number" step="0.01" id="comp-total" value="0" readonly>
                 </div>
 
-                <!-- Panel para añadir varios artículos a la misma compra -->
                 <div class="multi-item-panel">
                     <h4>📦 Añadir Artículos a esta Compra (Se añadirán también al Catálogo)</h4>
                     <div class="form-grid">
@@ -714,7 +767,7 @@
             <button type="submit" class="btn-primary" style="width:100%">Guardar Compra Completa</button>
         </form>
 
-        <!-- 6. FORMULARIO VENTAS (MULTI-ARTÍCULO, SELECT CLIENTE, COBRADO SÍ/NO Y ENVÍO) -->
+        <!-- 6. FORMULARIO VENTAS -->
         <form id="form-ventas" class="tab-form" onsubmit="saveRecord(event, 'ventas')" style="display:none;">
             <div class="form-grid">
                 <div class="form-group"><label>Núm. Factura *</label><input type="text" id="ven-factura" required placeholder="Ej: FAC-2026-001"></div>
@@ -731,7 +784,6 @@
                     </select>
                 </div>
 
-                <!-- Panel para añadir varios artículos del catálogo a la misma factura de venta -->
                 <div class="multi-item-panel">
                     <h4>🛒 Añadir Artículos a esta Factura de Venta</h4>
                     <div class="form-grid">
@@ -765,7 +817,6 @@
                 <div class="form-group"><label>Base Imponible REBU (Solo App)</label><input type="text" id="ven-base-rebu" readonly></div>
                 <div class="form-group"><label>IVA REBU 21% (Solo App)</label><input type="text" id="ven-iva-rebu" readonly></div>
                 
-                <!-- Transporte y Entrega -->
                 <div class="form-group"><label>Transporte / Transportista</label><input type="text" id="ven-transp"></div>
                 <div class="form-group"><label>Localizador de Envío</label><input type="text" id="ven-localizador"></div>
                 <div class="form-group">
@@ -774,7 +825,6 @@
                 </div>
                 <div class="form-group"><label>Fecha de Entrega</label><input type="date" id="ven-fecha-entrega"></div>
 
-                <!-- Cobrado y Contabilizado -->
                 <div class="form-group">
                     <label>Cobrado (Suma al cliente)</label>
                     <select id="ven-cobrado"><option value="No">No</option><option value="Sí">Sí</option></select>
@@ -788,7 +838,7 @@
             <button type="submit" class="btn-primary" style="width:100%">Guardar Factura de Venta y Sincronizar Catálogo</button>
         </form>
 
-        <!-- 7. FORMULARIO GASTOS (CON SELECT PROVEEDOR) -->
+        <!-- 7. FORMULARIO GASTOS -->
         <form id="form-gastos" class="tab-form" onsubmit="saveRecord(event, 'gastos')" style="display:none;">
             <div class="form-grid">
                 <div class="form-group"><label>Núm. Gasto / Ref *</label><input type="text" id="gas-ref" required></div>
@@ -839,21 +889,40 @@
     const blob = new Blob([JSON.stringify(manifestJSON)], {type: 'application/json'});
     document.querySelector('#my-manifest-placeholder').setAttribute('href', URL.createObjectURL(blob));
 
+    const COLLECTIONS = ['empresa', 'catalogo', 'proveedores', 'clientes', 'compras', 'ventas', 'gastos'];
     let currentTab = 'catalogo';
     let editIndex = null;
-    let tempImagesArray = []; // Almacena múltiples fotos por artículo en Catálogo
-    let tempCompraItems = []; // Almacena varios artículos dentro de una misma Compra
-    let tempVentaItems = [];  // Almacena varios artículos dentro de una misma Venta
+    let tempImagesArray = [];
+    let tempCompraItems = [];
+    let tempVentaItems = [];
 
     let db = JSON.parse(localStorage.getItem('circa_db_v2')) || {
-        empresa: [{ ref: 'EMP-01', nombre: 'CirCA by RB', nif: '', dir: '', tel: '', email: 'www.circabyrb.com', fecha: '2026-01-01' }],
+        empresa: [{ _id: 'emp_default', _updatedAt: 1, ref: 'EMP-01', nombre: 'CirCA by RB', nif: '', dir: '', tel: '', email: 'www.circabyrb.com', fecha: '2026-01-01' }],
         catalogo: [],
         proveedores: [],
         clientes: [],
         compras: [],
         ventas: [],
-        gastos: []
+        gastos: [],
+        _deletedIds: []
     };
+
+    // Normaliza la base de datos asegurando que cada registro tenga su matrícula única (_id) y marca de tiempo (_updatedAt)
+    function normalizeDB(database) {
+        if (!database._deletedIds) database._deletedIds = [];
+        COLLECTIONS.forEach(col => {
+            if (!Array.isArray(database[col])) database[col] = [];
+            database[col].forEach((item, idx) => {
+                if (!item._id) {
+                    const key = item.ref || item.factura || item.just || item.nombre || idx;
+                    item._id = `${col}_${String(key).replace(/\s+/g, '_')}_${idx}`;
+                }
+                if (!item._updatedAt) item._updatedAt = 1;
+            });
+        });
+        return database;
+    }
+    db = normalizeDB(db);
 
     const tabTitles = {
         catalogo: '1. Catálogo de Artículos (Cuadrícula)',
@@ -865,18 +934,284 @@
         gastos: '7. Listado de Gastos'
     };
 
+    /* ==========================================================
+       2. MOTOR DE FUSIÓN Y SINCRONIZACIÓN MULTI-DISPOSITIVO GITHUB
+       ========================================================== */
+    let githubFileSha = null;
+    let githubPollTimer = null;
+    let isSyncing = false;
+    let pendingPush = false;
+    const SYNC_INTERVAL_MS = 10000; // Parámetro ajustable: comprueba cambios cada 10 segundos (10000 ms)
+
+    // Codifica el objeto JSON completo (con imágenes y tildes) a Base64 de forma asíncrona
+    function stringToBase64Async(str) {
+        return new Promise((resolve, reject) => {
+            const b = new Blob([str], { type: 'application/json;charset=utf-8' });
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = reject;
+            reader.readAsDataURL(b);
+        });
+    }
+
+    // Decodifica el Base64 recibido de GitHub a texto UTF-8 limpio
+    function base64ToUtf8(b64) {
+        const clean = b64.replace(/[\r\n\s]/g, '');
+        const binary = atob(clean);
+        const bytes = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+            bytes[i] = binary.charCodeAt(i);
+        }
+        return new TextDecoder('utf-8').decode(bytes);
+    }
+
+    // Fusión Inteligente (Smart Merge): combina los datos de todos los dispositivos sin sobrescribir cambios ajenos
+    function mergeDatabases(local, remote) {
+        local = normalizeDB(local);
+        remote = normalizeDB(remote);
+
+        const deletedSet = new Set([...(local._deletedIds || []), ...(remote._deletedIds || [])]);
+        const merged = { _deletedIds: Array.from(deletedSet) };
+
+        COLLECTIONS.forEach(col => {
+            const map = new Map();
+            (remote[col] || []).forEach(item => {
+                if (!deletedSet.has(item._id)) map.set(item._id, item);
+            });
+            (local[col] || []).forEach(item => {
+                if (!deletedSet.has(item._id)) {
+                    const existing = map.get(item._id);
+                    if (!existing || (item._updatedAt || 0) >= (existing._updatedAt || 0)) {
+                        map.set(item._id, item);
+                    }
+                }
+            });
+            merged[col] = Array.from(map.values());
+        });
+
+        return merged;
+    }
+
+    function getGitHubHeaders(token) {
+        return {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/vnd.github+json',
+            'X-GitHub-Api-Version': '2022-11-28'
+        };
+    }
+
+    function updateGitHubBadge(state, text) {
+        const badge = document.getElementById('github-status-badge');
+        if (state === 'online') badge.className = 'sync-status sync-online';
+        else if (state === 'error') badge.className = 'sync-status sync-error';
+        else badge.className = 'sync-status sync-offline';
+        badge.innerText = text;
+    }
+
+    function openGitHubModal() {
+        const cfg = JSON.parse(localStorage.getItem('circa_gh_config') || '{}');
+        document.getElementById('gh-owner').value = cfg.owner || 'PinyPunK';
+        document.getElementById('gh-repo').value = cfg.repo || 'CirCA-by-RB';
+        document.getElementById('gh-branch').value = cfg.branch || 'main';
+        document.getElementById('gh-token').value = cfg.token || '';
+        document.getElementById('gh-test-msg').style.display = 'none';
+        document.getElementById('github-modal').style.display = 'flex';
+    }
+
+    function closeGitHubModal() {
+        document.getElementById('github-modal').style.display = 'none';
+    }
+
+    async function testGitHubConnection() {
+        const owner = document.getElementById('gh-owner').value.trim();
+        const repo = document.getElementById('gh-repo').value.trim();
+        const token = document.getElementById('gh-token').value.trim();
+        const msgBox = document.getElementById('gh-test-msg');
+        msgBox.style.display = 'block';
+        msgBox.style.background = '#2a2418';
+        msgBox.style.color = 'var(--gold-light)';
+        msgBox.innerText = '⏳ Verificando permisos del Token con GitHub...';
+
+        try {
+            const res = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
+                headers: getGitHubHeaders(token),
+                cache: 'no-store'
+            });
+            if (!res.ok) throw new Error(`Código ${res.status}: No se encontró el repositorio o el Token es inválido.`);
+            const repoData = await res.json();
+            if (repoData.permissions && !repoData.permissions.push) {
+                throw new Error("El Token puede leer, pero NO tiene permiso de escritura (push). Marca la casilla 'repo'.");
+            }
+            msgBox.style.background = 'rgba(46, 204, 113, 0.2)';
+            msgBox.style.color = 'var(--success)';
+            msgBox.innerText = '✅ ¡Conexión verificada! Tu Token tiene permisos de lectura y escritura.';
+        } catch (err) {
+            msgBox.style.background = 'rgba(231, 76, 60, 0.2)';
+            msgBox.style.color = '#ff6b6b';
+            msgBox.innerText = '❌ Error: ' + err.message;
+        }
+    }
+
+    async function saveGitHubConfig() {
+        const owner = document.getElementById('gh-owner').value.trim();
+        const repo = document.getElementById('gh-repo').value.trim();
+        const branch = document.getElementById('gh-branch').value.trim() || 'main';
+        const token = document.getElementById('gh-token').value.trim();
+        if (!owner || !repo || !token) {
+            return alert("Rellena Usuario, Repositorio y Token de GitHub.");
+        }
+        localStorage.setItem('circa_gh_config', JSON.stringify({ owner, repo, branch, token }));
+        closeGitHubModal();
+        await syncWithGitHub(true, true);
+        startAutoSyncTimer();
+    }
+
+    function disconnectGitHub() {
+        if (githubPollTimer) clearInterval(githubPollTimer);
+        localStorage.removeItem('circa_gh_config');
+        updateGitHubBadge('offline', '💾 Modo Local (Desconectado de GitHub)');
+        closeGitHubModal();
+    }
+
+    // Función Maestra de Sincronización Bidireccional
+    async function syncWithGitHub(pushChanges = false, manualTrigger = false) {
+        const cfg = JSON.parse(localStorage.getItem('circa_gh_config') || 'null');
+        if (!cfg || !cfg.token) return;
+
+        if (isSyncing) {
+            if (pushChanges) pendingPush = true;
+            return;
+        }
+
+        // Si el usuario tiene un formulario abierto escribiendo, posponemos la lectura automática
+        if (!pushChanges && !manualTrigger && document.getElementById('form-modal').style.display === 'flex') return;
+
+        isSyncing = true;
+        if (pushChanges || manualTrigger) {
+            updateGitHubBadge('offline', '⏳ Sincronizando datos con GitHub...');
+        }
+
+        try {
+            const branch = cfg.branch || 'main';
+            const getUrl = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/db.json?ref=${encodeURIComponent(branch)}`;
+            const putUrl = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/db.json`;
+
+            const getRes = await fetch(getUrl, {
+                method: 'GET',
+                headers: getGitHubHeaders(cfg.token),
+                cache: 'no-store'
+            });
+
+            let remoteDB = null;
+            let remoteSha = null;
+
+            if (getRes.ok) {
+                const fileMeta = await getRes.json();
+                remoteSha = fileMeta.sha;
+
+                if (remoteSha !== githubFileSha || pushChanges || manualTrigger) {
+                    let rawJson = '';
+                    if (fileMeta.content) {
+                        rawJson = base64ToUtf8(fileMeta.content);
+                    } else if (fileMeta.git_url) {
+                        const blobRes = await fetch(fileMeta.git_url, { headers: getGitHubHeaders(cfg.token), cache: 'no-store' });
+                        const blobData = await blobRes.json();
+                        rawJson = base64ToUtf8(blobData.content);
+                    }
+                    if (rawJson) remoteDB = JSON.parse(rawJson);
+                }
+            } else if (getRes.status === 404) {
+                pushChanges = true;
+            } else {
+                const errObj = await getRes.json().catch(() => ({}));
+                throw new Error(`HTTP ${getRes.status}: ${errObj.message || 'Verifica tu Token'}`);
+            }
+
+            if (remoteDB) {
+                db = mergeDatabases(db, remoteDB);
+                localStorage.setItem('circa_db_v2', JSON.stringify(db));
+                if (db.empresa && db.empresa.length > 0) {
+                    document.getElementById('active-company-display').innerText = "Empresa activa: " + db.empresa[db.empresa.length - 1].nombre;
+                }
+                renderCurrentTab();
+                githubFileSha = remoteSha;
+            }
+
+            if (pushChanges) {
+                const base64Content = await stringToBase64Async(JSON.stringify(db));
+                const bodyPayload = {
+                    message: "Sincronización automática CirCA by RB",
+                    content: base64Content,
+                    branch: branch
+                };
+                if (remoteSha) bodyPayload.sha = remoteSha;
+
+                const putRes = await fetch(putUrl, {
+                    method: 'PUT',
+                    headers: {
+                        ...getGitHubHeaders(cfg.token),
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(bodyPayload)
+                });
+
+                if (!putRes.ok) {
+                    const errPut = await putRes.json().catch(() => ({}));
+                    throw new Error(`Error al guardar (${putRes.status}): ${errPut.message || 'Sin permiso de escritura'}`);
+                }
+
+                const putResult = await putRes.json();
+                if (putResult && putResult.content && putResult.content.sha) {
+                    githubFileSha = putResult.content.sha;
+                }
+            }
+
+            const timeStr = new Date().toLocaleTimeString();
+            updateGitHubBadge('online', `🟢 Sincronizado en todos tus dispositivos (${timeStr})`);
+        } catch (err) {
+            console.error("Error de sincronización GitHub:", err);
+            updateGitHubBadge('error', `⚠️ ${err.message}`);
+            if (manualTrigger) {
+                alert("No se pudo sincronizar con GitHub:\n" + err.message);
+            }
+        } finally {
+            isSyncing = false;
+            if (pendingPush) {
+                pendingPush = false;
+                syncWithGitHub(true, false);
+            }
+        }
+    }
+
+    function startAutoSyncTimer() {
+        const cfg = JSON.parse(localStorage.getItem('circa_gh_config') || 'null');
+        if (!cfg || !cfg.token) {
+            updateGitHubBadge('offline', '💾 Modo Local (Pulsa Configurar GitHub)');
+            return;
+        }
+        if (githubPollTimer) clearInterval(githubPollTimer);
+        githubPollTimer = setInterval(() => syncWithGitHub(false, false), SYNC_INTERVAL_MS);
+    }
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            syncWithGitHub(false, false);
+        }
+    });
+    window.addEventListener('online', () => syncWithGitHub(true, false));
+
     function saveDB() {
         localStorage.setItem('circa_db_v2', JSON.stringify(db));
-        if (db.empresa.length > 0) {
+        if (db.empresa && db.empresa.length > 0) {
             document.getElementById('active-company-display').innerText = "Empresa activa: " + db.empresa[db.empresa.length - 1].nombre;
         }
         renderCurrentTab();
+        syncWithGitHub(true, false);
     }
 
     /* ==========================================================
-       2. CÁLCULO AUTOMÁTICO DE FACTURADO Y PAGADO/COBRADO
+       3. CÁLCULO AUTOMÁTICO DE FACTURADO Y PAGADO/COBRADO
        ========================================================== */
-    // Calcula todo lo comprado y pagado a un proveedor sumando desde la pestaña Compras
     function getProveedorTotals(provName) {
         let facturado = 0;
         let pagado = 0;
@@ -890,7 +1225,6 @@
         return { facturado: facturado.toFixed(2), pagado: pagado.toFixed(2) };
     }
 
-    // Calcula todo lo vendido y cobrado a un cliente sumando desde la pestaña Ventas
     function getClienteTotals(cliName) {
         let facturado = 0;
         let cobrado = 0;
@@ -904,7 +1238,6 @@
         return { facturado: facturado.toFixed(2), cobrado: cobrado.toFixed(2) };
     }
 
-    // Rellena todos los desplegables (<select>) de Proveedores y Clientes
     function populateSelects() {
         const provOptions = '<option value="">-- Seleccionar Proveedor --</option>' +
             (db.proveedores || []).map(p => `<option value="${p.nombre}">${p.ref} - ${p.nombre}</option>`).join('');
@@ -916,7 +1249,7 @@
     }
 
     /* ==========================================================
-       3. NAVEGACIÓN, FILTROS Y ORDENACIÓN
+       4. NAVEGACIÓN, FILTROS Y ORDENACIÓN
        ========================================================== */
     function switchTab(tab, btn) {
         currentTab = tab;
@@ -966,7 +1299,7 @@
     }
 
     /* ==========================================================
-       4. RENDERIZADO DE CUADRÍCULA Y LISTADOS
+       5. RENDERIZADO DE CUADRÍCULA Y LISTADOS
        ========================================================== */
     function changeMainCardImage(cardIdx, imgSrc) {
         const imgEl = document.getElementById('main-cat-img-' + cardIdx);
@@ -982,7 +1315,6 @@
             return;
         }
 
-        // 1. CATÁLOGO (CUADRÍCULA CON MÚLTIPLES FOTOS)
         if (currentTab === 'catalogo') {
             container.innerHTML = `<div class="catalog-grid">` + data.map(item => {
                 const imgs = item.imagenes && item.imagenes.length > 0 ? item.imagenes : (item.imgData ? [item.imgData] : ['Logo.jpg']);
@@ -1007,7 +1339,7 @@
                                 <div>📏 Medidas: ${item.medidas}</div>
                                 <div>🏷️ Cód. Barras: ${item.barcode || '-'}</div>
                                 <div>🏢 Prov: ${item.prov || '-'} (Just: ${item.justificante || '-'})</div>
-                                <div>🖼️ Fotos guardadas: ${imgs.length}</div>
+                                <div>🖼️ Fotos: ${imgs.length}</div>
                                 ${item.vendido === 'Vendido' ? `<div style="margin-top:6px; padding-top:6px; border-top:1px dashed var(--border-color); color:var(--gold-light);">📦 <strong>Datos Venta:</strong><br>Fact: ${item.factura || '-'} (${item.impFactura || 0}€)<br>Transp: ${item.transp || '-'} [${item.localizador || '-'}]<br>Entregado: ${item.entregado || 'No'}</div>` : ''}
                             </div>
                         </div>
@@ -1023,7 +1355,6 @@
             return;
         }
 
-        // RESTO DE PESTAÑAS (LISTADOS)
         container.innerHTML = `<div class="list-container">` + data.map(item => {
             let fieldsHTML = '';
             let extraBoxHTML = '';
@@ -1110,7 +1441,7 @@
     }
 
     /* ==========================================================
-       5. MÚLTIPLES IMÁGENES Y SUB-LISTAS (COMPRAS Y VENTAS)
+       6. MÚLTIPLES IMÁGENES Y SUB-LISTAS (COMPRAS Y VENTAS)
        ========================================================== */
     function toggleVendidoCat() {
         const val = document.getElementById('cat-vendido').value;
@@ -1125,13 +1456,13 @@
                 const img = new Image();
                 img.onload = function() {
                     const canvas = document.createElement('canvas');
-                    const maxW = 400;
+                    const maxW = 260;
                     const scale = maxW / img.width;
                     canvas.width = maxW;
                     canvas.height = img.height * scale;
                     const ctx = canvas.getContext('2d');
                     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                    tempImagesArray.push(canvas.toDataURL('image/jpeg', 0.75));
+                    tempImagesArray.push(canvas.toDataURL('image/jpeg', 0.65));
                     renderImagePreviews();
                 };
                 img.src = e.target.result;
@@ -1155,7 +1486,6 @@
         renderImagePreviews();
     }
 
-    // --- GESTIÓN DE MÚLTIPLES ARTÍCULOS EN COMPRAS ---
     function addCompraItem() {
         const ref = document.getElementById('c-item-ref').value.trim();
         const nombre = document.getElementById('c-item-nombre').value.trim();
@@ -1200,7 +1530,6 @@
         document.getElementById('comp-total').value = total.toFixed(2);
     }
 
-    // --- GESTIÓN DE MÚLTIPLES ARTÍCULOS EN VENTAS ---
     function autofillVentaItem() {
         const index = document.getElementById('ven-select-cat').value;
         if (index === "") return;
@@ -1277,7 +1606,7 @@
     }
 
     /* ==========================================================
-       6. ABRIR Y GUARDAR FORMULARIOS
+       7. ABRIR Y GUARDAR FORMULARIOS CON ID Y MARCA DE TIEMPO
        ========================================================== */
     function openFormModal(index = null) {
         editIndex = index;
@@ -1297,9 +1626,7 @@
                 db.catalogo.map((x, i) => `<option value="${i}">${x.ref} - ${x.nombre} (PVP: ${x.venta}€)</option>`).join('');
             renderVentaItems();
         }
-        if (currentTab === 'compras') {
-            renderCompraItems();
-        }
+        if (currentTab === 'compras') renderCompraItems();
         if (currentTab === 'catalogo') {
             renderImagePreviews();
             toggleVendidoCat();
@@ -1397,12 +1724,15 @@
     function saveRecord(e, tab) {
         e.preventDefault();
         let record = {};
+        const now = Date.now();
         const today = new Date().toISOString().split('T')[0];
+        const existingId = editIndex !== null && db[tab][editIndex] ? db[tab][editIndex]._id : `${tab}_${now}_${Math.random().toString(36).substr(2, 5)}`;
 
         if (tab === 'catalogo') {
             const entregadoVal = document.getElementById('cat-entregado').value;
             const fechaEnt = document.getElementById('cat-fecha-entrega').value;
             record = {
+                _id: existingId, _updatedAt: now,
                 ref: document.getElementById('cat-ref').value,
                 sku: document.getElementById('cat-sku').value,
                 nombre: document.getElementById('cat-nombre').value,
@@ -1424,6 +1754,7 @@
             };
         } else if (tab === 'empresa') {
             record = {
+                _id: existingId, _updatedAt: now,
                 ref: document.getElementById('emp-ref').value || 'EMP',
                 nombre: document.getElementById('emp-nombre').value,
                 nif: document.getElementById('emp-nif').value,
@@ -1435,6 +1766,7 @@
         } else if (tab === 'proveedores') {
             const docs = Array.from(document.getElementById('prov-docs').files).map(f => f.name).join(', ');
             record = {
+                _id: existingId, _updatedAt: now,
                 ref: document.getElementById('prov-ref').value,
                 nombre: document.getElementById('prov-nombre').value,
                 dir: document.getElementById('prov-dir').value,
@@ -1447,6 +1779,7 @@
         } else if (tab === 'clientes') {
             const docs = Array.from(document.getElementById('cli-docs').files).map(f => f.name).join(', ');
             record = {
+                _id: existingId, _updatedAt: now,
                 ref: document.getElementById('cli-ref').value,
                 nombre: document.getElementById('cli-nombre').value,
                 dir: document.getElementById('cli-dir').value,
@@ -1457,13 +1790,13 @@
                 docs: docs || (editIndex !== null ? db.clientes[editIndex].docs : 'Ninguno')
             };
         } else if (tab === 'compras') {
-            // Si el usuario rellenó los campos de artículo pero olvidó pulsar "➕ Añadir", lo añadimos automáticamente
             if (tempCompraItems.length === 0 && document.getElementById('c-item-ref').value.trim() !== '') {
                 addCompraItem();
             }
             if (tempCompraItems.length === 0) return alert("Añade al menos un artículo a la compra pulsando '➕ Añadir Artículo'.");
 
             record = {
+                _id: existingId, _updatedAt: now,
                 just: document.getElementById('comp-just').value,
                 fecha: document.getElementById('comp-fecha').value || today,
                 prov: document.getElementById('comp-prov').value,
@@ -1475,10 +1808,10 @@
                 sku: tempCompraItems[0].sku
             };
 
-            // Añadir nuevos artículos al Catálogo automáticamente
             if (editIndex === null) {
-                tempCompraItems.forEach(it => {
+                tempCompraItems.forEach((it, idx) => {
                     db.catalogo.push({
+                        _id: `catalogo_${now}_${idx}`, _updatedAt: now,
                         ref: it.ref, sku: it.sku, nombre: it.nombre, barcode: it.barcode,
                         desc: 'Añadido desde Compras', medidas: '0x0x0 cm', coste: it.precio, venta: 0,
                         prov: record.prov, justificante: record.just, fecha: record.fecha, imagenes: [],
@@ -1498,6 +1831,7 @@
             const cobradoVal = document.getElementById('ven-cobrado').value;
 
             record = {
+                _id: existingId, _updatedAt: now,
                 factura: document.getElementById('ven-factura').value,
                 fecha: document.getElementById('ven-fecha').value || today,
                 cliente: document.getElementById('ven-cliente').value,
@@ -1519,10 +1853,10 @@
                 sku: tempVentaItems[0].sku
             };
 
-            // Sincronizar todos los artículos incluidos en la factura con el Catálogo
             tempVentaItems.forEach(vendidoItem => {
                 const catIdx = db.catalogo.findIndex(c => c.ref === vendidoItem.ref);
                 if (catIdx !== -1) {
+                    db.catalogo[catIdx]._updatedAt = now;
                     db.catalogo[catIdx].vendido = 'Vendido';
                     db.catalogo[catIdx].factura = record.factura;
                     db.catalogo[catIdx].impFactura = record.total;
@@ -1534,6 +1868,7 @@
         } else if (tab === 'gastos') {
             const file = document.getElementById('gas-file').files[0]?.name;
             record = {
+                _id: existingId, _updatedAt: now,
                 ref: document.getElementById('gas-ref').value,
                 fecha: document.getElementById('gas-fecha').value,
                 prov: document.getElementById('gas-prov').value,
@@ -1556,14 +1891,19 @@
     }
 
     function deleteRecord(index) {
-        if (confirm("¿Seguro que deseas borrar este registro?")) {
+        if (confirm("¿Seguro que deseas borrar este registro en todos tus dispositivos?")) {
+            const item = db[currentTab][index];
+            if (item && item._id) {
+                if (!db._deletedIds) db._deletedIds = [];
+                db._deletedIds.push(item._id);
+            }
             db[currentTab].splice(index, 1);
             saveDB();
         }
     }
 
     /* ==========================================================
-       7. LECTOR DE CÓDIGO DE BARRAS Y QR
+       8. LECTOR DE CÓDIGO DE BARRAS Y QR
        ========================================================== */
     let html5QrCode = null;
     let targetBarcodeInput = '';
@@ -1600,7 +1940,7 @@
     }
 
     /* ==========================================================
-       8. EXPORTACIÓN EXCEL (.CSV) Y FACTURA OFICIAL PDF SIN DESGLOSE REBU
+       9. EXPORTACIÓN EXCEL (.CSV) Y FACTURA OFICIAL PDF SIN DESGLOSE REBU
        ========================================================== */
     function downloadCSV(rows, filename) {
         if (!rows || rows.length === 0) return alert("No hay datos para exportar.");
@@ -1609,6 +1949,8 @@
             delete copy.imagenes;
             delete copy.imgData;
             delete copy._idx;
+            delete copy._id;
+            delete copy._updatedAt;
             if (copy.items) copy.items = copy.items.map(i => `${i.ref}(${i.nombre}:${i.precio}€)`).join(' | ');
             return copy;
         });
@@ -1647,7 +1989,6 @@
         }
     }
 
-    // Imprime la Factura Oficial Multi-Artículo con Logo, Empresa, Cliente y SIN desglose REBU
     function printInvoicePDF(venta) {
         const emp = db.empresa[db.empresa.length - 1] || {
             nombre: 'CirCA by RB', nif: '', dir: '', tel: '', email: ''
@@ -1779,7 +2120,7 @@
         const win = window.open('', '_blank');
         const rowsHTML = items.map(item => {
             const entries = Object.entries(item)
-                .filter(([k]) => k !== 'imagenes' && k !== 'imgData' && k !== '_idx' && k !== 'items')
+                .filter(([k]) => k !== 'imagenes' && k !== 'imgData' && k !== '_idx' && k !== 'items' && k !== '_id' && k !== '_updatedAt')
                 .map(([k, v]) => `<div><strong>${k.toUpperCase()}:</strong> ${v || '-'}</div>`)
                 .join('');
             return `<div class="card"><div class="grid">${entries}</div></div>`;
@@ -1807,7 +2148,7 @@
     }
 
     /* ==========================================================
-       9. COPIAS DE SEGURIDAD (JSON)
+       10. COPIAS DE SEGURIDAD (JSON) E INICIO
        ========================================================== */
     function exportarDatos() {
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
@@ -1823,9 +2164,10 @@
         const reader = new FileReader();
         reader.onload = function(e) {
             try {
-                db = JSON.parse(e.target.result);
+                const imported = normalizeDB(JSON.parse(e.target.result));
+                db = mergeDatabases(db, imported);
                 saveDB();
-                alert("¡Copia de seguridad restaurada correctamente!");
+                alert("¡Copia de seguridad fusionada y subida a GitHub!");
             } catch (err) {
                 alert("Archivo inválido.");
             }
@@ -1834,6 +2176,8 @@
     }
 
     renderCurrentTab();
+    syncWithGitHub(false, false);
+    startAutoSyncTimer();
 </script>
 </body>
 </html>
