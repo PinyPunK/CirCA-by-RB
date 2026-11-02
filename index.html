@@ -24,14 +24,16 @@
            1. VARIABLES DE COLOR (CIRCA BY RB)
            ========================================== */
         :root {
-            --bg-dark: #121212;
-            --bg-panel: #1E1E1E;
-            --bg-card: #252525;
+            --bg-dark: #0f0f0f;
+            --bg-panel: #1c1c1c;
+            --bg-card: #282828;
             --gold-main: #C5A059;
             --gold-light: #EED9A4;
             --gold-dark: #8C6D32;
+            --accent-cyan: #5bc0be;
+            --accent-purple: #7b4397;
             --text-light: #F5F5F5;
-            --text-muted: #BDBDBD;
+            --text-muted: #AAAAAA;
             --border-color: #383020;
             --danger: #e74c3c;
             --success: #2ecc71;
@@ -48,91 +50,369 @@
         body {
             background-color: var(--bg-dark);
             color: var(--text-light);
-            padding-bottom: 90px;
+            padding-bottom: 110px;
         }
 
         /* ==========================================
-           2. CABECERA Y BOTÓN DE MENÚ IZQUIERDO
+           2. BARRA SUPERIOR ESTILO APP MÓVIL (IMAGEN 2)
            ========================================== */
-        header {
-            background: linear-gradient(180deg, #0a0a0a 0%, var(--bg-panel) 100%);
-            border-bottom: 2px solid var(--gold-main);
-            padding: 12px 15px;
-            text-align: center;
+        .app-topbar {
+            background-color: #181818;
+            border-bottom: 1px solid #2e2e2e;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             position: sticky;
             top: 0;
             z-index: 100;
+            gap: 10px;
         }
 
-        .menu-toggle-btn {
-            position: absolute;
-            left: 15px;
-            top: 20px;
-            background-color: var(--bg-dark);
-            color: var(--gold-light);
-            border: 1px solid var(--gold-main);
-            border-radius: 6px;
-            padding: 8px 12px;
-            font-size: 1.2rem;
-            cursor: pointer;
+        .topbar-left {
             display: flex;
             align-items: center;
-            gap: 6px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+            gap: 12px;
         }
 
-        .menu-toggle-btn span {
-            font-size: 0.85rem;
-            font-weight: bold;
+        .icon-btn {
+            background: #252525;
+            border: 1px solid #383838;
+            color: var(--text-light);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: 0.2s;
         }
+        .icon-btn:hover { border-color: var(--gold-main); color: var(--gold-light); }
 
-        .app-logo {
-            width: 80px;
-            height: 80px;
+        .topbar-logo {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
             object-fit: cover;
+            border: 1.5px solid var(--gold-main);
+            cursor: pointer;
+        }
+
+        .topbar-title-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .topbar-title {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--text-light);
+        }
+
+        .topbar-pill-select {
+            margin-top: 3px;
+            background-color: #2c2c2c;
+            color: #ddd;
+            border: none;
+            border-radius: 15px;
+            padding: 3px 10px;
+            font-size: 0.75rem;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sort-az-btn {
+            color: var(--gold-main);
+            font-weight: bold;
+            font-size: 0.9rem;
+            background: transparent;
+            border: none;
+            padding: 6px 8px;
+            cursor: pointer;
+        }
+
+        /* ==========================================
+           3. MENÚ PRINCIPAL TIPO DASHBOARD (IMAGEN 1)
+           ========================================== */
+        .dashboard-wrapper {
+            max-width: 650px;
+            margin: 15px auto;
+            padding: 0 12px;
+        }
+
+        .dashboard-brand {
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        .dashboard-brand img {
+            width: 75px;
+            height: 75px;
             border-radius: 50%;
             border: 2px solid var(--gold-main);
-            box-shadow: 0 4px 12px rgba(197, 160, 89, 0.3);
-            margin-bottom: 4px;
+            object-fit: cover;
             cursor: pointer;
-            transition: transform 0.2s, box-shadow 0.2s;
         }
 
-        .app-logo:hover {
-            transform: scale(1.06);
-            box-shadow: 0 0 18px var(--gold-main);
-        }
-
-        header h1 {
-            color: var(--gold-light);
-            letter-spacing: 3px;
+        .dashboard-brand h2 {
             font-family: 'Georgia', serif;
-            font-size: 1.3rem;
-            cursor: pointer;
+            color: var(--gold-light);
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            margin-top: 4px;
         }
 
-        header p {
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .dash-tile {
+            background: linear-gradient(145deg, #2b2b2b, #202020);
+            border: 1px solid #363636;
+            border-radius: 18px;
+            padding: 22px 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            min-height: 135px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.45);
+            transition: transform 0.15s, border-color 0.2s;
+        }
+
+        .dash-tile:hover, .dash-tile:active {
+            transform: scale(0.98);
+            border-color: var(--gold-main);
+        }
+
+        .dash-tile svg {
+            width: 42px;
+            height: 42px;
+            fill: #ffffff;
+            margin-bottom: 10px;
+        }
+
+        .dash-tile-title {
+            font-size: 1rem;
+            color: #ffffff;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .dash-tile-sub {
+            font-size: 0.9rem;
             color: var(--gold-main);
-            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .dashboard-bottom-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .dash-small-tile {
+            background: linear-gradient(145deg, #2b2b2b, #202020);
+            border: 1px solid #363636;
+            border-radius: 16px;
+            padding: 16px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+        }
+
+        .dash-small-tile:hover { border-color: var(--gold-main); }
+        .dash-small-tile svg { width: 30px; height: 30px; fill: #ffffff; margin-bottom: 4px; }
+        .dash-small-tile span { font-size: 0.7rem; color: var(--text-muted); }
+
+        /* ==========================================
+           4. CUADRÍCULA DE 3 COLUMNAS PARA ARTÍCULOS (IMAGEN 2)
+           ========================================== */
+        .articles-3col-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            padding: 6px 0;
+        }
+
+        .art-card-compact {
+            background-color: #161616;
+            border: 1px solid #262626;
+            border-radius: 4px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+
+        .art-card-compact:hover {
+            border-color: var(--gold-main);
+        }
+
+        .art-img-square {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            object-fit: cover;
+            background-color: #ffffff;
+            display: block;
+        }
+
+        .art-info-compact {
+            padding: 7px 6px;
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            font-size: 0.74rem;
+        }
+
+        .art-title-center {
+            text-align: center;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.76rem;
+            line-height: 1.25;
+            min-height: 2.4em;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .art-sku-line {
+            color: #888888;
+            font-size: 0.68rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .art-qty-right {
+            text-align: right;
+            color: #ffffff;
+            font-weight: 600;
+            font-size: 0.76rem;
+        }
+
+        .art-price-dual {
+            text-align: right;
+            font-size: 0.72rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .cost-color { color: #7e57c2; } /* Tono violeta/azulado para el coste como en Imagen 2 */
+        .sale-color { color: var(--gold-main); } /* Dorado/verde para el precio de venta */
+
+        .art-desc-preview {
+            color: #9e9e9e;
+            font-size: 0.68rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
             margin-top: 2px;
         }
 
-        .sync-status {
-            display: inline-block;
-            margin-top: 5px;
-            padding: 3px 12px;
-            border-radius: 12px;
-            font-size: 0.72rem;
-            font-weight: bold;
-            background-color: rgba(255,255,255,0.05);
-            border: 1px solid var(--border-color);
+        @media (min-width: 900px) {
+            .articles-3col-grid {
+                grid-template-columns: repeat(4, 1fr);
+                gap: 14px;
+            }
+            .art-info-compact { font-size: 0.85rem; padding: 10px; }
+            .art-title-center { font-size: 0.9rem; }
+            .art-price-dual { font-size: 0.85rem; }
         }
-        .sync-online { color: var(--success); border-color: var(--success); background-color: rgba(46, 204, 113, 0.1); }
-        .sync-offline { color: var(--gold-light); border-color: var(--gold-dark); }
-        .sync-error { color: #ff6b6b; border-color: var(--danger); background-color: rgba(231, 76, 60, 0.15); }
 
         /* ==========================================
-           3. MENÚ LATERAL OCULTO A LA IZQUIERDA (DRAWER)
+           5. BOTONES FLOTANTES (FAB) Y BARRA INFERIOR FIJA (IMAGEN 2)
+           ========================================== */
+        .fab-group {
+            position: fixed;
+            bottom: 52px;
+            right: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 120;
+        }
+
+        .fab-btn {
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(0,0,0,0.6);
+            transition: transform 0.2s;
+        }
+        .fab-btn:active { transform: scale(0.92); }
+
+        .fab-secondary {
+            width: 46px;
+            height: 46px;
+            background-color: #2b6cb0;
+            color: #fff;
+            font-size: 1.15rem;
+        }
+
+        .fab-folder {
+            width: 46px;
+            height: 46px;
+            background-color: #689f38;
+            color: #111;
+            font-size: 1.15rem;
+        }
+
+        .fab-add {
+            width: 58px;
+            height: 58px;
+            background-color: #e6b800;
+            color: #111;
+            font-size: 2rem;
+            font-weight: 400;
+        }
+
+        .bottom-totals-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: #181818;
+            border-top: 1px solid #2e2e2e;
+            padding: 10px 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 0.9rem;
+            color: #d0d0d0;
+            z-index: 110;
+        }
+
+        .bottom-totals-bar span.divider {
+            color: #444;
+        }
+
+        /* ==========================================
+           6. MENÚ LATERAL IZQUIERDO OCULTO (DRAWER)
            ========================================== */
         .sidebar-overlay {
             position: fixed;
@@ -156,7 +436,6 @@
             display: flex;
             flex-direction: column;
             overflow-y: auto;
-            box-shadow: 4px 0 20px rgba(0,0,0,0.8);
         }
         .sidebar.open { transform: translateX(0); }
 
@@ -169,30 +448,20 @@
             background-color: #141414;
         }
 
-        .sidebar-header h3 {
-            color: var(--gold-light);
-            font-family: 'Georgia', serif;
-            font-size: 1.05rem;
-            letter-spacing: 1px;
-        }
+        .sidebar-header h3 { color: var(--gold-light); font-family: 'Georgia', serif; font-size: 1rem; }
 
-        .sidebar-nav {
-            display: flex;
-            flex-direction: column;
-            padding: 10px 0;
-        }
+        .sidebar-nav { display: flex; flex-direction: column; padding: 10px 0; }
 
         .sidebar-nav button {
             background: none;
             border: none;
             color: var(--text-light);
-            padding: 14px 20px;
+            padding: 13px 20px;
             text-align: left;
-            font-size: 0.95rem;
+            font-size: 0.92rem;
             font-weight: 600;
             cursor: pointer;
             border-left: 4px solid transparent;
-            transition: 0.2s;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -204,74 +473,62 @@
             border-left-color: var(--gold-main);
         }
 
-        .sidebar-subbtn {
-            padding-left: 38px !important;
-            font-size: 0.88rem !important;
-            color: var(--gold-main) !important;
+        /* ==========================================
+           7. CONTENEDOR, FILTROS DESPLEGABLES Y LISTADOS
+           ========================================== */
+        .container {
+            max-width: 1200px;
+            margin: 10px auto;
+            padding: 0 10px;
         }
 
-        /* SUBPESTAÑAS DENTRO DE ARTÍCULOS */
+        .collapsible-filters {
+            background-color: var(--bg-panel);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px;
+            margin-bottom: 14px;
+            display: none;
+        }
+        .collapsible-filters.show { display: block; }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 10px;
+        }
+
+        .filter-item { display: flex; flex-direction: column; }
+        .filter-item label { font-size: 0.75rem; color: var(--gold-main); margin-bottom: 3px; }
+        .filter-item input, .filter-item select {
+            background-color: var(--bg-dark);
+            border: 1px solid var(--gold-dark);
+            color: var(--text-light);
+            padding: 8px 10px;
+            border-radius: 5px;
+            font-size: 0.85rem;
+        }
+
         .subtabs-bar {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 10px;
+            gap: 8px;
+            margin-bottom: 10px;
         }
 
         .subtab-btn {
             background-color: var(--bg-panel);
             color: var(--text-light);
             border: 1px solid var(--gold-dark);
-            padding: 10px 18px;
+            padding: 7px 14px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 0.9rem;
-            transition: 0.2s;
+            font-size: 0.82rem;
         }
-
         .subtab-btn.active {
             background: linear-gradient(135deg, var(--gold-main), var(--gold-dark));
             color: #000;
-            border-color: var(--gold-light);
         }
-
-        /* CONTENEDOR PRINCIPAL Y BARRA DE HERRAMIENTAS */
-        .container {
-            max-width: 1250px;
-            margin: 15px auto;
-            padding: 0 12px;
-        }
-
-        .toolbar {
-            background-color: var(--bg-panel);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
-        .toolbar-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 12px;
-        }
-
-        .toolbar-top h2 {
-            color: var(--gold-light);
-            font-family: 'Georgia', serif;
-            font-size: 1.3rem;
-        }
-
-        .action-buttons { display: flex; gap: 8px; flex-wrap: wrap; }
 
         .btn-primary {
             background: linear-gradient(135deg, var(--gold-main), var(--gold-dark));
@@ -292,114 +549,20 @@
             border-radius: 4px;
             font-size: 0.75rem;
             cursor: pointer;
-            transition: 0.2s;
-        }
-        .btn-small:hover { background-color: var(--gold-main); color: #000; }
-
-        .filters-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 10px;
         }
 
-        .filter-item { display: flex; flex-direction: column; }
-        .filter-item label { font-size: 0.75rem; color: var(--gold-main); margin-bottom: 3px; }
-        .filter-item input, .filter-item select {
-            background-color: var(--bg-dark);
-            border: 1px solid var(--gold-dark);
-            color: var(--text-light);
-            padding: 8px 10px;
-            border-radius: 5px;
-            font-size: 0.85rem;
-        }
-
-        /* ==========================================
-           4. CUADRÍCULA DE ARTÍCULOS, FICHAS Y LISTADOS
-           ========================================== */
-        .catalog-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 18px;
-        }
-
-        .catalog-card {
-            background-color: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-        }
-
-        .catalog-img {
-            width: 100%;
-            height: 190px;
-            object-fit: cover;
-            background-color: #111;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .thumb-strip {
-            display: flex;
-            gap: 5px;
-            padding: 6px 10px;
-            background: #181818;
-            overflow-x: auto;
-        }
-
-        .thumb-strip img {
-            width: 36px;
-            height: 36px;
-            object-fit: cover;
-            border-radius: 4px;
-            border: 1px solid var(--gold-dark);
-            cursor: pointer;
-        }
-
-        .catalog-body { padding: 12px; }
-
-        .badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 0.7rem;
-            font-weight: bold;
-            margin-bottom: 6px;
-        }
-        .badge-disponible { background-color: rgba(46, 204, 113, 0.2); color: var(--success); border: 1px solid var(--success); }
-        .badge-vendido { background-color: rgba(231, 76, 60, 0.2); color: var(--danger); border: 1px solid var(--danger); }
-
-        .catalog-ref { color: var(--gold-main); font-size: 0.82rem; font-weight: bold; }
-        .catalog-title { color: var(--gold-light); font-size: 1.05rem; margin: 4px 0 8px 0; font-weight: bold; }
-
-        .catalog-prices {
-            display: flex;
-            justify-content: space-between;
-            background-color: var(--bg-dark);
-            padding: 8px 10px;
-            border-radius: 4px;
-            margin-bottom: 8px;
-            font-size: 0.88rem;
-            border: 1px solid var(--border-color);
-        }
-
-        /* Caja para leer la Descripción completa sin recortes */
         .full-desc-box {
-            background-color: rgba(0,0,0,0.35);
+            background-color: rgba(0,0,0,0.4);
             border-left: 3px solid var(--gold-main);
-            padding: 8px;
+            padding: 10px;
             border-radius: 4px;
-            margin-bottom: 8px;
-            font-size: 0.8rem;
+            margin: 8px 0;
+            font-size: 0.85rem;
             color: var(--text-light);
             white-space: pre-wrap;
             word-break: break-word;
-            line-height: 1.45;
+            line-height: 1.5;
         }
-
-        .catalog-details { font-size: 0.76rem; color: var(--text-muted); line-height: 1.45; }
 
         .list-container { display: flex; flex-direction: column; gap: 12px; }
 
@@ -412,7 +575,6 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
 
         .list-card-header {
@@ -421,27 +583,24 @@
             align-items: center;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 8px;
-            flex-wrap: wrap;
-            gap: 8px;
         }
 
-        .list-card-title { color: var(--gold-light); font-size: 1.05rem; font-weight: bold; }
+        .list-card-title { color: var(--gold-light); font-size: 1rem; font-weight: bold; }
 
         .list-card-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(175px, 1fr));
             gap: 8px;
-            font-size: 0.85rem;
+            font-size: 0.84rem;
         }
 
-        .field-item strong { color: var(--gold-main); display: block; font-size: 0.75rem; }
+        .field-item strong { color: var(--gold-main); display: block; font-size: 0.74rem; }
 
         .sub-items-box {
             background-color: var(--bg-dark);
             border: 1px solid var(--border-color);
             border-radius: 5px;
             padding: 10px;
-            margin-top: 5px;
             font-size: 0.8rem;
         }
 
@@ -451,7 +610,6 @@
             padding: 4px 0;
             border-bottom: 1px dashed #2c2c2c;
         }
-        .sub-item-row:last-child { border-bottom: none; }
 
         .card-actions {
             display: flex;
@@ -462,34 +620,25 @@
             flex-wrap: wrap;
         }
 
-        /* PANELES DE AJUSTES Y AYUDA */
         .settings-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-            gap: 18px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
         }
 
         .settings-card {
             background-color: var(--bg-panel);
             border: 1px solid var(--gold-dark);
             border-radius: 8px;
-            padding: 20px;
+            padding: 18px;
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
 
-        .settings-card h3 {
-            color: var(--gold-light);
-            font-family: 'Georgia', serif;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 8px;
-            font-size: 1.1rem;
-        }
+        .settings-card h3 { color: var(--gold-light); font-family: 'Georgia', serif; font-size: 1.05rem; }
 
-        /* ==========================================
-           5. VENTANAS MODALES Y FORMULARIOS
-           ========================================== */
+        /* VENTANAS MODALES */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -505,11 +654,10 @@
         .modal-box {
             background-color: var(--bg-panel);
             border: 2px solid var(--gold-main);
-            border-radius: 8px;
+            border-radius: 10px;
             width: 100%;
-            max-width: 860px;
+            max-width: 850px;
             padding: 20px;
-            position: relative;
             margin: auto;
         }
 
@@ -544,21 +692,11 @@
             font-size: 15px;
         }
 
-        .form-group textarea {
-            resize: vertical;
-            min-height: 90px;
-            line-height: 1.4;
-        }
-
-        .form-group input[readonly] {
-            background-color: #2a2418;
-            color: var(--gold-light);
-            font-weight: bold;
-        }
+        .form-group textarea { resize: vertical; min-height: 90px; }
+        .form-group input[readonly] { background-color: #2a2418; color: var(--gold-light); font-weight: bold; }
 
         .input-with-scanner { display: flex; gap: 5px; }
         .input-with-scanner input { flex: 1; }
-
         .measures-group { display: flex; align-items: center; gap: 4px; }
         .measures-group input { width: 31%; }
 
@@ -568,57 +706,24 @@
             border: 1px solid var(--gold-dark);
             padding: 14px;
             border-radius: 6px;
-            margin-bottom: 12px;
         }
 
-        .multi-item-panel h4 {
-            color: var(--gold-light);
-            margin-bottom: 10px;
-            font-size: 0.95rem;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 5px;
-        }
-
-        .preview-images-box {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-top: 8px;
-        }
-
-        .preview-thumb {
-            position: relative;
-            width: 60px;
-            height: 60px;
-        }
-
-        .preview-thumb img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 4px;
-            border: 1px solid var(--gold-main);
-        }
-
+        .preview-images-box { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+        .preview-thumb { position: relative; width: 60px; height: 60px; }
+        .preview-thumb img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; border: 1px solid var(--gold-main); }
         .preview-thumb button {
-            position: absolute;
-            top: -5px; right: -5px;
-            background: var(--danger);
-            color: #fff;
-            border: none;
-            border-radius: 50%;
-            width: 20px; height: 20px;
-            font-size: 11px;
-            cursor: pointer;
+            position: absolute; top: -5px; right: -5px;
+            background: var(--danger); color: #fff; border: none;
+            border-radius: 50%; width: 20px; height: 20px; font-size: 11px; cursor: pointer;
         }
 
         #reader { width: 100%; max-width: 400px; margin: 0 auto; }
-        .empty-msg { text-align: center; padding: 30px; color: var(--text-muted); font-style: italic; }
+        .empty-msg { text-align: center; padding: 35px; color: var(--text-muted); font-style: italic; }
     </style>
 </head>
 <body>
 
-<!-- FONDO OSCURO Y MENÚ LATERAL IZQUIERDO OCULTO -->
+<!-- MENÚ LATERAL IZQUIERDO OCULTO -->
 <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar(false)"></div>
 <aside id="sidebar" class="sidebar">
     <div class="sidebar-header">
@@ -626,55 +731,50 @@
         <button class="btn-close" onclick="toggleSidebar(false)">✖</button>
     </div>
     <div class="sidebar-nav">
+        <button id="nav-menu" onclick="switchTab('menu')">⊞ Menú Principal (Panel)</button>
         <button id="nav-catalogo" class="active" onclick="switchTab('catalogo')">📦 1. Artículos (Inicio)</button>
-        <button id="nav-fichas" class="sidebar-subbtn" onclick="switchTab('fichas')">↳ 📋 Fichas de Artículos</button>
+        <button id="nav-fichas" onclick="switchTab('fichas')">📋 1B. Fichas de Artículos</button>
         <button id="nav-empresa" onclick="switchTab('empresa')">🏛️ 2. Empresa</button>
         <button id="nav-proveedores" onclick="switchTab('proveedores')">🚚 3. Proveedores</button>
         <button id="nav-clientes" onclick="switchTab('clientes')">👥 4. Clientes</button>
-        <button id="nav-compras" onclick="switchTab('compras')">🛍️ 5. Compras</button>
-        <button id="nav-ventas" onclick="switchTab('ventas')">🧾 6. Ventas</button>
+        <button id="nav-compras" onclick="switchTab('compras')">📥 5. Compras (Entradas)</button>
+        <button id="nav-ventas" onclick="switchTab('ventas')">📤 6. Ventas (Salidas)</button>
         <button id="nav-gastos" onclick="switchTab('gastos')">💼 7. Gastos</button>
         <button id="nav-ajustes" onclick="switchTab('ajustes')">⚙️ 8. Ajustes</button>
-        <button id="nav-ayuda" onclick="switchTab('ayuda')">❓ 9. Ayuda</button>
+        <button id="nav-ayuda" onclick="switchTab('ayuda')">❓ 9. Ayuda y Manual</button>
     </div>
 </aside>
 
-<!-- CABECERA (EL LOGO LLEVA SIEMPRE A LA PANTALLA PRINCIPAL DE ARTÍCULOS) -->
-<header>
-    <button class="menu-toggle-btn" onclick="toggleSidebar(true)" title="Abrir Menú">
-        ☰ <span>Menú</span>
-    </button>
-    <img src="Logo.jpg" alt="Logo CirCA by RB" class="app-logo" onclick="goHome()" title="Volver a Inicio (Artículos)" onerror="this.style.display='none'">
-    <h1 onclick="goHome()" title="Volver a Inicio (Artículos)">CIRCA BY R.B</h1>
-    <p id="active-company-display">Empresa activa: CirCA by RB</p>
-    <div>
-        <span id="github-status-badge" class="sync-status sync-offline" onclick="switchTab('ajustes')" style="cursor:pointer;">💾 Modo Local (Configurar en Ajustes)</span>
+<!-- CABECERA ESTILO IMAGEN 2 (CON LOGO PARA VOLVER A ARTÍCULOS Y BOTÓN DE MENÚ) -->
+<header class="app-topbar">
+    <div class="topbar-left">
+        <button class="icon-btn" onclick="toggleSidebar(true)" title="Abrir Menú Lateral">☰</button>
+        <img src="Logo.jpg" alt="CirCA" class="topbar-logo" onclick="goHome()" title="Ir al Listado Principal de Artículos" onerror="this.style.display='none'">
+        <div class="topbar-title-group">
+            <span id="section-title" class="topbar-title">Artículos</span>
+            <select id="quick-status-filter" class="topbar-pill-select" onchange="renderCurrentTab()">
+                <option value="ALL">- Todos los Artículos -</option>
+                <option value="Disponible">Disponibles en tienda</option>
+                <option value="Vendido">Artículos Vendidos</option>
+            </select>
+        </div>
+    </div>
+    <div class="topbar-right">
+        <button class="icon-btn" onclick="switchTab('menu')" title="Ver Panel de Menú Principal (Cuadrícula)">⊞</button>
+        <button class="icon-btn" onclick="toggleFilterPanel()" title="Buscar y Filtrar">🔍</button>
+        <button class="sort-az-btn" onclick="quickCycleSort()" title="Cambiar Orden Ascendente/Descendente">↓A-Z</button>
+        <button class="icon-btn" onclick="showExportMenu()" title="Exportar a Excel o PDF">⋮</button>
     </div>
 </header>
 
 <div class="container">
 
-    <!-- SUBPESTAÑAS VISIBLES CUANDO ESTÁS EN ARTÍCULOS O EN FICHAS -->
-    <div id="articulos-subtabs" class="subtabs-bar">
-        <button id="subtab-catalogo" class="subtab-btn active" onclick="switchTab('catalogo')">📦 Listado de Artículos (Inicio)</button>
-        <button id="subtab-fichas" class="subtab-btn" onclick="switchTab('fichas')">📋 Fichas de Artículos</button>
-    </div>
-
-    <!-- BARRA DE HERRAMIENTAS DE LISTADOS -->
-    <div id="main-toolbar" class="toolbar">
-        <div class="toolbar-top">
-            <h2 id="section-title">1. Artículos (Pantalla Principal)</h2>
-            <div class="action-buttons">
-                <button id="btn-add-main" class="btn-primary" onclick="openFormModal()">➕ Añadir Nuevo</button>
-                <button class="btn-small" onclick="exportSectionCSV()">📊 Excel (Listado)</button>
-                <button class="btn-small" onclick="printSectionPDF()">🖨️ PDF (Listado)</button>
-            </div>
-        </div>
-
+    <!-- PANEL DESPLEGABLE DE BÚSQUEDA Y FILTROS (SE ABRE CON LA LUPA 🔍) -->
+    <div id="collapsible-filters" class="collapsible-filters">
         <div class="filters-grid">
             <div class="filter-item">
-                <label>🔍 Buscar por cualquier campo</label>
-                <input type="text" id="filter-search" placeholder="SKU, Ref, nombre, descripción, estilo..." oninput="renderCurrentTab()">
+                <label>🔍 Buscar texto, SKU o Código</label>
+                <input type="text" id="filter-search" placeholder="Escribe SKU, ref, nombre..." oninput="renderCurrentTab()">
             </div>
             <div class="filter-item">
                 <label>📅 Fecha Desde</label>
@@ -688,27 +788,62 @@
                 <label>↕️ Ordenar por</label>
                 <select id="sort-field" onchange="renderCurrentTab()">
                     <option value="none">-- Orden de registro --</option>
-                    <option value="fecha">Fecha</option>
                     <option value="ref">Referencia / Código</option>
                     <option value="sku">SKU</option>
+                    <option value="fecha">Fecha</option>
                 </select>
             </div>
             <div class="filter-item">
-                <label>Dirección de orden</label>
+                <label>Dirección</label>
                 <select id="sort-dir" onchange="renderCurrentTab()">
-                    <option value="asc">Ascendente (A-Z / Antiguo)</option>
-                    <option value="desc">Descendente (Z-A / Reciente)</option>
+                    <option value="asc">Ascendente (A-Z)</option>
+                    <option value="desc">Descendente (Z-A)</option>
                 </select>
             </div>
-            <div class="filter-item" style="justify-content: flex-end;">
-                <button class="btn-small" onclick="clearFilters()">🧹 Limpiar Filtros</button>
+            <div class="filter-item" style="justify-content: flex-end; gap:5px; flex-direction:row; align-items:flex-end;">
+                <button class="btn-small" onclick="exportSectionCSV()">📊 Excel</button>
+                <button class="btn-small" onclick="printSectionPDF()">🖨️ PDF</button>
+                <button class="btn-small" onclick="clearFilters()">🧹 Limpiar</button>
             </div>
         </div>
     </div>
 
-    <!-- CONTENEDOR DINÁMICO DE VISTAS -->
+    <!-- SUBPESTAÑAS RÁPIDAS DENTRO DE ARTÍCULOS / FICHAS -->
+    <div id="articulos-subtabs" class="subtabs-bar">
+        <button id="subtab-catalogo" class="subtab-btn active" onclick="switchTab('catalogo')">📦 Artículos</button>
+        <button id="subtab-fichas" class="subtab-btn" onclick="switchTab('fichas')">📋 Fichas</button>
+    </div>
+
+    <!-- CONTENEDOR DINÁMICO DONDE SE PINTA EL MENÚ DE LA IMAGEN 1 O LOS ARTÍCULOS DE LA IMAGEN 2 -->
     <div id="main-list-view"></div>
 
+</div>
+
+<!-- BOTONES FLOTANTES INFERIORES (COMO EN LA IMAGEN 2) -->
+<div id="fab-container" class="fab-group">
+    <button class="fab-btn fab-folder" onclick="switchTab('menu')" title="Menú Principal">⊞</button>
+    <button class="fab-btn fab-secondary" onclick="switchTab('fichas')" title="Ir a Fichas de Artículos">📋</button>
+    <button class="fab-btn fab-add" onclick="openFormModal()" title="Añadir Nuevo Registro">+</button>
+</div>
+
+<!-- BARRA INFERIOR DE TOTALES FIJA (COMO EN LA IMAGEN 2: Cant. | Total Coste / Venta) -->
+<div id="bottom-summary-bar" class="bottom-totals-bar">
+    <span id="summary-cant">Cant.: 0,00</span>
+    <span class="divider">|</span>
+    <span id="summary-totals">Total: 0,00€ / 0,00€</span>
+</div>
+
+<!-- ==========================================
+     MODAL DE DETALLE COMPLETO DEL ARTÍCULO AL PULSAR SU TARJETA
+     ========================================== -->
+<div id="detail-modal" class="modal-overlay">
+    <div class="modal-box" style="max-width: 550px;">
+        <div class="modal-header">
+            <h3 id="det-title">Detalle del Artículo</h3>
+            <button class="btn-close" onclick="document.getElementById('detail-modal').style.display='none'">✖</button>
+        </div>
+        <div id="det-body"></div>
+    </div>
 </div>
 
 <!-- ==========================================
@@ -721,12 +856,12 @@
             <button class="btn-close" onclick="closeFormModal()">✖</button>
         </div>
 
-        <!-- 1. FORMULARIO ARTÍCULOS (CON DESCRIPCIÓN COMPLETA MULTILÍNEA) -->
+        <!-- 1. FORMULARIO ARTÍCULOS -->
         <form id="form-catalogo" class="tab-form" onsubmit="saveRecord(event, 'catalogo')" style="display:none;">
             <div class="form-grid">
                 <div class="form-group"><label>Referencia *</label><input type="text" id="cat-ref" required></div>
-                <div class="form-group"><label>SKU *</label><input type="text" id="cat-sku" placeholder="Ej: SKU-001"></div>
-                <div class="form-group"><label>Nombre del Artículo *</label><input type="text" id="cat-nombre" required></div>
+                <div class="form-group"><label>SKU *</label><input type="text" id="cat-sku" placeholder="Ej: 001 23 100 21 171"></div>
+                <div class="form-group"><label>Nombre del Artículo *</label><input type="text" id="cat-nombre" required placeholder="Ej: Lamp/Techo/Pop-Art 001"></div>
                 <div class="form-group">
                     <label>Código de Barras / QR</label>
                     <div class="input-with-scanner">
@@ -758,10 +893,9 @@
                     </select>
                 </div>
 
-                <!-- Campo Descripción Completa -->
                 <div class="form-group" style="grid-column: 1 / -1;">
                     <label>Descripción Completa del Artículo</label>
-                    <textarea id="cat-desc" placeholder="Escribe aquí toda la historia, estado de conservación y detalles completos del artículo..."></textarea>
+                    <textarea id="cat-desc" placeholder="Escribe aquí la descripción completa del artículo..."></textarea>
                 </div>
 
                 <div class="form-group" style="grid-column: 1 / -1;">
@@ -788,33 +922,33 @@
             <button type="submit" class="btn-primary" style="width:100%">Guardar Artículo</button>
         </form>
 
-        <!-- 1B. NUEVO FORMULARIO: FICHAS DE ARTÍCULOS -->
+        <!-- 1B. FORMULARIO FICHAS DE ARTÍCULOS -->
         <form id="form-fichas" class="tab-form" onsubmit="saveRecord(event, 'fichas')" style="display:none;">
             <div class="form-grid">
                 <div class="form-group" style="grid-column: 1 / -1;">
                     <label>Título de la Ficha *</label>
-                    <input type="text" id="fic-titulo" required placeholder="Ej: Lámpara Space Age Fase años 70">
+                    <input type="text" id="fic-titulo" required placeholder="Ej: Lámpara Colgante Pop-Art 001">
                 </div>
                 <div class="form-group"><label>Referencia *</label><input type="text" id="fic-ref" required></div>
-                <div class="form-group"><label>Materiales</label><input type="text" id="fic-materiales" placeholder="Ej: Metal cromado, cristal opalino..."></div>
-                <div class="form-group"><label>Dimensiones</label><input type="text" id="fic-dimensiones" placeholder="Ej: 45 cm x 30 cm x 30 cm"></div>
-                <div class="form-group"><label>Periodo</label><input type="text" id="fic-periodo" placeholder="Ej: 1960 - 1969 / Años 70"></div>
-                <div class="form-group"><label>Estilo</label><input type="text" id="fic-estilo" placeholder="Ej: Mid Century, Space Age, Art Decó..."></div>
-                <div class="form-group"><label>Fecha Creación</label><input type="date" id="fic-fecha"></div>
+                <div class="form-group"><label>Materiales</label><input type="text" id="fic-materiales"></div>
+                <div class="form-group"><label>Dimensiones</label><input type="text" id="fic-dimensiones"></div>
+                <div class="form-group"><label>Periodo</label><input type="text" id="fic-periodo"></div>
+                <div class="form-group"><label>Estilo</label><input type="text" id="fic-estilo"></div>
+                <div class="form-group"><label>Fecha</label><input type="date" id="fic-fecha"></div>
 
                 <div class="form-group" style="grid-column: 1 / -1;">
-                    <label>Imagen Ficha (Subir la imagen principal de la ficha del artículo)</label>
+                    <label>Imagen Ficha (Principal)</label>
                     <input type="file" id="fic-main-img" accept="image/*" onchange="handleFichaMainImage(event)">
                     <div id="fic-main-preview" class="preview-images-box"></div>
                 </div>
 
                 <div class="form-group" style="grid-column: 1 / -1;">
-                    <label>Fotos Adicionales del Artículo (Puedes subir varias fotos)</label>
+                    <label>Fotos Adicionales</label>
                     <input type="file" id="fic-fotos" accept="image/*" multiple onchange="handleFichaPhotos(event)">
                     <div id="fic-fotos-preview" class="preview-images-box"></div>
                 </div>
             </div>
-            <button type="submit" class="btn-primary" style="width:100%">Guardar Ficha del Artículo</button>
+            <button type="submit" class="btn-primary" style="width:100%">Guardar Ficha</button>
         </form>
 
         <!-- 2. FORMULARIO EMPRESA -->
@@ -828,7 +962,7 @@
                 <div class="form-group"><label>Correo Electrónico / Web</label><input type="text" id="emp-email"></div>
                 <div class="form-group"><label>Fecha Registro</label><input type="date" id="emp-fecha"></div>
             </div>
-            <button type="submit" class="btn-primary" style="width:100%">Guardar Datos de Empresa</button>
+            <button type="submit" class="btn-primary" style="width:100%">Guardar Empresa</button>
         </form>
 
         <!-- 3. FORMULARIO PROVEEDORES -->
@@ -864,14 +998,14 @@
         <!-- 5. FORMULARIO COMPRAS -->
         <form id="form-compras" class="tab-form" onsubmit="saveRecord(event, 'compras')" style="display:none;">
             <div class="form-grid">
-                <div class="form-group"><label>Núm. Justificante Compra *</label><input type="text" id="comp-just" required placeholder="Ej: ALB-2026-01"></div>
+                <div class="form-group"><label>Núm. Justificante Compra *</label><input type="text" id="comp-just" required></div>
                 <div class="form-group"><label>Fecha de Compra *</label><input type="date" id="comp-fecha" required></div>
                 <div class="form-group">
                     <label>Proveedor *</label>
                     <select id="comp-prov" class="provider-select" required></select>
                 </div>
                 <div class="form-group">
-                    <label>Pagado (Suma al proveedor)</label>
+                    <label>Pagado</label>
                     <select id="comp-pagado"><option value="No">No</option><option value="Sí">Sí</option></select>
                 </div>
                 <div class="form-group">
@@ -884,7 +1018,7 @@
                 </div>
 
                 <div class="multi-item-panel">
-                    <h4>📦 Añadir Artículos a esta Compra (Se añadirán también a Artículos)</h4>
+                    <h4>📦 Añadir Artículos a esta Compra</h4>
                     <div class="form-grid">
                         <div class="form-group"><label>Referencia</label><input type="text" id="c-item-ref"></div>
                         <div class="form-group"><label>Nombre Artículo</label><input type="text" id="c-item-nombre"></div>
@@ -896,7 +1030,7 @@
                                 <button type="button" class="btn-small" onclick="startScanner('c-item-barcode')">📷</button>
                             </div>
                         </div>
-                        <div class="form-group"><label>Precio Coste Unitario (€)</label><input type="number" step="0.01" id="c-item-precio" value="0"></div>
+                        <div class="form-group"><label>Precio Coste (€)</label><input type="number" step="0.01" id="c-item-precio" value="0"></div>
                         <div class="form-group"><label>Unidades</label><input type="number" id="c-item-uds" value="1"></div>
                     </div>
                     <button type="button" class="btn-small" style="width:100%; padding:10px; font-weight:bold;" onclick="addCompraItem()">➕ Añadir Artículo a la Compra</button>
@@ -909,7 +1043,7 @@
         <!-- 6. FORMULARIO VENTAS -->
         <form id="form-ventas" class="tab-form" onsubmit="saveRecord(event, 'ventas')" style="display:none;">
             <div class="form-grid">
-                <div class="form-group"><label>Núm. Factura *</label><input type="text" id="ven-factura" required placeholder="Ej: FAC-2026-001"></div>
+                <div class="form-group"><label>Núm. Factura *</label><input type="text" id="ven-factura" required></div>
                 <div class="form-group"><label>Fecha Venta *</label><input type="date" id="ven-fecha" required></div>
                 <div class="form-group">
                     <label>Cliente *</label>
@@ -927,7 +1061,7 @@
                     <h4>🛒 Añadir Artículos a esta Factura de Venta</h4>
                     <div class="form-grid">
                         <div class="form-group" style="grid-column: 1 / -1;">
-                            <label>Seleccionar de Artículos (Autorrellena los campos)</label>
+                            <label>Seleccionar de Artículos</label>
                             <select id="ven-select-cat" onchange="autofillVentaItem()">
                                 <option value="">-- Seleccionar artículo --</option>
                             </select>
@@ -942,19 +1076,19 @@
                                 <button type="button" class="btn-small" onclick="startScanner('v-item-barcode')">📷</button>
                             </div>
                         </div>
-                        <div class="form-group"><label>Precio Coste (€) [Para REBU]</label><input type="number" step="0.01" id="v-item-coste" value="0"></div>
+                        <div class="form-group"><label>Precio Coste (€)</label><input type="number" step="0.01" id="v-item-coste" value="0"></div>
                         <div class="form-group"><label>Importe Venta (€)</label><input type="number" step="0.01" id="v-item-precio" value="0"></div>
                     </div>
                     <button type="button" class="btn-small" style="width:100%; padding:10px; font-weight:bold;" onclick="addVentaItem()">➕ Añadir Artículo a la Factura</button>
                     <div id="venta-items-list" class="sub-items-box" style="margin-top:10px;"></div>
                 </div>
 
-                <div class="form-group"><label>Suma Artículos (€) [Auto]</label><input type="number" step="0.01" id="ven-subtotal" value="0" readonly></div>
+                <div class="form-group"><label>Suma Artículos (€)</label><input type="number" step="0.01" id="ven-subtotal" value="0" readonly></div>
                 <div class="form-group"><label>Gastos de Envío (€)</label><input type="number" step="0.01" id="ven-envio" value="0" oninput="recalcVentaTotals()"></div>
-                <div class="form-group"><label>Importe Total Factura (€) [Auto]</label><input type="number" step="0.01" id="ven-total" value="0" readonly></div>
-                <div class="form-group"><label>Coste Total Artículos (€) [Auto]</label><input type="number" step="0.01" id="ven-coste-total" value="0" readonly></div>
-                <div class="form-group"><label>Base Imponible REBU (Solo App)</label><input type="text" id="ven-base-rebu" readonly></div>
-                <div class="form-group"><label>IVA REBU 21% (Solo App)</label><input type="text" id="ven-iva-rebu" readonly></div>
+                <div class="form-group"><label>Importe Total Factura (€)</label><input type="number" step="0.01" id="ven-total" value="0" readonly></div>
+                <div class="form-group"><label>Coste Total Artículos (€)</label><input type="number" step="0.01" id="ven-coste-total" value="0" readonly></div>
+                <div class="form-group"><label>Base Imponible REBU (Interno)</label><input type="text" id="ven-base-rebu" readonly></div>
+                <div class="form-group"><label>IVA REBU 21% (Interno)</label><input type="text" id="ven-iva-rebu" readonly></div>
                 
                 <div class="form-group"><label>Transporte / Transportista</label><input type="text" id="ven-transp"></div>
                 <div class="form-group"><label>Localizador de Envío</label><input type="text" id="ven-localizador"></div>
@@ -965,7 +1099,7 @@
                 <div class="form-group"><label>Fecha de Entrega</label><input type="date" id="ven-fecha-entrega"></div>
 
                 <div class="form-group">
-                    <label>Cobrado (Suma al cliente)</label>
+                    <label>Cobrado</label>
                     <select id="ven-cobrado"><option value="No">No</option><option value="Sí">Sí</option></select>
                 </div>
                 <div class="form-group"><label>Fecha de Cobro</label><input type="date" id="ven-fecha-pago"></div>
@@ -974,7 +1108,7 @@
                     <select id="ven-contab"><option value="No">No</option><option value="Sí">Sí</option></select>
                 </div>
             </div>
-            <button type="submit" class="btn-primary" style="width:100%">Guardar Factura de Venta y Sincronizar</button>
+            <button type="submit" class="btn-primary" style="width:100%">Guardar Factura de Venta</button>
         </form>
 
         <!-- 7. FORMULARIO GASTOS -->
@@ -995,31 +1129,31 @@
             <button type="submit" class="btn-primary" style="width:100%">Guardar Gasto</button>
         </form>
 
-        <!-- 9. FORMULARIO AYUDA (DOCUMENTOS PDF Y VÍDEO TUTORIALES) -->
+        <!-- 9. FORMULARIO AYUDA -->
         <form id="form-ayuda" class="tab-form" onsubmit="saveRecord(event, 'ayuda')" style="display:none;">
             <div class="form-grid">
-                <div class="form-group"><label>Título del Recurso *</label><input type="text" id="ayu-titulo" required placeholder="Ej: Manual de Usuario CirCA"></div>
+                <div class="form-group"><label>Título del Recurso *</label><input type="text" id="ayu-titulo" required></div>
                 <div class="form-group">
-                    <label>Tipo de Recurso</label>
+                    <label>Tipo</label>
                     <select id="ayu-tipo">
                         <option value="Documento PDF">📄 Documento PDF / Manual</option>
                         <option value="Vídeo Tutorial">🎬 Vídeo Tutorial</option>
                     </select>
                 </div>
                 <div class="form-group" style="grid-column: 1 / -1;">
-                    <label>Enlace URL (Google Drive, YouTube o enlace directo al PDF/Vídeo)</label>
+                    <label>Enlace URL (Drive, YouTube, etc.)</label>
                     <input type="url" id="ayu-url" placeholder="https://...">
                 </div>
                 <div class="form-group" style="grid-column: 1 / -1;">
-                    <label>Subir archivo PDF o documento de referencia</label>
+                    <label>Subir archivo PDF</label>
                     <input type="file" id="ayu-file" accept=".pdf,video/*,image/*" onchange="handleAyudaFile(event)">
                 </div>
                 <div class="form-group" style="grid-column: 1 / -1;">
-                    <label>Descripción / Notas de Ayuda</label>
-                    <textarea id="ayu-desc" placeholder="Explica brevemente qué incluye este manual o vídeo tutorial..."></textarea>
+                    <label>Descripción / Notas</label>
+                    <textarea id="ayu-desc"></textarea>
                 </div>
             </div>
-            <button type="submit" class="btn-primary" style="width:100%">Guardar en Ayuda</button>
+            <button type="submit" class="btn-primary" style="width:100%">Guardar Recurso en Ayuda</button>
         </form>
     </div>
 </div>
@@ -1032,13 +1166,13 @@
             <button class="btn-close" onclick="stopScanner()">✖</button>
         </div>
         <div id="reader"></div>
-        <p style="margin-top:10px; font-size:0.85rem; color:var(--gold-light);">Apunta con la cámara al código del producto</p>
+        <p style="margin-top:10px; font-size:0.85rem; color:var(--gold-light);">Apunta con la cámara al código del artículo</p>
     </div>
 </div>
 
 <script>
     /* ==========================================================
-       1. MANIFIESTO PWA Y EVENTO DE INSTALACIÓN DE LA APP
+       1. MANIFIESTO PWA Y EVENTO DE INSTALACIÓN
        ========================================================== */
     const manifestJSON = {
         "name": "CirCA by RB - Gestión",
@@ -1067,23 +1201,22 @@
             const { outcome } = await deferredInstallPrompt.userChoice;
             if (outcome === 'accepted') deferredInstallPrompt = null;
         } else {
-            alert("Para instalar la App en tu dispositivo:\n\n📱 En Android (Chrome): Toca el menú de 3 puntos (⋮) arriba a la derecha y selecciona 'Instalar aplicación' o 'Añadir a pantalla de inicio'.\n\n💻 En Ordenador: Haz clic en el icono de instalación (➕ o pantalla) a la derecha de la barra de direcciones.");
+            alert("Para instalar la App:\n\n📱 En Android (Chrome): Toca los 3 puntos (⋮) arriba a la derecha y elige 'Instalar aplicación'.\n\n💻 En PC: Pulsa el icono de instalación en la barra de direcciones.");
         }
     }
 
     function uninstallAppPWA() {
-        if (confirm("¿Deseas desconectar y limpiar los datos temporales de este dispositivo?\n\nNota: Para quitar el icono de tu pantalla de inicio en Android, mantén pulsado el icono de CirCA by RB y selecciona 'Desinstalar'.")) {
+        if (confirm("¿Deseas limpiar los datos temporales de este dispositivo?")) {
             localStorage.removeItem('circa_db_v2');
-            alert("Datos locales reiniciados. Si tienes GitHub conectado, puedes volver a sincronizarlos cuando quieras.");
             location.reload();
         }
     }
 
     /* ==========================================================
-       2. INICIALIZACIÓN DE COLECCIONES Y BASE DE DATOS
+       2. INICIALIZACIÓN DE DATOS
        ========================================================== */
     const COLLECTIONS = ['empresa', 'catalogo', 'fichas', 'proveedores', 'clientes', 'compras', 'ventas', 'gastos', 'ayuda'];
-    let currentTab = 'catalogo';
+    let currentTab = 'catalogo'; // Inicia en el listado de artículos (puedes cambiarlo a 'menu' si prefieres iniciar en el Dashboard)
     let editIndex = null;
     let tempImagesArray = [];
     let tempFichaMainImg = '';
@@ -1102,7 +1235,7 @@
         ventas: [],
         gastos: [],
         ayuda: [
-            { _id: 'ayu_default_1', _updatedAt: 1, ref: 'AYU-01', titulo: 'Guía Rápida de Uso - CirCA by RB', tipo: 'Documento PDF', url: '', file: 'Integrado', desc: '1. Pulsa el Logo en cualquier momento para volver al listado principal de Artículos.\n2. Usa el botón Menú (arriba a la izquierda) para navegar por todas las secciones.\n3. En Ajustes puedes conectar la sincronización automática con GitHub.' }
+            { _id: 'ayu_default_1', _updatedAt: 1, ref: 'AYU-01', titulo: 'Manual de Usuario Oficial - CirCA by RB', tipo: 'Documento PDF', url: 'manual_usuario.html', file: 'manual_usuario.html', desc: 'Guía paso a paso de todas las pantallas, REBU, fichas e instalación.' }
         ],
         _deletedIds: []
     };
@@ -1124,34 +1257,52 @@
     db = normalizeDB(db);
 
     const tabTitles = {
-        catalogo: '1. Artículos (Pantalla Principal)',
-        fichas: '1B. Fichas Técnicas de Artículos',
-        empresa: '2. Listado de Empresas',
-        proveedores: '3. Listado de Proveedores (Saldos Automáticos)',
-        clientes: '4. Listado de Clientes (Saldos Automáticos)',
-        compras: '5. Listado de Compras Multi-Artículo',
-        ventas: '6. Listado de Ventas y Facturación',
-        gastos: '7. Listado de Gastos',
-        ajustes: '8. Ajustes del Sistema y Sincronización',
-        ayuda: '9. Centro de Ayuda, Manuales PDF y Vídeo Tutoriales'
+        menu: 'Menú Principal',
+        catalogo: 'Artículos',
+        fichas: 'Fichas de Artículos',
+        empresa: 'Empresa',
+        proveedores: 'Proveedores',
+        clientes: 'Clientes',
+        compras: 'Compras (Entradas)',
+        ventas: 'Ventas (Salidas)',
+        gastos: 'Gastos',
+        ajustes: 'Ajustes',
+        ayuda: 'Ayuda y Soporte'
     };
 
     /* ==========================================================
-       3. NAVEGACIÓN: MENÚ LATERAL Y BOTÓN DE INICIO EN EL LOGO
+       3. NAVEGACIÓN, MENÚ DASHBOARD Y CONTROLES DE CABECERA
        ========================================================== */
     function toggleSidebar(open) {
-        const sb = document.getElementById('sidebar');
-        const ov = document.getElementById('sidebar-overlay');
-        if (open) {
-            sb.classList.add('open');
-            ov.classList.add('open');
-        } else {
-            sb.classList.remove('open');
-            ov.classList.remove('open');
-        }
+        document.getElementById('sidebar').classList.toggle('open', open);
+        document.getElementById('sidebar-overlay').classList.toggle('open', open);
     }
 
-    // Al pulsar el Logo vuelve siempre a la pantalla principal de Artículos
+    function toggleFilterPanel() {
+        document.getElementById('collapsible-filters').classList.toggle('show');
+    }
+
+    function quickCycleSort() {
+        const sortField = document.getElementById('sort-field');
+        const sortDir = document.getElementById('sort-dir');
+        if (sortField.value === 'none') {
+            sortField.value = 'ref';
+            sortDir.value = 'asc';
+        } else if (sortDir.value === 'asc') {
+            sortDir.value = 'desc';
+        } else {
+            sortDir.value = 'asc';
+        }
+        renderCurrentTab();
+    }
+
+    function showExportMenu() {
+        const opcion = prompt("Opciones de listado:\nEscribe 1 para Exportar a EXCEL (.csv)\nEscribe 2 para Imprimir / Guardar en PDF", "1");
+        if (opcion === "1") exportSectionCSV();
+        else if (opcion === "2") printSectionPDF();
+    }
+
+    // Al pulsar el Logo vuelve siempre a la pantalla principal de Artículos (Requisito 6)
     function goHome() {
         switchTab('catalogo');
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1165,7 +1316,9 @@
         const activeNav = document.getElementById('nav-' + tab);
         if (activeNav) activeNav.classList.add('active');
 
-        // Mostrar subpestañas de Artículos / Fichas solo cuando estamos en una de ellas
+        document.getElementById('section-title').innerText = tabTitles[tab] || 'CirCA by RB';
+        document.getElementById('quick-status-filter').style.display = tab === 'catalogo' ? 'inline-block' : 'none';
+
         const subtabsBar = document.getElementById('articulos-subtabs');
         if (tab === 'catalogo' || tab === 'fichas') {
             subtabsBar.style.display = 'flex';
@@ -1175,17 +1328,12 @@
             subtabsBar.style.display = 'none';
         }
 
-        // Ocultar barra de filtros si estamos en Ajustes
-        const toolbar = document.getElementById('main-toolbar');
-        toolbar.style.display = tab === 'ajustes' ? 'none' : 'flex';
+        // Mostrar u ocultar botones flotantes y barra inferior según la vista
+        const isMenuOrSettings = (tab === 'menu' || tab === 'ajustes');
+        document.getElementById('fab-container').style.display = isMenuOrSettings ? 'none' : 'flex';
+        document.getElementById('bottom-summary-bar').style.display = isMenuOrSettings ? 'none' : 'flex';
 
-        document.getElementById('section-title').innerText = tabTitles[tab];
-        const addBtn = document.getElementById('btn-add-main');
-        if (tab === 'fichas') addBtn.innerText = '➕ Añadir nueva';
-        else if (tab === 'ayuda') addBtn.innerText = '➕ Añadir PDF / Tutorial';
-        else addBtn.innerText = '➕ Añadir Nuevo';
-
-        clearFilters();
+        renderCurrentTab();
     }
 
     /* ==========================================================
@@ -1211,16 +1359,13 @@
         const clean = b64.replace(/[\r\n\s]/g, '');
         const binary = atob(clean);
         const bytes = new Uint8Array(binary.length);
-        for (let i = 0; i < binary.length; i++) {
-            bytes[i] = binary.charCodeAt(i);
-        }
+        for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
         return new TextDecoder('utf-8').decode(bytes);
     }
 
     function mergeDatabases(local, remote) {
         local = normalizeDB(local);
         remote = normalizeDB(remote);
-
         const deletedSet = new Set([...(local._deletedIds || []), ...(remote._deletedIds || [])]);
         const merged = { _deletedIds: Array.from(deletedSet) };
 
@@ -1239,7 +1384,6 @@
             });
             merged[col] = Array.from(map.values());
         });
-
         return merged;
     }
 
@@ -1249,14 +1393,6 @@
             'Accept': 'application/vnd.github+json',
             'X-GitHub-Api-Version': '2022-11-28'
         };
-    }
-
-    function updateGitHubBadge(state, text) {
-        const badge = document.getElementById('github-status-badge');
-        if (state === 'online') badge.className = 'sync-status sync-online';
-        else if (state === 'error') badge.className = 'sync-status sync-error';
-        else badge.className = 'sync-status sync-offline';
-        badge.innerText = text;
     }
 
     async function testGitHubConnection() {
@@ -1274,14 +1410,14 @@
                 headers: getGitHubHeaders(token),
                 cache: 'no-store'
             });
-            if (!res.ok) throw new Error(`Código ${res.status}: No se encontró el repositorio o el Token es inválido.`);
+            if (!res.ok) throw new Error(`Código ${res.status}: Verifica el repositorio o el Token.`);
             const repoData = await res.json();
             if (repoData.permissions && !repoData.permissions.push) {
-                throw new Error("El Token puede leer, pero NO tiene permiso de escritura. Marca la casilla 'repo'.");
+                throw new Error("El Token no tiene permiso de escritura ('repo').");
             }
             msgBox.style.background = 'rgba(46, 204, 113, 0.2)';
             msgBox.style.color = 'var(--success)';
-            msgBox.innerText = '✅ ¡Conexión verificada! Tu Token tiene permisos de lectura y escritura.';
+            msgBox.innerText = '✅ ¡Conexión verificada! Permisos de lectura y escritura correctos.';
         } catch (err) {
             msgBox.style.background = 'rgba(231, 76, 60, 0.2)';
             msgBox.style.color = '#ff6b6b';
@@ -1294,20 +1430,18 @@
         const repo = document.getElementById('gh-repo').value.trim();
         const branch = document.getElementById('gh-branch').value.trim() || 'main';
         const token = document.getElementById('gh-token').value.trim();
-        if (!owner || !repo || !token) {
-            return alert("Rellena Usuario, Repositorio y Token de GitHub.");
-        }
+        if (!owner || !repo || !token) return alert("Rellena Usuario, Repositorio y Token.");
         localStorage.setItem('circa_gh_config', JSON.stringify({ owner, repo, branch, token }));
         await syncWithGitHub(true, true);
         startAutoSyncTimer();
-        alert("¡Configuración de GitHub guardada y sincronizada!");
+        alert("¡Conectado y sincronizado con GitHub!");
     }
 
     function disconnectGitHub() {
         if (githubPollTimer) clearInterval(githubPollTimer);
         localStorage.removeItem('circa_gh_config');
-        updateGitHubBadge('offline', '💾 Modo Local (Desconectado de GitHub)');
         alert("Desconectado de GitHub.");
+        renderCurrentTab();
     }
 
     async function syncWithGitHub(pushChanges = false, manualTrigger = false) {
@@ -1318,37 +1452,25 @@
             if (pushChanges) pendingPush = true;
             return;
         }
-
         if (!pushChanges && !manualTrigger && document.getElementById('form-modal').style.display === 'flex') return;
 
         isSyncing = true;
-        if (pushChanges || manualTrigger) {
-            updateGitHubBadge('offline', '⏳ Sincronizando datos con GitHub...');
-        }
-
         try {
             const branch = cfg.branch || 'main';
             const getUrl = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/db.json?ref=${encodeURIComponent(branch)}`;
             const putUrl = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/db.json`;
 
-            const getRes = await fetch(getUrl, {
-                method: 'GET',
-                headers: getGitHubHeaders(cfg.token),
-                cache: 'no-store'
-            });
-
+            const getRes = await fetch(getUrl, { method: 'GET', headers: getGitHubHeaders(cfg.token), cache: 'no-store' });
             let remoteDB = null;
             let remoteSha = null;
 
             if (getRes.ok) {
                 const fileMeta = await getRes.json();
                 remoteSha = fileMeta.sha;
-
                 if (remoteSha !== githubFileSha || pushChanges || manualTrigger) {
                     let rawJson = '';
-                    if (fileMeta.content) {
-                        rawJson = base64ToUtf8(fileMeta.content);
-                    } else if (fileMeta.git_url) {
+                    if (fileMeta.content) rawJson = base64ToUtf8(fileMeta.content);
+                    else if (fileMeta.git_url) {
                         const blobRes = await fetch(fileMeta.git_url, { headers: getGitHubHeaders(cfg.token), cache: 'no-store' });
                         const blobData = await blobRes.json();
                         rawJson = base64ToUtf8(blobData.content);
@@ -1357,56 +1479,32 @@
                 }
             } else if (getRes.status === 404) {
                 pushChanges = true;
-            } else {
-                const errObj = await getRes.json().catch(() => ({}));
-                throw new Error(`HTTP ${getRes.status}: ${errObj.message || 'Verifica tu Token'}`);
             }
 
             if (remoteDB) {
                 db = mergeDatabases(db, remoteDB);
                 localStorage.setItem('circa_db_v2', JSON.stringify(db));
-                if (db.empresa && db.empresa.length > 0) {
-                    document.getElementById('active-company-display').innerText = "Empresa activa: " + db.empresa[db.empresa.length - 1].nombre;
-                }
                 if (currentTab !== 'ajustes') renderCurrentTab();
                 githubFileSha = remoteSha;
             }
 
             if (pushChanges) {
                 const base64Content = await stringToBase64Async(JSON.stringify(db));
-                const bodyPayload = {
-                    message: "Sincronización automática CirCA by RB",
-                    content: base64Content,
-                    branch: branch
-                };
+                const bodyPayload = { message: "Sync CirCA by RB", content: base64Content, branch: branch };
                 if (remoteSha) bodyPayload.sha = remoteSha;
 
                 const putRes = await fetch(putUrl, {
                     method: 'PUT',
-                    headers: {
-                        ...getGitHubHeaders(cfg.token),
-                        'Content-Type': 'application/json'
-                    },
+                    headers: { ...getGitHubHeaders(cfg.token), 'Content-Type': 'application/json' },
                     body: JSON.stringify(bodyPayload)
                 });
-
-                if (!putRes.ok) {
-                    const errPut = await putRes.json().catch(() => ({}));
-                    throw new Error(`Error al guardar (${putRes.status}): ${errPut.message || 'Sin permiso de escritura'}`);
-                }
-
-                const putResult = await putRes.json();
-                if (putResult && putResult.content && putResult.content.sha) {
-                    githubFileSha = putResult.content.sha;
+                if (putRes.ok) {
+                    const putResult = await putRes.json();
+                    if (putResult?.content?.sha) githubFileSha = putResult.content.sha;
                 }
             }
-
-            const timeStr = new Date().toLocaleTimeString();
-            updateGitHubBadge('online', `🟢 Sincronizado con GitHub (${timeStr})`);
         } catch (err) {
-            console.error("Error de sincronización GitHub:", err);
-            updateGitHubBadge('error', `⚠️ ${err.message}`);
-            if (manualTrigger) alert("No se pudo sincronizar con GitHub:\n" + err.message);
+            console.error("Error GitHub Sync:", err);
         } finally {
             isSyncing = false;
             if (pendingPush) {
@@ -1418,10 +1516,7 @@
 
     function startAutoSyncTimer() {
         const cfg = JSON.parse(localStorage.getItem('circa_gh_config') || 'null');
-        if (!cfg || !cfg.token) {
-            updateGitHubBadge('offline', '💾 Modo Local (Configurar en Ajustes)');
-            return;
-        }
+        if (!cfg || !cfg.token) return;
         if (githubPollTimer) clearInterval(githubPollTimer);
         githubPollTimer = setInterval(() => syncWithGitHub(false, false), SYNC_INTERVAL_MS);
     }
@@ -1429,19 +1524,15 @@
     document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') syncWithGitHub(false, false);
     });
-    window.addEventListener('online', () => syncWithGitHub(true, false));
 
     function saveDB() {
         localStorage.setItem('circa_db_v2', JSON.stringify(db));
-        if (db.empresa && db.empresa.length > 0) {
-            document.getElementById('active-company-display').innerText = "Empresa activa: " + db.empresa[db.empresa.length - 1].nombre;
-        }
         renderCurrentTab();
         syncWithGitHub(true, false);
     }
 
     /* ==========================================================
-       5. SALDOS AUTOMÁTICOS Y FILTROS
+       5. SALDOS AUTOMÁTICOS Y FILTRADO
        ========================================================== */
     function getProveedorTotals(provName) {
         let facturado = 0, pagado = 0;
@@ -1483,19 +1574,24 @@
         document.getElementById('filter-date-to').value = '';
         document.getElementById('sort-field').value = 'none';
         document.getElementById('sort-dir').value = 'asc';
+        document.getElementById('quick-status-filter').value = 'ALL';
         renderCurrentTab();
     }
 
     function getFilteredAndSortedData() {
-        if (currentTab === 'ajustes') return [];
+        if (currentTab === 'ajustes' || currentTab === 'menu') return [];
         const query = document.getElementById('filter-search').value.toLowerCase().trim();
         const dateFrom = document.getElementById('filter-date-from').value;
         const dateTo = document.getElementById('filter-date-to').value;
         const sortField = document.getElementById('sort-field').value;
         const sortDir = document.getElementById('sort-dir').value;
+        const statusFilter = document.getElementById('quick-status-filter').value;
 
         let list = (db[currentTab] || []).map((item, originalIndex) => ({ ...item, _idx: originalIndex }));
 
+        if (currentTab === 'catalogo' && statusFilter !== 'ALL') {
+            list = list.filter(item => (item.vendido || 'Disponible') === statusFilter);
+        }
         if (query) {
             list = list.filter(item => JSON.stringify(item).toLowerCase().includes(query));
         }
@@ -1513,46 +1609,125 @@
         return list;
     }
 
-    /* ==========================================================
-       6. RENDERIZADO DE PANTALLAS (ARTÍCULOS, FICHAS, AJUSTES, AYUDA...)
-       ========================================================== */
-    function changeMainCardImage(prefix, cardIdx, imgSrc) {
-        const imgEl = document.getElementById(`${prefix}-img-${cardIdx}`);
-        if (imgEl) imgEl.src = imgSrc;
+    function formatEuro(num) {
+        return (parseFloat(num) || 0).toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
     }
 
+    /* ==========================================================
+       6. RENDERIZADO DE PANTALLAS (IMAGEN 1 E IMAGEN 2)
+       ========================================================== */
     function renderCurrentTab() {
         const container = document.getElementById('main-list-view');
 
-        // PESTAÑA 8: AJUSTES
+        // VISTA A: MENÚ PRINCIPAL ESTILO IMAGEN 1 (DASHBOARD DE TARJETAS)
+        if (currentTab === 'menu') {
+            const totalArts = db.catalogo.length;
+            const totalCosteArts = db.catalogo.reduce((acc, x) => acc + (parseFloat(x.coste) || 0), 0);
+            const totalFichas = db.fichas.length;
+            const totalGastos = db.gastos.reduce((acc, x) => acc + (parseFloat(x.total) || 0), 0);
+            const totalCompras = db.compras.length;
+            const totalVentas = db.ventas.length;
+
+            container.innerHTML = `
+                <div class="dashboard-wrapper">
+                    <div class="dashboard-brand">
+                        <img src="Logo.jpg" alt="CirCA by RB" onclick="goHome()" onerror="this.style.display='none'">
+                        <h2>CIRCA BY R.B</h2>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <!-- 1. Artículos -->
+                        <div class="dash-tile" onclick="switchTab('catalogo')">
+                            <svg viewBox="0 0 24 24"><path d="M21 16.5C21 16.88 20.79 17.21 20.47 17.38L12.57 21.82C12.41 21.94 12.21 22 12 22C11.79 22 11.59 21.94 11.43 21.82L3.53 17.38C3.21 17.21 3 16.88 3 16.5V7.5C3 7.12 3.21 6.79 3.53 6.62L11.43 2.18C11.59 2.06 11.79 2 12 2C12.21 2 12.41 2.06 12.57 2.18L20.47 6.62C20.79 6.79 21 7.12 21 7.5V16.5M12 4.15L6.04 7.5L12 10.85L17.96 7.5L12 4.15M5 15.91L11 19.29V12.58L5 9.21V15.91M19 15.91V9.21L13 12.58V19.29L19 15.91Z"/></svg>
+                            <div class="dash-tile-title">Artículos</div>
+                            <div class="dash-tile-sub">${formatEuro(totalArts)} / ${formatEuro(totalCosteArts)}€</div>
+                        </div>
+
+                        <!-- 2. Fichas / Documentos -->
+                        <div class="dash-tile" onclick="switchTab('fichas')">
+                            <svg viewBox="0 0 24 24"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20M9,13V11H15V13H9M9,17V15H15V17H9Z"/></svg>
+                            <div class="dash-tile-title">Fichas</div>
+                            <div class="dash-tile-sub">${totalFichas}</div>
+                        </div>
+
+                        <!-- 3. Empresa -->
+                        <div class="dash-tile" onclick="switchTab('empresa')">
+                            <svg viewBox="0 0 24 24"><path d="M3,21V19H21V21H3M5,17V9H7V17H5M11,17V9H13V17H11M17,17V9H19V17H17M12,2L21,7V8H3V7L12,2Z"/></svg>
+                            <div class="dash-tile-title">Empresa</div>
+                            <div class="dash-tile-sub">${db.empresa[db.empresa.length - 1]?.nombre || 'CirCA'}</div>
+                        </div>
+
+                        <!-- 4. Gastos -->
+                        <div class="dash-tile" onclick="switchTab('gastos')">
+                            <svg viewBox="0 0 24 24"><path d="M19,3H14.82C14.4,1.84 13.3,1 12,1C10.7,1 9.6,1.84 9.18,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M12,3A1,1 0 0,1 13,4A1,1 0 0,1 12,5A1,1 0 0,1 11,4A1,1 0 0,1 12,3M13,17H11V16H9V14H13V13H10A1,1 0 0,1 9,12V9A1,1 0 0,1 10,8H11V7H13V8H15V10H11V11H14A1,1 0 0,1 15,12V15A1,1 0 0,1 14,16H13V17Z"/></svg>
+                            <div class="dash-tile-title">Gastos</div>
+                            <div class="dash-tile-sub">${formatEuro(totalGastos)}€</div>
+                        </div>
+
+                        <!-- 5. Compras (Nueva entrada) -->
+                        <div class="dash-tile" onclick="switchTab('compras')">
+                            <svg viewBox="0 0 24 24"><path d="M12,3L2,8L12,13L22,8L12,3M4,10.5V16.5L11,20V14L4,10.5M18,13V16H15V18H18V21H20V18H23V16H20V13H18Z"/></svg>
+                            <div class="dash-tile-title">Compras (Entrada)</div>
+                            <div class="dash-tile-sub">${totalCompras} reg.</div>
+                        </div>
+
+                        <!-- 6. Ventas (Nueva salida) -->
+                        <div class="dash-tile" onclick="switchTab('ventas')">
+                            <svg viewBox="0 0 24 24"><path d="M12,3L2,8L12,13L22,8L12,3M4,10.5V16.5L11,20V14L4,10.5M15,16V18H23V16H15Z"/></svg>
+                            <div class="dash-tile-title">Ventas (Salida)</div>
+                            <div class="dash-tile-sub">${totalVentas} fact.</div>
+                        </div>
+
+                        <!-- 7. Escanear código de barras -->
+                        <div class="dash-tile" onclick="scanToSearchCatalog()">
+                            <svg viewBox="0 0 24 24"><path d="M2,6H4V18H2V6M5,6H6V18H5V6M7,6H10V18H7V6M11,6H12V18H11V6M14,6H16V18H14V6M17,6H20V18H17V6M21,6H22V18H21V6Z"/></svg>
+                            <div class="dash-tile-title">Escanear código de barras</div>
+                        </div>
+
+                        <!-- 8. ¿Busca soporte? / Manual -->
+                        <div class="dash-tile" onclick="switchTab('ayuda')">
+                            <svg viewBox="0 0 24 24"><path d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4A2,2 0 0,0 20,2M7,9H9V11H7V9M11,9H13V11H11V9M15,9H17V11H15V9Z"/></svg>
+                            <div class="dash-tile-title">¿Busca soporte?</div>
+                        </div>
+                    </div>
+
+                    <!-- FILA INFERIOR DE 4 ICONOS (PROVEEDORES, CLIENTES, AJUSTES, AYUDA) -->
+                    <div class="dashboard-bottom-row">
+                        <div class="dash-small-tile" onclick="switchTab('proveedores')" title="Proveedores">
+                            <svg viewBox="0 0 24 24"><path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/></svg>
+                            <span>Proveedores</span>
+                        </div>
+                        <div class="dash-small-tile" onclick="switchTab('clientes')" title="Clientes">
+                            <svg viewBox="0 0 24 24"><path d="M16 17V19H2V17S2 13 9 13 16 17 16 17M12.5 7.5A3.5 3.5 0 1 0 9 11A3.5 3.5 0 0 0 12.5 7.5M15.94 13A5.32 5.32 0 0 1 18 17V19H22V17S22 13.37 15.94 13M15 4A3.39 3.39 0 0 0 13.07 4.59A5 5 0 0 1 13.07 10.41A3.39 3.39 0 0 0 15 11A3.5 3.5 0 0 0 15 4Z"/></svg>
+                            <span>Clientes</span>
+                        </div>
+                        <div class="dash-small-tile" onclick="switchTab('ajustes')" title="Ajustes">
+                            <svg viewBox="0 0 24 24"><path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.21,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.21,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.67 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/></svg>
+                            <span>Ajustes</span>
+                        </div>
+                        <div class="dash-small-tile" onclick="switchTab('ayuda')" title="Ayuda">
+                            <svg viewBox="0 0 24 24"><path d="M11,18H13V16H11V18M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,6A4,4 0 0,0 8,10H10A2,2 0 0,1 12,8A2,2 0 0,1 14,10C14,12 11,11.75 11,15H13C13,12.75 16,12.5 16,10A4,4 0 0,0 12,6Z"/></svg>
+                            <span>Ayuda</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            return;
+        }
+
+        // VISTA B: PESTAÑA AJUSTES
         if (currentTab === 'ajustes') {
             const cfg = JSON.parse(localStorage.getItem('circa_gh_config') || '{}');
             container.innerHTML = `
                 <div class="settings-grid">
-                    <!-- Tarjeta 1: Sincronización GitHub -->
                     <div class="settings-card">
-                        <h3>🐙 Sincronización en Tiempo Real con GitHub</h3>
-                        <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.4;">
-                            Conecta tus dispositivos al archivo <code>db.json</code> de tu repositorio de GitHub para que todos tus datos se actualicen automáticamente.
-                        </p>
-                        <div class="form-group">
-                            <label>Usuario de GitHub *</label>
-                            <input type="text" id="gh-owner" value="${cfg.owner || 'PinyPunK'}">
-                        </div>
-                        <div class="form-group">
-                            <label>Nombre del Repositorio *</label>
-                            <input type="text" id="gh-repo" value="${cfg.repo || 'CirCA-by-RB'}">
-                        </div>
-                        <div class="form-group">
-                            <label>Rama (Branch) *</label>
-                            <input type="text" id="gh-branch" value="${cfg.branch || 'main'}">
-                        </div>
-                        <div class="form-group">
-                            <label>Token Personal de GitHub (Permiso 'repo') *</label>
-                            <input type="password" id="gh-token" value="${cfg.token || ''}" placeholder="ghp_... o github_pat_...">
-                        </div>
+                        <h3>🐙 Sincronización Multi-Dispositivo con GitHub</h3>
+                        <div class="form-group"><label>Usuario de GitHub *</label><input type="text" id="gh-owner" value="${cfg.owner || 'PinyPunK'}"></div>
+                        <div class="form-group"><label>Repositorio *</label><input type="text" id="gh-repo" value="${cfg.repo || 'CirCA-by-RB'}"></div>
+                        <div class="form-group"><label>Rama (Branch) *</label><input type="text" id="gh-branch" value="${cfg.branch || 'main'}"></div>
+                        <div class="form-group"><label>Token Personal de GitHub (Permiso 'repo') *</label><input type="password" id="gh-token" value="${cfg.token || ''}" placeholder="ghp_..."></div>
                         <div id="gh-test-msg" style="display:none; padding:8px; border-radius:4px; font-size:0.8rem;"></div>
-                        <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:5px;">
+                        <div style="display:flex; gap:8px; flex-wrap:wrap;">
                             <button class="btn-small" onclick="testGitHubConnection()">🔍 Probar Token</button>
                             <button class="btn-primary" style="flex:1;" onclick="saveGitHubConfig()">🔗 Guardar y Sincronizar</button>
                             <button class="btn-small" onclick="syncWithGitHub(false, true)">🔄 Sincronizar Ahora</button>
@@ -1560,23 +1735,15 @@
                         </div>
                     </div>
 
-                    <!-- Tarjeta 2: Copias de Seguridad -->
                     <div class="settings-card">
                         <h3>💾 Copia de Seguridad y Restauración</h3>
-                        <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.4;">
-                            Descarga una copia completa de todos tus artículos, fichas, clientes, proveedores, compras, ventas y gastos en un archivo seguro <code>.json</code> o restáurala cuando lo necesites.
-                        </p>
                         <button class="btn-primary" onclick="exportarDatos()">📥 Descargar Copia de Seguridad (JSON)</button>
                         <button class="btn-small" style="padding:12px; font-weight:bold;" onclick="document.getElementById('import-file').click()">📤 Restaurar Copia de Seguridad</button>
                         <input type="file" id="import-file" style="display:none" accept=".json" onchange="importarDatos(event)">
                     </div>
 
-                    <!-- Tarjeta 3: Instalar / Desinstalar APP -->
                     <div class="settings-card">
-                        <h3>📱 Instalar y Desinstalar la Aplicación</h3>
-                        <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.4;">
-                            Instala <strong>CirCA by RB</strong> en la pantalla de inicio de tu móvil Android o en el escritorio de tu ordenador con su icono oficial.
-                        </p>
+                        <h3>📱 Instalar y Desinstalar la APP</h3>
                         <button class="btn-primary" onclick="installAppPWA()">📲 Instalar APP en este Dispositivo</button>
                         <button class="btn-small" style="border-color:var(--danger); color:var(--danger); padding:10px;" onclick="uninstallAppPWA()">🗑️ Desinstalar / Limpiar Datos Locales</button>
                     </div>
@@ -1586,96 +1753,61 @@
         }
 
         const data = getFilteredAndSortedData();
+        updateBottomSummaryBar(data);
 
         if (data.length === 0) {
-            container.innerHTML = `<div class="empty-msg">No hay registros en esta sección todavía. Pulsa el botón dorado superior para añadir el primero.</div>`;
+            container.innerHTML = `<div class="empty-msg">No hay registros en esta vista. Pulsa el botón circular dorado (+) abajo a la derecha para añadir el primero.</div>`;
             return;
         }
 
-        // PESTAÑA 1: ARTÍCULOS (PANTALLA PRINCIPAL CON SKU, COSTE, VENTA Y DESCRIPCIÓN COMPLETA)
+        // VISTA C: LISTADO DE ARTÍCULOS EN 3 COLUMNAS COMPACTAS (ESTILO IMAGEN 2)
         if (currentTab === 'catalogo') {
-            container.innerHTML = `<div class="catalog-grid">` + data.map(item => {
+            container.innerHTML = `<div class="articles-3col-grid">` + data.map(item => {
                 const imgs = item.imagenes && item.imagenes.length > 0 ? item.imagenes : (item.imgData ? [item.imgData] : ['Logo.jpg']);
-                const thumbsHTML = imgs.length > 1 ? `<div class="thumb-strip">` + imgs.map(src =>
-                    `<img src="${src}" onclick="changeMainCardImage('cat', ${item._idx}, '${src}')">`
-                ).join('') + `</div>` : '';
-
+                const qty = item.vendido === 'Vendido' ? '0,00' : '1,00';
                 return `
-                <div class="catalog-card">
-                    <div>
-                        <img id="cat-img-${item._idx}" src="${imgs[0]}" class="catalog-img" alt="${item.nombre}">
-                        ${thumbsHTML}
-                        <div class="catalog-body">
-                            <span class="badge ${item.vendido === 'Vendido' ? 'badge-vendido' : 'badge-disponible'}">${item.vendido || 'Disponible'}</span>
-                            <div class="catalog-ref">SKU: <strong>${item.sku || '-'}</strong> | REF: ${item.ref}</div>
-                            <div class="catalog-title">${item.nombre}</div>
-                            <div class="catalog-prices">
-                                <span>P. Coste: <strong>${item.coste} €</strong></span>
-                                <span style="color:var(--gold-light)">P. Venta: <strong>${item.venta} €</strong></span>
-                            </div>
-                            <div class="full-desc-box"><strong>Descripción:</strong>\n${item.desc || 'Sin descripción registrada.'}</div>
-                            <div class="catalog-details">
-                                <div>📏 Medidas: ${item.medidas}</div>
-                                <div>🏷️ Cód. Barras: ${item.barcode || '-'}</div>
-                                <div>🏢 Prov: ${item.prov || '-'} (Just: ${item.justificante || '-'})</div>
-                                ${item.vendido === 'Vendido' ? `<div style="margin-top:6px; padding-top:6px; border-top:1px dashed var(--border-color); color:var(--gold-light);">📦 <strong>Venta:</strong> Fact: ${item.factura || '-'} (${item.impFactura || 0}€) | Envío: ${item.transp || '-'} [${item.localizador || '-'}] | Entregado: ${item.entregado || 'No'}</div>` : ''}
-                            </div>
+                <div class="art-card-compact" onclick="openArticleDetailModal(${item._idx})">
+                    <img src="${imgs[0]}" class="art-img-square" alt="${item.nombre}">
+                    <div class="art-info-compact">
+                        <div class="art-title-center">${item.nombre}<br>${item.ref}</div>
+                        <div class="art-sku-line">${item.sku || item.barcode || item.ref}</div>
+                        <div class="art-qty-right">${qty}</div>
+                        <div class="art-price-dual">
+                            <span class="cost-color">${formatEuro(item.coste)}€</span> / <span class="sale-color">${formatEuro(item.venta)}€</span>
                         </div>
-                    </div>
-                    <div class="card-actions" style="padding: 10px;">
-                        <button class="btn-small" onclick="openFormModal(${item._idx})">✏️ Editar</button>
-                        <button class="btn-small" onclick="exportSingleCSV(${item._idx})">📊</button>
-                        <button class="btn-small" onclick="printSinglePDF(${item._idx})">🖨️</button>
-                        <button class="btn-small" style="border-color:var(--danger); color:var(--danger);" onclick="deleteRecord(${item._idx})">🗑️</button>
+                        <div class="art-desc-preview">${item.desc || ''}</div>
+                        <div class="art-sku-line">${item.barcode || item.sku || ''}</div>
                     </div>
                 </div>`;
             }).join('') + `</div>`;
             return;
         }
 
-        // PESTAÑA 1B: FICHAS DE ARTÍCULOS
+        // VISTA D: FICHAS DE ARTÍCULOS EN 3 COLUMNAS
         if (currentTab === 'fichas') {
-            container.innerHTML = `<div class="catalog-grid">` + data.map(item => {
-                const allImgs = [
-                    ...(item.imagenFicha ? [item.imagenFicha] : []),
-                    ...(item.fotos || [])
-                ];
-                const displayImgs = allImgs.length > 0 ? allImgs : ['Logo.jpg'];
-                const thumbsHTML = displayImgs.length > 1 ? `<div class="thumb-strip">` + displayImgs.map(src =>
-                    `<img src="${src}" onclick="changeMainCardImage('fic', ${item._idx}, '${src}')">`
-                ).join('') + `</div>` : '';
-
+            container.innerHTML = `<div class="articles-3col-grid">` + data.map(item => {
+                const img = item.imagenFicha || (item.fotos && item.fotos[0]) || 'Logo.jpg';
                 return `
-                <div class="catalog-card">
-                    <div>
-                        <img id="fic-img-${item._idx}" src="${displayImgs[0]}" class="catalog-img" alt="${item.titulo}">
-                        ${thumbsHTML}
-                        <div class="catalog-body">
-                            <div class="catalog-ref">REF: ${item.ref}</div>
-                            <div class="catalog-title">${item.titulo}</div>
-                            <div class="catalog-details" style="font-size:0.82rem; line-height:1.6;">
-                                <div><strong>🧱 Materiales:</strong> ${item.materiales || '-'}</div>
-                                <div><strong>📐 Dimensiones:</strong> ${item.dimensiones || '-'}</div>
-                                <div><strong>⏳ Periodo:</strong> ${item.periodo || '-'}</div>
-                                <div><strong>✨ Estilo:</strong> ${item.estilo || '-'}</div>
-                            </div>
+                <div class="art-card-compact" onclick="printFichaPDF(${item._idx})">
+                    <img src="${img}" class="art-img-square" alt="${item.titulo}">
+                    <div class="art-info-compact">
+                        <div class="art-title-center">${item.titulo}<br>${item.ref}</div>
+                        <div class="art-sku-line">${item.estilo || '-'} | ${item.periodo || '-'}</div>
+                        <div class="art-desc-preview">${item.dimensiones || ''}</div>
+                        <div style="display:flex; gap:4px; margin-top:5px;" onclick="event.stopPropagation()">
+                            <button class="btn-small" style="flex:1; padding:4px;" onclick="printFichaPDF(${item._idx})">🖨️</button>
+                            <button class="btn-small" style="flex:1; padding:4px;" onclick="openFormModal(${item._idx})">✏️</button>
+                            <button class="btn-small" style="flex:1; padding:4px; color:var(--danger); border-color:var(--danger);" onclick="deleteRecord(${item._idx})">🗑️</button>
                         </div>
-                    </div>
-                    <div class="card-actions" style="padding: 10px;">
-                        <button class="btn-small" style="border-color:var(--gold-light); font-weight:bold;" onclick="printFichaPDF(${item._idx})">🖨️ Imprimir Ficha</button>
-                        <button class="btn-small" onclick="openFormModal(${item._idx})">✏️</button>
-                        <button class="btn-small" style="border-color:var(--danger); color:var(--danger);" onclick="deleteRecord(${item._idx})">🗑️</button>
                     </div>
                 </div>`;
             }).join('') + `</div>`;
             return;
         }
 
-        // RESTO DE PESTAÑAS (EMPRESA, PROVEEDORES, CLIENTES, COMPRAS, VENTAS, GASTOS, AYUDA)
+        // VISTA E: RESTO DE PESTAÑAS EN FORMATO DE LISTADO
         container.innerHTML = `<div class="list-container">` + data.map(item => {
-            let fieldsHTML = '';
-            let extraBoxHTML = '';
-            let headerTitle = '';
+            let fieldsHTML = '', extraBoxHTML = '', headerTitle = '';
             let pdfButtonLabel = currentTab === 'ventas' ? '🧾 Factura PDF' : '🖨️ PDF';
 
             if (currentTab === 'empresa') {
@@ -1684,75 +1816,56 @@
                     <div class="field-item"><strong>NIF / CIF</strong>${item.nif || '-'}</div>
                     <div class="field-item"><strong>Dirección Fiscal</strong>${item.dir || '-'}</div>
                     <div class="field-item"><strong>Teléfono</strong>${item.tel || '-'}</div>
-                    <div class="field-item"><strong>Email / Web</strong>${item.email || '-'}</div>
-                    <div class="field-item"><strong>Fecha</strong>${item.fecha || '-'}</div>`;
+                    <div class="field-item"><strong>Email / Web</strong>${item.email || '-'}</div>`;
             } else if (currentTab === 'proveedores') {
                 const totals = getProveedorTotals(item.nombre);
                 headerTitle = `${item.ref} - ${item.nombre}`;
                 fieldsHTML = `
-                    <div class="field-item"><strong>Dirección</strong>${item.dir || '-'}</div>
-                    <div class="field-item"><strong>Teléfono</strong>${item.tel || '-'}</div>
-                    <div class="field-item"><strong>Correo / Web</strong>${item.email || '-'} / ${item.web || '-'}</div>
+                    <div class="field-item"><strong>Teléfono / Email</strong>${item.tel || '-'} / ${item.email || '-'}</div>
                     <div class="field-item"><strong>Total Facturado (Compras)</strong><span style="color:var(--gold-light); font-weight:bold;">${totals.facturado} €</span></div>
-                    <div class="field-item"><strong>Total Pagado (Pagado=Sí)</strong><span style="color:var(--success); font-weight:bold;">${totals.pagado} €</span></div>
-                    <div class="field-item"><strong>Documentos</strong>${item.docs || '-'}</div>`;
+                    <div class="field-item"><strong>Total Pagado (Pagado=Sí)</strong><span style="color:var(--success); font-weight:bold;">${totals.pagado} €</span></div>`;
             } else if (currentTab === 'clientes') {
                 const totals = getClienteTotals(item.nombre);
                 headerTitle = `${item.ref} - ${item.nombre}`;
                 fieldsHTML = `
-                    <div class="field-item"><strong>Dirección</strong>${item.dir || '-'}</div>
-                    <div class="field-item"><strong>Teléfono</strong>${item.tel || '-'}</div>
-                    <div class="field-item"><strong>Correo / Web</strong>${item.email || '-'} / ${item.web || '-'}</div>
+                    <div class="field-item"><strong>Teléfono / Email</strong>${item.tel || '-'} / ${item.email || '-'}</div>
                     <div class="field-item"><strong>Total Facturado (Ventas)</strong><span style="color:var(--gold-light); font-weight:bold;">${totals.facturado} €</span></div>
-                    <div class="field-item"><strong>Total Cobrado (Cobrado=Sí)</strong><span style="color:var(--success); font-weight:bold;">${totals.cobrado} €</span></div>
-                    <div class="field-item"><strong>Documentos</strong>${item.docs || '-'}</div>`;
+                    <div class="field-item"><strong>Total Cobrado (Cobrado=Sí)</strong><span style="color:var(--success); font-weight:bold;">${totals.cobrado} €</span></div>`;
             } else if (currentTab === 'compras') {
                 const items = item.items || [{ ref: item.ref, nombre: item.nombre, sku: item.sku, precio: item.precio, uds: item.uds || 1 }];
-                headerTitle = `Justificante: ${item.just || '-'} | Proveedor: ${item.prov || '-'}`;
+                headerTitle = `Justificante: ${item.just || '-'} | Prov: ${item.prov || '-'}`;
                 fieldsHTML = `
-                    <div class="field-item"><strong>Fecha Compra</strong>${item.fecha || '-'}</div>
+                    <div class="field-item"><strong>Fecha</strong>${item.fecha || '-'}</div>
                     <div class="field-item"><strong>Total Compra</strong><strong style="color:var(--gold-light)">${item.total || item.precio} €</strong></div>
-                    <div class="field-item"><strong>Pagado</strong>${item.pagado || 'No'}</div>
-                    <div class="field-item"><strong>Contabilizado</strong>${item.contab || 'No'}</div>`;
-                extraBoxHTML = `<div class="sub-items-box"><strong>Artículos en esta compra (${items.length}):</strong>` +
-                    items.map(it => `<div class="sub-item-row"><span>REF: ${it.ref} | SKU: ${it.sku || '-'} - <strong>${it.nombre}</strong> (x${it.uds} uds)</span><span>${it.precio} € / ud</span></div>`).join('') + `</div>`;
+                    <div class="field-item"><strong>Pagado / Contab.</strong>Pagado: ${item.pagado || 'No'} | Contab: ${item.contab || 'No'}</div>`;
+                extraBoxHTML = `<div class="sub-items-box">` + items.map(it => `<div class="sub-item-row"><span>REF: ${it.ref} | SKU: ${it.sku || '-'} - <strong>${it.nombre}</strong> (x${it.uds})</span><span>${it.precio} €</span></div>`).join('') + `</div>`;
             } else if (currentTab === 'ventas') {
                 const items = item.items || [{ ref: item.ref, sku: item.sku, nombre: item.nombre, precio: item.precio, coste: item.coste }];
                 headerTitle = `Factura: ${item.factura} | Cliente: ${item.cliente}`;
                 fieldsHTML = `
                     <div class="field-item"><strong>Fecha</strong>${item.fecha || '-'}</div>
-                    <div class="field-item"><strong>Subtotal + Envío</strong>${item.subtotal || item.precio}€ + ${item.envio || 0}€ = <strong style="color:var(--gold-light)">${item.total}€</strong></div>
+                    <div class="field-item"><strong>Total Factura</strong><strong style="color:var(--gold-light)">${item.total} €</strong> (Envío: ${item.envio || 0}€)</div>
                     <div class="field-item"><strong>REBU Interno (${item.destino})</strong>Base: ${item.baseRebu} | IVA: ${item.ivaRebu}</div>
-                    <div class="field-item"><strong>Transporte y Localizador</strong>${item.transp || '-'} (${item.localizador || '-'})</div>
-                    <div class="field-item"><strong>Entregado</strong>${item.entregado || 'No'}</div>
-                    <div class="field-item"><strong>Cobrado</strong>${item.cobrado || item.pagado || 'No'}</div>
-                    <div class="field-item"><strong>Contabilizado</strong>${item.contab || 'No'}</div>`;
-                extraBoxHTML = `<div class="sub-items-box"><strong>Artículos vendidos en esta factura (${items.length}):</strong>` +
-                    items.map(it => `<div class="sub-item-row"><span>REF: ${it.ref} | SKU: ${it.sku || '-'} - <strong>${it.nombre}</strong></span><span>PVP: ${it.precio} € (Coste: ${it.coste} €)</span></div>`).join('') + `</div>`;
+                    <div class="field-item"><strong>Transporte y Entrega</strong>${item.transp || '-'} [${item.localizador || '-'}] | Entregado: ${item.entregado || 'No'}</div>
+                    <div class="field-item"><strong>Cobrado / Contab.</strong>Cobrado: ${item.cobrado || 'No'} | Contab: ${item.contab || 'No'}</div>`;
+                extraBoxHTML = `<div class="sub-items-box">` + items.map(it => `<div class="sub-item-row"><span>REF: ${it.ref} | SKU: ${it.sku || '-'} - <strong>${it.nombre}</strong></span><span>PVP: ${it.precio} €</span></div>`).join('') + `</div>`;
             } else if (currentTab === 'gastos') {
                 headerTitle = `Gasto Nº ${item.ref} - ${item.nombre}`;
                 fieldsHTML = `
-                    <div class="field-item"><strong>Fecha</strong>${item.fecha || '-'}</div>
-                    <div class="field-item"><strong>Proveedor</strong>${item.prov || '-'}</div>
-                    <div class="field-item"><strong>Base Imponible</strong>${item.base} €</div>
-                    <div class="field-item"><strong>IVA</strong>${item.iva} €</div>
-                    <div class="field-item"><strong>Importe Total</strong><strong>${item.total} €</strong></div>
-                    <div class="field-item"><strong>Justificante</strong>${item.file || '-'}</div>`;
+                    <div class="field-item"><strong>Fecha / Proveedor</strong>${item.fecha || '-'} | ${item.prov || '-'}</div>
+                    <div class="field-item"><strong>Base + IVA</strong>${item.base}€ + ${item.iva}€</div>
+                    <div class="field-item"><strong>Total</strong><strong style="color:var(--gold-light)">${item.total} €</strong></div>`;
             } else if (currentTab === 'ayuda') {
                 headerTitle = `${item.tipo === 'Vídeo Tutorial' ? '🎬' : '📄'} ${item.titulo}`;
                 fieldsHTML = `
                     <div class="field-item"><strong>Tipo</strong>${item.tipo}</div>
-                    <div class="field-item"><strong>Archivo</strong>${item.file || '-'}</div>
-                    ${item.url ? `<div class="field-item"><strong>Enlace Directo</strong><a href="${item.url}" target="_blank" style="color:var(--gold-light);">🔗 Abrir Recurso / Tutorial</a></div>` : ''}
-                    ${item.fileData ? `<div class="field-item"><strong>Documento Guardado</strong><a href="${item.fileData}" download="${item.file || 'documento.pdf'}" style="color:var(--gold-light);">📥 Descargar / Ver PDF</a></div>` : ''}`;
+                    ${item.url ? `<div class="field-item"><strong>Enlace</strong><a href="${item.url}" target="_blank" style="color:var(--gold-light);">🔗 Abrir Recurso</a></div>` : ''}`;
                 extraBoxHTML = `<div class="full-desc-box">${item.desc || ''}</div>`;
             }
 
             return `
             <div class="list-card">
-                <div class="list-card-header">
-                    <span class="list-card-title">${headerTitle}</span>
-                </div>
+                <div class="list-card-header"><span class="list-card-title">${headerTitle}</span></div>
                 <div class="list-card-grid">${fieldsHTML}</div>
                 ${extraBoxHTML}
                 <div class="card-actions">
@@ -1765,8 +1878,70 @@
         }).join('') + `</div>`;
     }
 
+    // Actualiza la barra inferior con el formato exacto de la Imagen 2: Cant.: X | Total: Coste€ / Venta€
+    function updateBottomSummaryBar(data) {
+        const cantEl = document.getElementById('summary-cant');
+        const totEl = document.getElementById('summary-totals');
+        if (currentTab === 'catalogo') {
+            const count = data.length;
+            const sumCoste = data.reduce((acc, x) => acc + (parseFloat(x.coste) || 0), 0);
+            const sumVenta = data.reduce((acc, x) => acc + (parseFloat(x.venta) || 0), 0);
+            cantEl.innerText = `Cant.: ${formatEuro(count)}`;
+            totEl.innerText = `Total: ${formatEuro(sumCoste)}€ / ${formatEuro(sumVenta)}€`;
+        } else if (currentTab === 'ventas' || currentTab === 'compras' || currentTab === 'gastos') {
+            const count = data.length;
+            const sumTotal = data.reduce((acc, x) => acc + (parseFloat(x.total || x.precio) || 0), 0);
+            cantEl.innerText = `Reg.: ${count}`;
+            totEl.innerText = `Total: ${formatEuro(sumTotal)}€`;
+        } else {
+            cantEl.innerText = `Reg.: ${data.length}`;
+            totEl.innerText = `CirCA by RB`;
+        }
+    }
+
+    // Abre la ficha del artículo al tocar su tarjeta en la cuadrícula de 3 columnas (permite leer toda la descripción completa)
+    function openArticleDetailModal(index) {
+        const item = db.catalogo[index];
+        const imgs = item.imagenes && item.imagenes.length > 0 ? item.imagenes : (item.imgData ? [item.imgData] : ['Logo.jpg']);
+        document.getElementById('det-title').innerText = `${item.nombre} (${item.ref})`;
+
+        const thumbs = imgs.map(src => `<img src="${src}" style="width:65px; height:65px; object-fit:cover; border-radius:6px; border:1px solid var(--gold-main); cursor:pointer;" onclick="document.getElementById('det-main-img').src='${src}'">`).join('');
+
+        document.getElementById('det-body').innerHTML = `
+            <div style="text-align:center; margin-bottom:12px;">
+                <img id="det-main-img" src="${imgs[0]}" style="max-width:100%; max-height:260px; border-radius:8px; border:1px solid var(--gold-main);">
+                <div style="display:flex; gap:6px; justify-content:center; margin-top:8px; overflow-x:auto;">${thumbs}</div>
+            </div>
+            <div class="list-card-grid" style="margin-bottom:10px;">
+                <div class="field-item"><strong>Referencia</strong>${item.ref}</div>
+                <div class="field-item"><strong>SKU</strong>${item.sku || '-'}</div>
+                <div class="field-item"><strong>Código de Barras</strong>${item.barcode || '-'}</div>
+                <div class="field-item"><strong>Medidas</strong>${item.medidas || '-'}</div>
+                <div class="field-item"><strong>Precio de Coste</strong><span class="cost-color" style="font-weight:bold;">${formatEuro(item.coste)} €</span></div>
+                <div class="field-item"><strong>Precio de Venta</strong><span class="sale-color" style="font-weight:bold;">${formatEuro(item.venta)} €</span></div>
+                <div class="field-item"><strong>Proveedor</strong>${item.prov || '-'} (Just: ${item.justificante || '-'})</div>
+                <div class="field-item"><strong>Estado</strong>${item.vendido || 'Disponible'}</div>
+            </div>
+            <div class="full-desc-box"><strong>Descripción Completa:</strong>\n${item.desc || 'Sin descripción registrada.'}</div>
+            ${item.vendido === 'Vendido' ? `<div class="sub-items-box" style="margin-top:8px; color:var(--gold-light);">📦 Factura: ${item.factura || '-'} (${item.impFactura || 0}€) | Transporte: ${item.transp || '-'} [${item.localizador || '-'}] | Entregado: ${item.entregado || 'No'}</div>` : ''}
+            <div class="card-actions" style="margin-top:15px;">
+                <button class="btn-primary" onclick="document.getElementById('detail-modal').style.display='none'; openFormModal(${index});">✏️ Editar Artículo</button>
+                <button class="btn-small" onclick="exportSingleCSV(${index})">📊 Excel</button>
+                <button class="btn-small" onclick="printSinglePDF(${index})">🖨️ PDF</button>
+                <button class="btn-small" style="border-color:var(--danger); color:var(--danger);" onclick="document.getElementById('detail-modal').style.display='none'; deleteRecord(${index});">🗑️ Borrar</button>
+            </div>
+        `;
+        document.getElementById('detail-modal').style.display = 'flex';
+    }
+
+    function scanToSearchCatalog() {
+        switchTab('catalogo');
+        document.getElementById('collapsible-filters').classList.add('show');
+        startScanner('filter-search');
+    }
+
     /* ==========================================================
-       7. GESTIÓN DE IMÁGENES (CATÁLOGO Y FICHAS) Y SUB-LISTAS
+       7. GESTIÓN DE IMÁGENES Y SUB-LISTAS
        ========================================================== */
     function toggleVendidoCat() {
         const val = document.getElementById('cat-vendido').value;
@@ -1812,44 +1987,25 @@
     function handleFichaMainImage(event) {
         const file = event.target.files[0];
         if (!file) return;
-        compressImageFile(file, 340, (b64) => {
-            tempFichaMainImg = b64;
-            renderFichaPreviews();
-        });
+        compressImageFile(file, 340, (b64) => { tempFichaMainImg = b64; renderFichaPreviews(); });
     }
 
     function handleFichaPhotos(event) {
         Array.from(event.target.files).forEach(file => {
-            compressImageFile(file, 260, (b64) => {
-                tempFichaFotos.push(b64);
-                renderFichaPreviews();
-            });
+            compressImageFile(file, 260, (b64) => { tempFichaFotos.push(b64); renderFichaPreviews(); });
         });
     }
 
     function renderFichaPreviews() {
         document.getElementById('fic-main-preview').innerHTML = tempFichaMainImg ? `
-            <div class="preview-thumb">
-                <img src="${tempFichaMainImg}">
-                <button type="button" onclick="tempFichaMainImg=''; renderFichaPreviews();">✖</button>
-            </div>` : '';
-
+            <div class="preview-thumb"><img src="${tempFichaMainImg}"><button type="button" onclick="tempFichaMainImg=''; renderFichaPreviews();">✖</button></div>` : '';
         document.getElementById('fic-fotos-preview').innerHTML = tempFichaFotos.map((src, i) => `
-            <div class="preview-thumb">
-                <img src="${src}">
-                <button type="button" onclick="tempFichaFotos.splice(${i},1); renderFichaPreviews();">✖</button>
-            </div>
-        `).join('');
+            <div class="preview-thumb"><img src="${src}"><button type="button" onclick="tempFichaFotos.splice(${i},1); renderFichaPreviews();">✖</button></div>`).join('');
     }
 
     function handleAyudaFile(event) {
         const file = event.target.files[0];
-        if (!file) return;
-        if (file.size > 1500000) {
-            alert("El archivo supera 1.5 MB. Se guardará el nombre de referencia; para archivos pesados usa el campo de enlace URL (Google Drive / YouTube).");
-            tempAyudaDataUrl = '';
-            return;
-        }
+        if (!file || file.size > 1500000) return;
         const reader = new FileReader();
         reader.onload = (e) => { tempAyudaDataUrl = e.target.result; };
         reader.readAsDataURL(file);
@@ -1862,8 +2018,7 @@
         const barcode = document.getElementById('c-item-barcode').value.trim();
         const precio = parseFloat(document.getElementById('c-item-precio').value) || 0;
         const uds = parseInt(document.getElementById('c-item-uds').value) || 1;
-
-        if (!ref || !nombre) return alert("Introduce al menos la Referencia y el Nombre del artículo.");
+        if (!ref || !nombre) return alert("Introduce Referencia y Nombre.");
 
         tempCompraItems.push({ ref, nombre, sku, barcode, precio, uds });
         document.getElementById('c-item-ref').value = '';
@@ -1875,15 +2030,10 @@
         renderCompraItems();
     }
 
-    function removeCompraItem(idx) {
-        tempCompraItems.splice(idx, 1);
-        renderCompraItems();
-    }
-
     function renderCompraItems() {
         const box = document.getElementById('compra-items-list');
         if (tempCompraItems.length === 0) {
-            box.innerHTML = `<em>No hay artículos añadidos todavía.</em>`;
+            box.innerHTML = `<em>Sin artículos añadidos.</em>`;
             document.getElementById('comp-total').value = '0.00';
             return;
         }
@@ -1891,10 +2041,7 @@
         box.innerHTML = tempCompraItems.map((it, i) => {
             const sub = it.precio * it.uds;
             total += sub;
-            return `<div class="sub-item-row">
-                <span><strong>${it.ref}</strong> (${it.sku || '-'}) - ${it.nombre} | ${it.uds} x ${it.precio}€ = <strong>${sub.toFixed(2)}€</strong></span>
-                <button type="button" class="btn-small" style="border-color:var(--danger); color:var(--danger); padding:2px 6px;" onclick="removeCompraItem(${i})">✖</button>
-            </div>`;
+            return `<div class="sub-item-row"><span><strong>${it.ref}</strong> - ${it.nombre} (${it.uds}x${it.precio}€)</span><button type="button" class="btn-small" onclick="tempCompraItems.splice(${i},1); renderCompraItems();">✖</button></div>`;
         }).join('');
         document.getElementById('comp-total').value = total.toFixed(2);
     }
@@ -1918,8 +2065,7 @@
         const barcode = document.getElementById('v-item-barcode').value.trim();
         const coste = parseFloat(document.getElementById('v-item-coste').value) || 0;
         const precio = parseFloat(document.getElementById('v-item-precio').value) || 0;
-
-        if (!ref || !nombre) return alert("Selecciona un artículo o escribe su Referencia y Nombre.");
+        if (!ref || !nombre) return alert("Selecciona un artículo.");
 
         tempVentaItems.push({ ref, sku, nombre, barcode, coste, precio });
         document.getElementById('ven-select-cat').value = '';
@@ -1932,23 +2078,11 @@
         renderVentaItems();
     }
 
-    function removeVentaItem(idx) {
-        tempVentaItems.splice(idx, 1);
-        renderVentaItems();
-    }
-
     function renderVentaItems() {
         const box = document.getElementById('venta-items-list');
-        if (tempVentaItems.length === 0) {
-            box.innerHTML = `<em>No hay artículos en la factura todavía.</em>`;
-        } else {
-            box.innerHTML = tempVentaItems.map((it, i) => `
-                <div class="sub-item-row">
-                    <span><strong>REF: ${it.ref}</strong> | SKU: ${it.sku || '-'} - ${it.nombre} | PVP: <strong>${it.precio.toFixed(2)}€</strong> (Coste: ${it.coste.toFixed(2)}€)</span>
-                    <button type="button" class="btn-small" style="border-color:var(--danger); color:var(--danger); padding:2px 6px;" onclick="removeVentaItem(${i})">✖</button>
-                </div>
-            `).join('');
-        }
+        box.innerHTML = tempVentaItems.length === 0 ? `<em>Sin artículos en la factura.</em>` : tempVentaItems.map((it, i) => `
+            <div class="sub-item-row"><span><strong>${it.ref}</strong> - ${it.nombre} (${it.precio.toFixed(2)}€)</span><button type="button" class="btn-small" onclick="tempVentaItems.splice(${i},1); renderVentaItems();">✖</button></div>
+        `).join('');
         recalcVentaTotals();
     }
 
@@ -1962,8 +2096,7 @@
         document.getElementById('ven-coste-total').value = costeTotal.toFixed(2);
         document.getElementById('ven-total').value = totalVenta.toFixed(2);
 
-        const destino = document.getElementById('ven-destino').value;
-        if (destino === 'UE') {
+        if (document.getElementById('ven-destino').value === 'UE') {
             const base = (totalVenta - costeTotal) / 1.21;
             const iva = base * 0.21;
             document.getElementById('ven-base-rebu').value = base.toFixed(2) + ' €';
@@ -1978,14 +2111,10 @@
        8. ABRIR Y GUARDAR FORMULARIOS
        ========================================================== */
     function openFormModal(index = null) {
-        if (currentTab === 'ajustes') return;
+        if (currentTab === 'menu' || currentTab === 'ajustes') currentTab = 'catalogo';
         editIndex = index;
-        tempImagesArray = [];
-        tempFichaMainImg = '';
-        tempFichaFotos = [];
-        tempAyudaDataUrl = '';
-        tempCompraItems = [];
-        tempVentaItems = [];
+        tempImagesArray = []; tempFichaMainImg = ''; tempFichaFotos = []; tempAyudaDataUrl = '';
+        tempCompraItems = []; tempVentaItems = [];
 
         populateSelects();
         document.querySelectorAll('.tab-form').forEach(f => { f.style.display = 'none'; f.reset(); });
@@ -1993,11 +2122,11 @@
         const activeForm = document.getElementById('form-' + currentTab);
         if (!activeForm) return;
         activeForm.style.display = 'block';
-        document.getElementById('modal-title').innerText = index === null ? `➕ Añadir Nuevo (${tabTitles[currentTab]})` : `✏️ Editar Registro (${tabTitles[currentTab]})`;
+        document.getElementById('modal-title').innerText = index === null ? `➕ Añadir (${tabTitles[currentTab]})` : `✏️ Editar (${tabTitles[currentTab]})`;
 
         if (currentTab === 'ventas') {
             document.getElementById('ven-select-cat').innerHTML = '<option value="">-- Seleccionar artículo --</option>' +
-                db.catalogo.map((x, i) => `<option value="${i}">${x.ref} - ${x.nombre} (PVP: ${x.venta}€)</option>`).join('');
+                db.catalogo.map((x, i) => `<option value="${i}">${x.ref} - ${x.nombre} (${x.venta}€)</option>`).join('');
             renderVentaItems();
         }
         if (currentTab === 'compras') renderCompraItems();
@@ -2081,7 +2210,7 @@
                 document.getElementById('ven-transp').value = item.transp || '';
                 document.getElementById('ven-localizador').value = item.localizador || '';
                 document.getElementById('ven-entregado').value = item.entregado && item.entregado.startsWith('Sí') ? 'Sí' : 'No';
-                document.getElementById('ven-cobrado').value = item.cobrado || (item.pagado && item.pagado.startsWith('Sí') ? 'Sí' : 'No');
+                document.getElementById('ven-cobrado').value = item.cobrado || 'No';
                 document.getElementById('ven-contab').value = item.contab || 'No';
                 tempVentaItems = item.items ? [...item.items] : [{ ref: item.ref, sku: item.sku, nombre: item.nombre, barcode: item.barcode, coste: parseFloat(item.coste)||0, precio: parseFloat(item.precio)||0 }];
                 renderVentaItems();
@@ -2101,7 +2230,6 @@
                 tempAyudaDataUrl = item.fileData || '';
             }
         }
-
         document.getElementById('form-modal').style.display = 'flex';
     }
 
@@ -2193,7 +2321,7 @@
             };
         } else if (tab === 'compras') {
             if (tempCompraItems.length === 0 && document.getElementById('c-item-ref').value.trim() !== '') addCompraItem();
-            if (tempCompraItems.length === 0) return alert("Añade al menos un artículo a la compra pulsando '➕ Añadir Artículo'.");
+            if (tempCompraItems.length === 0) return alert("Añade al menos un artículo a la compra.");
 
             record = {
                 _id: existingId, _updatedAt: now,
@@ -2221,12 +2349,11 @@
             }
         } else if (tab === 'ventas') {
             if (tempVentaItems.length === 0 && document.getElementById('v-item-ref').value.trim() !== '') addVentaItem();
-            if (tempVentaItems.length === 0) return alert("Añade al menos un artículo a la factura de venta pulsando '➕ Añadir Artículo'.");
+            if (tempVentaItems.length === 0) return alert("Añade al menos un artículo a la venta.");
 
             const entregadoVal = document.getElementById('ven-entregado').value;
             const fechaEnt = document.getElementById('ven-fecha-entrega').value;
             const estadoEntregaTexto = entregadoVal === 'Sí' ? `Sí (${fechaEnt || today})` : 'No';
-            const cobradoVal = document.getElementById('ven-cobrado').value;
 
             record = {
                 _id: existingId, _updatedAt: now,
@@ -2243,7 +2370,7 @@
                 transp: document.getElementById('ven-transp').value,
                 localizador: document.getElementById('ven-localizador').value,
                 entregado: estadoEntregaTexto,
-                cobrado: cobradoVal,
+                cobrado: document.getElementById('ven-cobrado').value,
                 fechaPago: document.getElementById('ven-fecha-pago').value,
                 contab: document.getElementById('ven-contab').value,
                 items: tempVentaItems,
@@ -2291,18 +2418,15 @@
             };
         }
 
-        if (editIndex === null) {
-            db[tab].push(record);
-        } else {
-            db[tab][editIndex] = record;
-        }
+        if (editIndex === null) db[tab].push(record);
+        else db[tab][editIndex] = record;
 
         closeFormModal();
         saveDB();
     }
 
     function deleteRecord(index) {
-        if (confirm("¿Seguro que deseas borrar este registro en todos tus dispositivos?")) {
+        if (confirm("¿Seguro que deseas borrar este registro?")) {
             const item = db[currentTab][index];
             if (item && item._id) {
                 if (!db._deletedIds) db._deletedIds = [];
@@ -2327,12 +2451,16 @@
             { facingMode: "environment" },
             { fps: 10, qrbox: { width: 250, height: 150 } },
             (decodedText) => {
-                document.getElementById(targetBarcodeInput).value = decodedText;
+                const inputEl = document.getElementById(targetBarcodeInput);
+                if (inputEl) {
+                    inputEl.value = decodedText;
+                    if (targetBarcodeInput === 'filter-search') renderCurrentTab();
+                }
                 stopScanner();
             },
             () => {}
         ).catch(() => {
-            alert("No se pudo acceder a la cámara. Revisa los permisos del navegador.");
+            alert("No se pudo acceder a la cámara.");
             stopScanner();
         });
     }
@@ -2342,9 +2470,7 @@
             html5QrCode.stop().then(() => {
                 html5QrCode.clear();
                 document.getElementById('scanner-modal').style.display = 'none';
-            }).catch(() => {
-                document.getElementById('scanner-modal').style.display = 'none';
-            });
+            }).catch(() => { document.getElementById('scanner-modal').style.display = 'none'; });
         } else {
             document.getElementById('scanner-modal').style.display = 'none';
         }
@@ -2353,7 +2479,6 @@
     /* ==========================================================
        10. IMPRESIÓN DE FICHA ELEGANTE CIRCA, FACTURA PDF Y EXCEL
        ========================================================== */
-    // Diseño elegante de Ficha con Logo arriba a la izquierda y Título en la misma línea centrado
     function printFichaPDF(index) {
         const f = db.fichas[index];
         const logoUrl = new URL("Logo.jpg", window.location.href).href;
@@ -2362,9 +2487,7 @@
         const extraPhotosHTML = (f.fotos && f.fotos.length > 0) ? `
             <div class="photos-section">
                 <h3>GALERÍA DE DETALLES</h3>
-                <div class="photos-grid">
-                    ${f.fotos.map(src => `<img src="${src}">`).join('')}
-                </div>
+                <div class="photos-grid">${f.fotos.map(src => `<img src="${src}">`).join('')}</div>
             </div>` : '';
 
         win.document.write(`
@@ -2372,141 +2495,29 @@
             <html lang="es">
             <head>
                 <meta charset="UTF-8">
-                <title>Ficha_${f.ref}_${f.titulo}</title>
+                <title>Ficha_${f.ref}</title>
                 <style>
                     @page { margin: 15mm; }
-                    body {
-                        font-family: 'Georgia', serif;
-                        background-color: #121212;
-                        color: #F5F5F5;
-                        margin: 0;
-                        padding: 25px;
-                        -webkit-print-color-adjust: exact !important;
-                        print-color-adjust: exact !important;
-                    }
-                    .sheet-container {
-                        max-width: 820px;
-                        margin: auto;
-                        background-color: #1A1A1A;
-                        border: 2px solid #C5A059;
-                        border-radius: 10px;
-                        padding: 35px;
-                        box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-                    }
-                    /* Cabecera: Logo en parte superior izquierda y Título en la misma línea sobre el centro */
-                    .sheet-header {
-                        display: flex;
-                        align-items: center;
-                        border-bottom: 2px solid #C5A059;
-                        padding-bottom: 20px;
-                        margin-bottom: 28px;
-                    }
-                    .sheet-logo {
-                        width: 90px;
-                        height: 90px;
-                        object-fit: cover;
-                        border-radius: 50%;
-                        border: 2px solid #C5A059;
-                        flex-shrink: 0;
-                    }
-                    .sheet-title-wrap {
-                        flex: 1;
-                        text-align: center;
-                        padding-right: 90px; /* Compensa el ancho del logo para centrado matemático exacto */
-                    }
-                    .sheet-title-wrap h1 {
-                        color: #EED9A4;
-                        font-size: 26px;
-                        letter-spacing: 2px;
-                        margin: 0;
-                        text-transform: uppercase;
-                    }
-                    .sheet-title-wrap p {
-                        color: #C5A059;
-                        font-size: 13px;
-                        margin-top: 6px;
-                        letter-spacing: 1px;
-                    }
-                    .main-content {
-                        display: grid;
-                        grid-template-columns: 1fr 1fr;
-                        gap: 25px;
-                        align-items: center;
-                        margin-bottom: 25px;
-                    }
-                    .main-image-box {
-                        text-align: center;
-                        background: #121212;
-                        border: 1px solid #8C6D32;
-                        border-radius: 8px;
-                        padding: 12px;
-                    }
-                    .main-image-box img {
-                        width: 100%;
-                        max-height: 310px;
-                        object-fit: contain;
-                        border-radius: 4px;
-                    }
-                    .specs-box {
-                        background: #121212;
-                        border: 1px solid #383020;
-                        border-left: 4px solid #C5A059;
-                        border-radius: 6px;
-                        padding: 20px;
-                    }
-                    .spec-row {
-                        padding: 12px 0;
-                        border-bottom: 1px dashed #383020;
-                        font-family: 'Segoe UI', sans-serif;
-                        font-size: 14px;
-                    }
+                    body { font-family: 'Georgia', serif; background-color: #121212; color: #F5F5F5; margin: 0; padding: 25px; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+                    .sheet-container { max-width: 820px; margin: auto; background-color: #1A1A1A; border: 2px solid #C5A059; border-radius: 10px; padding: 35px; }
+                    .sheet-header { display: flex; align-items: center; border-bottom: 2px solid #C5A059; padding-bottom: 20px; margin-bottom: 28px; }
+                    .sheet-logo { width: 90px; height: 90px; object-fit: cover; border-radius: 50%; border: 2px solid #C5A059; flex-shrink: 0; }
+                    .sheet-title-wrap { flex: 1; text-align: center; padding-right: 90px; }
+                    .sheet-title-wrap h1 { color: #EED9A4; font-size: 26px; letter-spacing: 2px; margin: 0; text-transform: uppercase; }
+                    .sheet-title-wrap p { color: #C5A059; font-size: 13px; margin-top: 6px; }
+                    .main-content { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; align-items: center; margin-bottom: 25px; }
+                    .main-image-box { text-align: center; background: #121212; border: 1px solid #8C6D32; border-radius: 8px; padding: 12px; }
+                    .main-image-box img { width: 100%; max-height: 310px; object-fit: contain; }
+                    .specs-box { background: #121212; border: 1px solid #383020; border-left: 4px solid #C5A059; border-radius: 6px; padding: 20px; }
+                    .spec-row { padding: 12px 0; border-bottom: 1px dashed #383020; font-family: 'Segoe UI', sans-serif; }
                     .spec-row:last-child { border-bottom: none; }
-                    .spec-row strong {
-                        color: #C5A059;
-                        display: block;
-                        font-size: 11px;
-                        text-transform: uppercase;
-                        letter-spacing: 1px;
-                        margin-bottom: 3px;
-                    }
-                    .spec-row span {
-                        color: #F5F5F5;
-                        font-size: 15px;
-                        font-weight: 600;
-                    }
-                    .photos-section {
-                        margin-top: 25px;
-                        border-top: 1px solid #383020;
-                        padding-top: 20px;
-                    }
-                    .photos-section h3 {
-                        color: #EED9A4;
-                        font-size: 14px;
-                        letter-spacing: 2px;
-                        margin-bottom: 14px;
-                        text-align: center;
-                    }
-                    .photos-grid {
-                        display: grid;
-                        grid-template-columns: repeat(3, 1fr);
-                        gap: 12px;
-                    }
-                    .photos-grid img {
-                        width: 100%;
-                        height: 150px;
-                        object-fit: cover;
-                        border-radius: 6px;
-                        border: 1px solid #C5A059;
-                    }
-                    .sheet-footer {
-                        margin-top: 30px;
-                        text-align: center;
-                        font-size: 12px;
-                        color: #C5A059;
-                        border-top: 1px solid #383020;
-                        padding-top: 12px;
-                        letter-spacing: 2px;
-                    }
+                    .spec-row strong { color: #C5A059; display: block; font-size: 11px; text-transform: uppercase; margin-bottom: 3px; }
+                    .spec-row span { color: #F5F5F5; font-size: 15px; font-weight: 600; }
+                    .photos-section { margin-top: 25px; border-top: 1px solid #383020; padding-top: 20px; }
+                    .photos-section h3 { color: #EED9A4; font-size: 14px; text-align: center; margin-bottom: 14px; }
+                    .photos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+                    .photos-grid img { width: 100%; height: 150px; object-fit: cover; border-radius: 6px; border: 1px solid #C5A059; }
+                    .sheet-footer { margin-top: 30px; text-align: center; font-size: 12px; color: #C5A059; border-top: 1px solid #383020; padding-top: 12px; letter-spacing: 2px; }
                 </style>
             </head>
             <body>
@@ -2518,11 +2529,8 @@
                             <p>REFERENCIA: ${f.ref}</p>
                         </div>
                     </div>
-
                     <div class="main-content">
-                        <div class="main-image-box">
-                            <img src="${f.imagenFicha || (f.fotos && f.fotos[0]) || logoUrl}" alt="${f.titulo}">
-                        </div>
+                        <div class="main-image-box"><img src="${f.imagenFicha || (f.fotos && f.fotos[0]) || logoUrl}"></div>
                         <div class="specs-box">
                             <div class="spec-row"><strong>Referencia</strong><span>${f.ref || '-'}</span></div>
                             <div class="spec-row"><strong>Materiales</strong><span>${f.materiales || '-'}</span></div>
@@ -2531,16 +2539,11 @@
                             <div class="spec-row"><strong>Estilo</strong><span>${f.estilo || '-'}</span></div>
                         </div>
                     </div>
-
                     ${extraPhotosHTML}
-
-                    <div class="sheet-footer">
-                        CIRCA BY R.B — PIEZAS CON HISTORIA Y ESTILO
-                    </div>
+                    <div class="sheet-footer">CIRCA BY R.B — PIEZAS CON HISTORIA Y ESTILO</div>
                 </div>
                 <script>window.onload = function() { window.print(); }<\/script>
-            </body>
-            </html>
+            </body></html>
         `);
         win.document.close();
     }
@@ -2568,34 +2571,22 @@
         link.click();
     }
 
-    function exportSectionCSV() {
-        downloadCSV(getFilteredAndSortedData(), `CirCA_${currentTab}_listado.csv`);
-    }
-
+    function exportSectionCSV() { downloadCSV(getFilteredAndSortedData(), `CirCA_${currentTab}.csv`); }
     function exportSingleCSV(index) {
         const item = db[currentTab][index];
-        downloadCSV([item], `CirCA_${currentTab}_${item.ref || item.factura || index}.csv`);
+        downloadCSV([item], `CirCA_${currentTab}_${item.ref || index}.csv`);
     }
-
-    function printSectionPDF() {
-        openPrintWindow(tabTitles[currentTab], getFilteredAndSortedData());
-    }
-
+    function printSectionPDF() { openPrintWindow(tabTitles[currentTab], getFilteredAndSortedData()); }
     function printSinglePDF(index) {
         const item = db[currentTab][index];
         if (currentTab === 'ventas') printInvoicePDF(item);
         else if (currentTab === 'fichas') printFichaPDF(index);
-        else openPrintWindow(`Ficha Individual - ${tabTitles[currentTab]}`, [item]);
+        else openPrintWindow(`Ficha - ${tabTitles[currentTab]}`, [item]);
     }
 
     function printInvoicePDF(venta) {
-        const emp = db.empresa[db.empresa.length - 1] || {
-            nombre: 'CirCA by RB', nif: '', dir: '', tel: '', email: ''
-        };
-        const cli = db.clientes.find(c =>
-            c.nombre.toLowerCase() === (venta.cliente || '').toLowerCase()
-        ) || { nombre: venta.cliente, ref: '-', dir: '-', tel: '-', email: '-' };
-
+        const emp = db.empresa[db.empresa.length - 1] || { nombre: 'CirCA by RB', nif: '', dir: '', tel: '', email: '' };
+        const cli = db.clientes.find(c => c.nombre.toLowerCase() === (venta.cliente || '').toLowerCase()) || { nombre: venta.cliente, ref: '-', dir: '-', tel: '-', email: '-' };
         const items = venta.items || [{ ref: venta.ref, sku: venta.sku, nombre: venta.nombre, precio: venta.precio }];
         const logoUrl = new URL("Logo.jpg", window.location.href).href;
 
@@ -2613,8 +2604,7 @@
             <!DOCTYPE html>
             <html lang="es">
             <head>
-                <meta charset="UTF-8">
-                <title>Factura_${venta.factura}</title>
+                <meta charset="UTF-8"><title>Factura_${venta.factura}</title>
                 <style>
                     body { font-family: 'Georgia', serif; color: #1a1a1a; margin: 0; padding: 35px; background: #fff; }
                     .invoice-box { max-width: 820px; margin: auto; border: 2px solid #C5A059; padding: 30px; border-radius: 6px; }
@@ -2624,20 +2614,18 @@
                     .company-details h1 { margin: 0; font-size: 22px; color: #121212; letter-spacing: 2px; }
                     .company-details p { margin: 3px 0; font-family: 'Segoe UI', sans-serif; font-size: 12px; color: #444; }
                     .invoice-meta { text-align: right; font-family: 'Segoe UI', sans-serif; }
-                    .invoice-meta h2 { margin: 0 0 8px 0; color: #8C6D32; font-size: 24px; letter-spacing: 1px; }
-                    .invoice-meta p { margin: 4px 0; font-size: 13px; }
+                    .invoice-meta h2 { margin: 0 0 8px 0; color: #8C6D32; font-size: 24px; }
                     .parties { display: flex; justify-content: space-between; gap: 20px; margin-bottom: 25px; font-family: 'Segoe UI', sans-serif; font-size: 13px; }
                     .party-box { flex: 1; background: #faf8f5; border: 1px solid #e2d5b5; padding: 14px; border-radius: 5px; }
                     .party-box h3 { margin: 0 0 8px 0; font-size: 13px; color: #8C6D32; text-transform: uppercase; border-bottom: 1px solid #e2d5b5; padding-bottom: 4px; }
-                    .party-box p { margin: 4px 0; }
                     table { width: 100%; border-collapse: collapse; margin-bottom: 25px; font-family: 'Segoe UI', sans-serif; font-size: 13px; }
-                    th { background-color: #121212; color: #EED9A4; padding: 10px; text-align: left; border: 1px solid #121212; }
+                    th { background-color: #121212; color: #EED9A4; padding: 10px; text-align: left; }
                     td { padding: 10px; border-bottom: 1px solid #ddd; }
                     .text-right { text-align: right; }
                     .totals { width: 320px; margin-left: auto; font-family: 'Segoe UI', sans-serif; font-size: 14px; }
                     .totals-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #eee; }
-                    .totals-row.final { font-size: 17px; font-weight: bold; color: #121212; border-top: 2px solid #C5A059; border-bottom: 2px solid #C5A059; padding: 10px 0; margin-top: 6px; }
-                    .legal-note { margin-top: 30px; padding: 12px; background: #faf8f5; border-left: 4px solid #C5A059; font-family: 'Segoe UI', sans-serif; font-size: 11.5px; color: #444; }
+                    .totals-row.final { font-size: 17px; font-weight: bold; border-top: 2px solid #C5A059; border-bottom: 2px solid #C5A059; padding: 10px 0; margin-top: 6px; }
+                    .legal-note { margin-top: 30px; padding: 12px; background: #faf8f5; border-left: 4px solid #C5A059; font-family: 'Segoe UI', sans-serif; font-size: 11.5px; }
                 </style>
             </head>
             <body>
@@ -2658,7 +2646,6 @@
                             <p><strong>Fecha:</strong> ${venta.fecha}</p>
                         </div>
                     </div>
-
                     <div class="parties">
                         <div class="party-box">
                             <h3>Datos del Cliente</h3>
@@ -2674,39 +2661,20 @@
                             <p><strong>Entregado:</strong> ${venta.entregado || 'No'}</p>
                         </div>
                     </div>
-
                     <table>
-                        <thead>
-                            <tr>
-                                <th>Referencia</th>
-                                <th>SKU</th>
-                                <th>Artículo</th>
-                                <th class="text-right">Importe</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th>Referencia</th><th>SKU</th><th>Artículo</th><th class="text-right">Importe</th></tr></thead>
                         <tbody>${rowsHTML}</tbody>
                     </table>
-
                     <div class="totals">
-                        <div class="totals-row">
-                            <span>Gastos de Envío:</span>
-                            <span>${parseFloat(venta.envio || 0).toFixed(2)} €</span>
-                        </div>
-                        <div class="totals-row final">
-                            <span>TOTAL DE LA FACTURA:</span>
-                            <span>${parseFloat(venta.total || 0).toFixed(2)} €</span>
-                        </div>
+                        <div class="totals-row"><span>Gastos de Envío:</span><span>${parseFloat(venta.envio || 0).toFixed(2)} €</span></div>
+                        <div class="totals-row final"><span>TOTAL DE LA FACTURA:</span><span>${parseFloat(venta.total || 0).toFixed(2)} €</span></div>
                     </div>
-
                     <div class="legal-note">
-                        ${venta.destino === 'UE' 
-                            ? 'Operación sujeta al Régimen Especial de Bienes Usados, Objetos de Arte, Antigüedades y Objetos de Colección (REBU). IVA incluido.' 
-                            : 'Exportación / Operación exenta.'}
+                        ${venta.destino === 'UE' ? 'Operación sujeta al Régimen Especial de Bienes Usados, Objetos de Arte, Antigüedades y Objetos de Colección (REBU). IVA incluido.' : 'Exportación / Operación exenta.'}
                     </div>
                 </div>
                 <script>window.onload = function() { window.print(); }<\/script>
-            </body>
-            </html>
+            </body></html>
         `);
         win.document.close();
     }
@@ -2717,8 +2685,7 @@
         const rowsHTML = items.map(item => {
             const entries = Object.entries(item)
                 .filter(([k]) => !['imagenes','imgData','imagenFicha','fotos','fileData','_idx','items','_id','_updatedAt'].includes(k))
-                .map(([k, v]) => `<div><strong>${k.toUpperCase()}:</strong> ${v || '-'}</div>`)
-                .join('');
+                .map(([k, v]) => `<div><strong>${k.toUpperCase()}:</strong> ${v || '-'}</div>`).join('');
             return `<div class="card"><div class="grid">${entries}</div></div>`;
         }).join('');
 
@@ -2732,10 +2699,7 @@
                 .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-family: sans-serif; font-size: 12px; }
             </style></head>
             <body>
-                <div class="top">
-                    <img src="${logoUrl}" onerror="this.style.display='none'">
-                    <h1>CIRCA BY R.B - ${title}</h1>
-                </div>
+                <div class="top"><img src="${logoUrl}" onerror="this.style.display='none'"><h1>CIRCA BY R.B - ${title}</h1></div>
                 ${rowsHTML}
                 <script>window.onload = function() { window.print(); }<\/script>
             </body></html>
@@ -2743,9 +2707,6 @@
         win.document.close();
     }
 
-    /* ==========================================================
-       11. COPIAS DE SEGURIDAD (JSON) E INICIO
-       ========================================================== */
     function exportarDatos() {
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(db));
         const a = document.createElement('a');
@@ -2763,10 +2724,8 @@
                 const imported = normalizeDB(JSON.parse(e.target.result));
                 db = mergeDatabases(db, imported);
                 saveDB();
-                alert("¡Copia de seguridad fusionada y sincronizada!");
-            } catch (err) {
-                alert("Archivo inválido.");
-            }
+                alert("¡Copia restaurada y sincronizada!");
+            } catch (err) { alert("Archivo inválido."); }
         };
         reader.readAsText(file);
     }
