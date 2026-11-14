@@ -54,6 +54,26 @@
             padding-bottom: 110px;
         }
 
+        /* NOTIFICACIÓN FLOTANTE DE GUARDADO (TOAST) */
+        #save-toast {
+            position: fixed;
+            top: 70px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #1b4332;
+            color: #d8f3dc;
+            border: 1.5px solid var(--success);
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            z-index: 500;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
         /* ==========================================
            2. BARRA SUPERIOR ESTILO APP MÓVIL
            ========================================== */
@@ -137,6 +157,16 @@
             background: transparent;
             border: none;
             padding: 6px;
+            cursor: pointer;
+        }
+
+        .sync-mini-badge {
+            font-size: 0.7rem;
+            padding: 4px 8px;
+            border-radius: 10px;
+            background: #252525;
+            border: 1px solid var(--border-color);
+            color: var(--gold-light);
             cursor: pointer;
         }
 
@@ -526,10 +556,7 @@
             font-size: 0.85rem;
         }
 
-        .subtabs-bar {
-            display: flex;
-            gap: 8px;
-        }
+        .subtabs-bar { display: flex; gap: 8px; }
 
         .subtab-btn {
             background-color: var(--bg-panel);
@@ -741,6 +768,9 @@
 </head>
 <body>
 
+<!-- NOTIFICACIÓN FLOTANTE DE GUARDADO -->
+<div id="save-toast">✅ ¡Cambios guardados correctamente!</div>
+
 <!-- INPUT OCULTO PARA SUBIR ARCHIVOS EXCEL (.XLSX) -->
 <input type="file" id="excel-upload-input" style="display:none" accept=".xlsx,.xls,.csv" onchange="importFromExcelXLSX(event)">
 
@@ -781,6 +811,7 @@
         </div>
     </div>
     <div class="topbar-right">
+        <span id="sync-mini-indicator" class="sync-mini-badge" onclick="switchTab('ajustes')" title="Estado de Guardado">💾 Local</span>
         <button class="icon-btn" onclick="switchTab('menu')" title="Ver Panel de Menú Principal">⊞</button>
         <button class="icon-btn" onclick="toggleFilterPanel()" title="Buscar y Filtrar">🔍</button>
         <button class="sort-az-btn" onclick="quickCycleSort()" title="Cambiar Orden A-Z / Z-A">↓A-Z</button>
@@ -802,7 +833,7 @@
         </div>
     </div>
 
-    <!-- PANEL DESPLEGABLE DE BÚSQUEDA Y FILTROS (SE ABRE CON LA LUPA 🔍) -->
+    <!-- PANEL DESPLEGABLE DE BÚSQUEDA Y FILTROS -->
     <div id="collapsible-filters" class="collapsible-filters">
         <div class="filters-grid">
             <div class="filter-item">
@@ -844,14 +875,14 @@
 
 </div>
 
-<!-- BOTONES FLOTANTES INFERIORES (COMO EN LA IMAGEN 2) -->
+<!-- BOTONES FLOTANTES INFERIORES -->
 <div id="fab-container" class="fab-group">
     <button class="fab-btn fab-folder" onclick="switchTab('menu')" title="Menú Principal">⊞</button>
     <button class="fab-btn fab-secondary" onclick="switchTab('fichas')" title="Ir a Fichas de Artículos">📋</button>
-    <button class="fab-btn fab-add" onclick="openFormModal()" title="Añadir Nuevo Registro">+</button>
+    <button class="fab-btn fab-add" onclick="openFormModal(null)" title="Añadir Nuevo Registro">+</button>
 </div>
 
-<!-- BARRA INFERIOR DE TOTALES FIJA (Cant. | Total Coste / Venta) -->
+<!-- BARRA INFERIOR DE TOTALES FIJA -->
 <div id="bottom-summary-bar" class="bottom-totals-bar">
     <span id="summary-cant">Cant.: 0,00</span>
     <span class="divider">|</span>
@@ -881,7 +912,7 @@
             <button class="btn-close" onclick="closeFormModal()">✖</button>
         </div>
 
-        <!-- 1. FORMULARIO ARTÍCULOS (ADAPTADO CON TODOS LOS CAMPOS DE TU PLANTILLA EXCEL) -->
+        <!-- 1. FORMULARIO ARTÍCULOS -->
         <form id="form-catalogo" class="tab-form" onsubmit="saveRecord(event, 'catalogo')" style="display:none;">
             <div class="form-grid">
                 <div class="form-group"><label>Referencia (Col. A) *</label><input type="text" id="cat-ref" required placeholder="Ej: ART00001"></div>
@@ -947,7 +978,7 @@
                     </div>
                 </div>
             </div>
-            <button type="submit" class="btn-primary" style="width:100%">Guardar Artículo</button>
+            <button type="submit" class="btn-primary" style="width:100%">💾 Guardar Cambios del Artículo</button>
         </form>
 
         <!-- 1B. FORMULARIO FICHAS DE ARTÍCULOS -->
@@ -976,7 +1007,7 @@
                     <div id="fic-fotos-preview" class="preview-images-box"></div>
                 </div>
             </div>
-            <button type="submit" class="btn-primary" style="width:100%">Guardar Ficha</button>
+            <button type="submit" class="btn-primary" style="width:100%">💾 Guardar Ficha</button>
         </form>
 
         <!-- 2. FORMULARIO EMPRESA -->
@@ -990,7 +1021,7 @@
                 <div class="form-group"><label>Correo Electrónico / Web</label><input type="text" id="emp-email"></div>
                 <div class="form-group"><label>Fecha Registro</label><input type="date" id="emp-fecha"></div>
             </div>
-            <button type="submit" class="btn-primary" style="width:100%">Guardar Empresa</button>
+            <button type="submit" class="btn-primary" style="width:100%">💾 Guardar Empresa</button>
         </form>
 
         <!-- 3. FORMULARIO PROVEEDORES -->
@@ -1005,7 +1036,7 @@
                 <div class="form-group"><label>Fecha Alta</label><input type="date" id="prov-fecha"></div>
                 <div class="form-group"><label>Documentos Adjuntos</label><input type="file" id="prov-docs" multiple></div>
             </div>
-            <button type="submit" class="btn-primary" style="width:100%">Guardar Proveedor</button>
+            <button type="submit" class="btn-primary" style="width:100%">💾 Guardar Proveedor</button>
         </form>
 
         <!-- 4. FORMULARIO CLIENTES -->
@@ -1020,7 +1051,7 @@
                 <div class="form-group"><label>Fecha Alta</label><input type="date" id="cli-fecha"></div>
                 <div class="form-group"><label>Documentos Adjuntos</label><input type="file" id="cli-docs" multiple></div>
             </div>
-            <button type="submit" class="btn-primary" style="width:100%">Guardar Cliente</button>
+            <button type="submit" class="btn-primary" style="width:100%">💾 Guardar Cliente</button>
         </form>
 
         <!-- 5. FORMULARIO COMPRAS -->
@@ -1065,7 +1096,7 @@
                     <div id="compra-items-list" class="sub-items-box" style="margin-top:10px;"></div>
                 </div>
             </div>
-            <button type="submit" class="btn-primary" style="width:100%">Guardar Compra Completa</button>
+            <button type="submit" class="btn-primary" style="width:100%">💾 Guardar Compra Completa</button>
         </form>
 
         <!-- 6. FORMULARIO VENTAS -->
@@ -1136,7 +1167,7 @@
                     <select id="ven-contab"><option value="No">No</option><option value="Sí">Sí</option></select>
                 </div>
             </div>
-            <button type="submit" class="btn-primary" style="width:100%">Guardar Factura de Venta</button>
+            <button type="submit" class="btn-primary" style="width:100%">💾 Guardar Factura de Venta</button>
         </form>
 
         <!-- 7. FORMULARIO GASTOS -->
@@ -1154,7 +1185,7 @@
                 <div class="form-group"><label>Importe Total (€) *</label><input type="number" step="0.01" id="gas-total" required></div>
                 <div class="form-group"><label>Justificante del Gasto</label><input type="file" id="gas-file"></div>
             </div>
-            <button type="submit" class="btn-primary" style="width:100%">Guardar Gasto</button>
+            <button type="submit" class="btn-primary" style="width:100%">💾 Guardar Gasto</button>
         </form>
 
         <!-- 9. FORMULARIO AYUDA -->
@@ -1181,7 +1212,7 @@
                     <textarea id="ayu-desc"></textarea>
                 </div>
             </div>
-            <button type="submit" class="btn-primary" style="width:100%">Guardar Recurso en Ayuda</button>
+            <button type="submit" class="btn-primary" style="width:100%">💾 Guardar Recurso en Ayuda</button>
         </form>
     </div>
 </div>
@@ -1233,19 +1264,22 @@
         }
     }
 
-    function uninstallAppPWA() {
+    async function uninstallAppPWA() {
         if (confirm("¿Deseas limpiar los datos temporales de este dispositivo?")) {
             localStorage.removeItem('circa_db_v2');
+            localStorage.removeItem('circa_unsaved_changes');
+            await clearIndexedDB();
             location.reload();
         }
     }
 
     /* ==========================================================
-       2. INICIALIZACIÓN DE DATOS
+       2. MOTOR DE PERSISTENCIA REFORZADO (INDEXEDDB + LOCALSTORAGE)
        ========================================================== */
     const COLLECTIONS = ['empresa', 'catalogo', 'fichas', 'proveedores', 'clientes', 'compras', 'ventas', 'gastos', 'ayuda'];
     let currentTab = 'catalogo';
     let editIndex = null;
+    let editingRecordId = null; // Garantiza que siempre editemos el registro exacto aunque haya filtros activos
     let tempImagesArray = [];
     let tempFichaMainImg = '';
     let tempFichaFotos = [];
@@ -1253,7 +1287,8 @@
     let tempCompraItems = [];
     let tempVentaItems = [];
 
-    let db = JSON.parse(localStorage.getItem('circa_db_v2')) || {
+    const defaultDB = {
+        _lastModified: 0,
         empresa: [{ _id: 'emp_default', _updatedAt: 1, ref: 'EMP-01', nombre: 'CirCA by RB', nif: '', dir: '', tel: '', email: 'www.circabyrb.com', fecha: '2026-01-01' }],
         catalogo: [],
         fichas: [],
@@ -1268,8 +1303,65 @@
         _deletedIds: []
     };
 
+    let db = JSON.parse(localStorage.getItem('circa_db_v2') || 'null') || defaultDB;
+
+    // Funciones de base de datos IndexedDB (soporta cientos de megabytes sin límite de fotos)
+    function openIDB() {
+        return new Promise((resolve, reject) => {
+            const req = indexedDB.open('CirCA_Enterprise_DB', 1);
+            req.onupgradeneeded = (e) => {
+                const idb = e.target.result;
+                if (!idb.objectStoreNames.contains('store')) {
+                    idb.createObjectStore('store');
+                }
+            };
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => reject(req.error);
+        });
+    }
+
+    async function saveToIndexedDB(dataObj) {
+        try {
+            const idb = await openIDB();
+            return new Promise((resolve, reject) => {
+                const tx = idb.transaction('store', 'readwrite');
+                tx.objectStore('store').put(dataObj, 'main_db');
+                tx.oncomplete = () => resolve(true);
+                tx.onerror = () => reject(tx.error);
+            });
+        } catch (e) {
+            console.warn("IndexedDB no disponible:", e);
+        }
+    }
+
+    async function loadFromIndexedDB() {
+        try {
+            const idb = await openIDB();
+            return new Promise((resolve) => {
+                const tx = idb.transaction('store', 'readonly');
+                const req = tx.objectStore('store').get('main_db');
+                req.onsuccess = () => resolve(req.result || null);
+                req.onerror = () => resolve(null);
+            });
+        } catch (e) {
+            return null;
+        }
+    }
+
+    async function clearIndexedDB() {
+        try {
+            const idb = await openIDB();
+            const tx = idb.transaction('store', 'readwrite');
+            tx.objectStore('store').clear();
+        } catch (e) {}
+    }
+
+    // Normaliza la base de datos asegurando que cada artículo tenga un _id único y permanente
     function normalizeDB(database) {
+        if (!database) database = { ...defaultDB };
         if (!database._deletedIds) database._deletedIds = [];
+        if (!database._lastModified) database._lastModified = 1;
+
         COLLECTIONS.forEach(col => {
             if (!Array.isArray(database[col])) database[col] = [];
             database[col].forEach((item, idx) => {
@@ -1283,6 +1375,13 @@
         return database;
     }
     db = normalizeDB(db);
+
+    function showSaveToast(msg = "✅ ¡Cambios guardados correctamente!") {
+        const toast = document.getElementById('save-toast');
+        toast.innerText = msg;
+        toast.style.display = 'flex';
+        setTimeout(() => { toast.style.display = 'none'; }, 2600);
+    }
 
     const tabTitles = {
         menu: 'Menú Principal',
@@ -1307,20 +1406,18 @@
         input.click();
     }
 
-    // Lee el archivo Excel (.xlsx) respetando exactamente las 14 columnas de Inventario (1).xlsx
     function importFromExcelXLSX(event) {
         const file = event.target.files[0];
         if (!file) return;
 
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = async function(e) {
             try {
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, { type: 'array' });
                 const firstSheetName = workbook.SheetNames[0];
                 const worksheet = workbook.Sheets[firstSheetName];
 
-                // Si estamos en Catálogo (o si el Excel tiene la estructura de Inventario con REFERENCIA y SKU)
                 const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
                 if (rows.length < 2) return alert("El archivo Excel está vacío.");
 
@@ -1338,7 +1435,6 @@
                         const r = rows[i];
                         if (!r || r.length === 0) continue;
 
-                        // Mapeo posicional exacto de las 14 columnas de tu archivo Inventario (1).xlsx
                         const ref = String(r[0] ?? '').trim();
                         const sku = String(r[1] ?? '').trim();
                         const nombre = String(r[2] ?? '').trim();
@@ -1354,15 +1450,13 @@
                         const stock = r[12] !== '' && r[12] !== null && r[12] !== undefined ? (parseFloat(String(r[12]).replace(',', '.')) || 0) : 0;
                         const desc = String(r[13] ?? '').trim();
 
-                        // Ignorar filas en blanco (como las 3 últimas filas vacías de Hoja1)
                         if (!ref && !nombre && !sku) continue;
 
-                        // Dar de alta automáticamente al Proveedor en la pestaña Proveedores si no existe todavía
                         if (prov) {
                             const provExists = db.proveedores.some(p => (p.nombre || '').toLowerCase() === prov.toLowerCase());
                             if (!provExists) {
                                 db.proveedores.push({
-                                    _id: `proveedores_${now}_${db.proveedores.length}`,
+                                    _id: `prov_${prov.replace(/\s+/g, '_').toLowerCase()}`,
                                     _updatedAt: now,
                                     ref: `PROV-${String(db.proveedores.length + 1).padStart(3, '0')}`,
                                     nombre: prov,
@@ -1371,7 +1465,6 @@
                             }
                         }
 
-                        // Comprobar si la Referencia ya existe en el catálogo para actualizarla o crearla nueva
                         const existingIdx = db.catalogo.findIndex(item => (item.ref || '').toLowerCase() === ref.toLowerCase());
 
                         if (existingIdx !== -1) {
@@ -1388,7 +1481,7 @@
                                 coste: coste,
                                 itp: itp,
                                 totalCoste: totalCoste,
-                                venta: venta || old.venta || 0,
+                                venta: venta > 0 ? venta : (old.venta || 0),
                                 prov: prov || old.prov,
                                 justificante: justificante || old.justificante,
                                 stock: stock,
@@ -1396,8 +1489,10 @@
                             };
                             updatedCount++;
                         } else {
+                            // ID determinista basado en la Referencia para que nunca se duplique entre dispositivos
+                            const stableId = ref ? `cat_${ref.toUpperCase().replace(/\s+/g, '_')}` : `catalogo_${now}_${i}`;
                             db.catalogo.push({
-                                _id: `catalogo_${now}_${i}_${Math.random().toString(36).substr(2, 4)}`,
+                                _id: stableId,
                                 _updatedAt: now,
                                 ref: ref || `ART-${i}`,
                                 sku: sku,
@@ -1422,10 +1517,9 @@
                         }
                     }
 
-                    saveDB();
+                    await saveDB();
                     alert(`✅ ¡Importación de Inventario Excel (.xlsx) completada!\n\n• Artículos nuevos añadidos: ${addedCount}\n• Artículos existentes actualizados: ${updatedCount}\n• Total en tu catálogo: ${db.catalogo.length} artículos.`);
                 } else {
-                    // Importación genérica para el resto de pestañas (Proveedores, Clientes, Gastos, etc.)
                     const jsonObjects = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
                     let count = 0;
                     jsonObjects.forEach((obj, idx) => {
@@ -1436,7 +1530,7 @@
                         });
                         count++;
                     });
-                    saveDB();
+                    await saveDB();
                     alert(`✅ Se han importado ${count} registros en ${tabTitles[currentTab]}.`);
                 }
             } catch (err) {
@@ -1447,7 +1541,6 @@
         reader.readAsArrayBuffer(file);
     }
 
-    // Exporta los datos a un archivo Excel (.xlsx) real con las 14 columnas exactas de tu plantilla
     function exportToExcelXLSX(singleIndex = null) {
         const targetTab = (currentTab === 'menu' || currentTab === 'ajustes') ? 'catalogo' : currentTab;
         const rawList = singleIndex !== null ? [db[targetTab][singleIndex]] : (targetTab === currentTab ? getFilteredAndSortedData() : db[targetTab]);
@@ -1460,7 +1553,6 @@
         let sheetName = "Hoja1";
 
         if (targetTab === 'catalogo') {
-            // Cabecera exacta de 14 columnas idéntica a tu archivo Inventario (1).xlsx
             const headers = [
                 'REFERENCIA', 'SKU', 'NOMBRE ARTÍCULO', 'SKU', 'CÓDIGO DE BARRAS/QR',
                 'MEDIDAS', 'PRECIO COSTE', 'ITP (%)', 'TOTAL COSTE', 'PRECIO DE VENTA',
@@ -1495,7 +1587,6 @@
 
             worksheet = XLSX.utils.aoa_to_sheet(aoa);
         } else {
-            // Exportación limpia a .xlsx para cualquiera de las demás pestañas
             const cleanData = rawList.map(r => {
                 const copy = { ...r };
                 delete copy.imagenes; delete copy.imgData; delete copy.imagenFicha;
@@ -1577,13 +1668,21 @@
     }
 
     /* ==========================================================
-       5. MOTOR DE SINCRONIZACIÓN MULTI-DISPOSITIVO CON GITHUB
+       5. MOTOR DE SINCRONIZACIÓN ANTI-PÉRDIDA CON GITHUB
        ========================================================== */
     let githubFileSha = null;
     let githubPollTimer = null;
     let isSyncing = false;
     let pendingPush = false;
-    const SYNC_INTERVAL_MS = 10000;
+    const SYNC_INTERVAL_MS = 12000;
+
+    function updateMiniSyncIndicator(text, color = 'var(--gold-light)') {
+        const el = document.getElementById('sync-mini-indicator');
+        if (el) {
+            el.innerText = text;
+            el.style.color = color;
+        }
+    }
 
     function stringToBase64Async(str) {
         return new Promise((resolve, reject) => {
@@ -1603,25 +1702,42 @@
         return new TextDecoder('utf-8').decode(bytes);
     }
 
+    // Fusión Inteligente por _id y por Referencia (evita que GitHub sobrescriba una edición local reciente)
     function mergeDatabases(local, remote) {
         local = normalizeDB(local);
         remote = normalizeDB(remote);
         const deletedSet = new Set([...(local._deletedIds || []), ...(remote._deletedIds || [])]);
-        const merged = { _deletedIds: Array.from(deletedSet) };
+        const merged = {
+            _lastModified: Math.max(local._lastModified || 0, remote._lastModified || 0),
+            _deletedIds: Array.from(deletedSet)
+        };
 
         COLLECTIONS.forEach(col => {
             const map = new Map();
+
+            // Función auxiliar para generar clave única (en catálogo usa la Referencia para no duplicar nunca un artículo editado)
+            const getItemKey = (item) => {
+                if (col === 'catalogo' && item.ref) return `REF_${String(item.ref).trim().toUpperCase()}`;
+                return item._id;
+            };
+
             (remote[col] || []).forEach(item => {
-                if (!deletedSet.has(item._id)) map.set(item._id, item);
+                if (!deletedSet.has(item._id)) {
+                    map.set(getItemKey(item), item);
+                }
             });
+
             (local[col] || []).forEach(item => {
                 if (!deletedSet.has(item._id)) {
-                    const existing = map.get(item._id);
-                    if (!existing || (item._updatedAt || 0) >= (existing._updatedAt || 0)) {
-                        map.set(item._id, item);
+                    const key = getItemKey(item);
+                    const existing = map.get(key);
+                    // Gana siempre el registro que tenga la marca de tiempo (_updatedAt) más reciente
+                    if (!existing || (Number(item._updatedAt) || 0) >= (Number(existing._updatedAt) || 0)) {
+                        map.set(key, item);
                     }
                 }
             });
+
             merged[col] = Array.from(map.values());
         });
         return merged;
@@ -1680,6 +1796,7 @@
     function disconnectGitHub() {
         if (githubPollTimer) clearInterval(githubPollTimer);
         localStorage.removeItem('circa_gh_config');
+        updateMiniSyncIndicator('💾 Local', 'var(--gold-light)');
         alert("Desconectado de GitHub.");
         renderCurrentTab();
     }
@@ -1688,6 +1805,11 @@
         const cfg = JSON.parse(localStorage.getItem('circa_gh_config') || 'null');
         if (!cfg || !cfg.token) return;
 
+        // Si había cambios locales pendientes de subir porque cerraste la app rápido antes, forzamos subida
+        if (localStorage.getItem('circa_unsaved_changes') === 'true') {
+            pushChanges = true;
+        }
+
         if (isSyncing) {
             if (pushChanges) pendingPush = true;
             return;
@@ -1695,6 +1817,8 @@
         if (!pushChanges && !manualTrigger && document.getElementById('form-modal').style.display === 'flex') return;
 
         isSyncing = true;
+        updateMiniSyncIndicator('⏳ Sync...', 'var(--gold-light)');
+
         try {
             const branch = cfg.branch || 'main';
             const getUrl = `https://api.github.com/repos/${cfg.owner}/${cfg.repo}/contents/db.json?ref=${encodeURIComponent(branch)}`;
@@ -1723,7 +1847,7 @@
 
             if (remoteDB) {
                 db = mergeDatabases(db, remoteDB);
-                localStorage.setItem('circa_db_v2', JSON.stringify(db));
+                await persistLocalOnly();
                 if (currentTab !== 'ajustes') renderCurrentTab();
                 githubFileSha = remoteSha;
             }
@@ -1741,10 +1865,13 @@
                 if (putRes.ok) {
                     const putResult = await putRes.json();
                     if (putResult?.content?.sha) githubFileSha = putResult.content.sha;
+                    localStorage.removeItem('circa_unsaved_changes');
                 }
             }
+            updateMiniSyncIndicator('🟢 Guardado', 'var(--success)');
         } catch (err) {
             console.error("Error GitHub Sync:", err);
+            updateMiniSyncIndicator('⚠️ Local', '#ff6b6b');
         } finally {
             isSyncing = false;
             if (pendingPush) {
@@ -1765,9 +1892,22 @@
         if (document.visibilityState === 'visible') syncWithGitHub(false, false);
     });
 
-    function saveDB() {
-        localStorage.setItem('circa_db_v2', JSON.stringify(db));
+    // Guarda en localStorage Y en IndexedDB simultáneamente para que jamás se pierda un cambio al salir
+    async function persistLocalOnly() {
+        try {
+            localStorage.setItem('circa_db_v2', JSON.stringify(db));
+        } catch (err) {
+            console.warn("localStorage lleno, usando IndexedDB de alta capacidad.");
+        }
+        await saveToIndexedDB(db);
+    }
+
+    async function saveDB() {
+        db._lastModified = Date.now();
+        localStorage.setItem('circa_unsaved_changes', 'true');
+        await persistLocalOnly();
         renderCurrentTab();
+        showSaveToast("✅ ¡Cambios guardados correctamente!");
         syncWithGitHub(true, false);
     }
 
@@ -1798,13 +1938,20 @@
         return { facturado: facturado.toFixed(2), cobrado: cobrado.toFixed(2) };
     }
 
-    function populateSelects() {
+    // Rellena los desplegables de proveedores/clientes y añade dinámicamente el valor actual si no estaba en la lista
+    function populateSelects(currentProvVal = '', currentCliVal = '') {
+        const provNames = new Set((db.proveedores || []).map(p => p.nombre));
+        if (currentProvVal && !provNames.has(currentProvVal)) provNames.add(currentProvVal);
+
         const provOptions = '<option value="">-- Seleccionar Proveedor --</option>' +
-            (db.proveedores || []).map(p => `<option value="${p.nombre}">${p.ref} - ${p.nombre}</option>`).join('');
+            Array.from(provNames).filter(Boolean).map(nombre => `<option value="${nombre}">${nombre}</option>`).join('');
         document.querySelectorAll('.provider-select').forEach(sel => sel.innerHTML = provOptions);
 
+        const cliNames = new Set((db.clientes || []).map(c => c.nombre));
+        if (currentCliVal && !cliNames.has(currentCliVal)) cliNames.add(currentCliVal);
+
         const cliOptions = '<option value="">-- Seleccionar Cliente --</option>' +
-            (db.clientes || []).map(c => `<option value="${c.nombre}">${c.ref} - ${c.nombre}</option>`).join('');
+            Array.from(cliNames).filter(Boolean).map(nombre => `<option value="${nombre}">${nombre}</option>`).join('');
         document.querySelectorAll('.client-select').forEach(sel => sel.innerHTML = cliOptions);
     }
 
@@ -1859,7 +2006,6 @@
     function renderCurrentTab() {
         const container = document.getElementById('main-list-view');
 
-        // VISTA A: MENÚ PRINCIPAL ESTILO IMAGEN 1
         if (currentTab === 'menu') {
             const totalArts = db.catalogo.length;
             const totalCosteArts = db.catalogo.reduce((acc, x) => acc + (parseFloat(x.coste) || 0), 0);
@@ -1947,7 +2093,6 @@
             return;
         }
 
-        // VISTA B: PESTAÑA AJUSTES (CON IMPORTACIÓN/EXPORTACIÓN EXCEL Y GITHUB)
         if (currentTab === 'ajustes') {
             const cfg = JSON.parse(localStorage.getItem('circa_gh_config') || '{}');
             container.innerHTML = `
@@ -1955,7 +2100,7 @@
                     <div class="settings-card">
                         <h3>📊 Importar y Exportar Inventario Excel (.xlsx)</h3>
                         <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.4;">
-                            Importa directamente tu plantilla oficial <strong>Inventario (1).xlsx</strong> con sus 14 columnas (Referencia, SKU, Nombre, Código de barras, Medidas, Precio Coste, ITP %, Total Coste, PVP, Proveedor, Justificante, Stock y Descripción) o exporta todo tu inventario a Excel.
+                            Importa directamente tu plantilla oficial <strong>Inventario (1).xlsx</strong> con sus 14 columnas o exporta todo tu inventario a Excel.
                         </p>
                         <button class="btn-primary" onclick="triggerExcelImport()">📥 Importar Archivo Excel (.xlsx)</button>
                         <button class="btn-small" style="padding:12px; font-weight:bold;" onclick="exportToExcelXLSX()">📤 Exportar Inventario a Excel (.xlsx)</button>
@@ -1971,7 +2116,7 @@
                         <div style="display:flex; gap:8px; flex-wrap:wrap;">
                             <button class="btn-small" onclick="testGitHubConnection()">🔍 Probar Token</button>
                             <button class="btn-primary" style="flex:1;" onclick="saveGitHubConfig()">🔗 Guardar y Sincronizar</button>
-                            <button class="btn-small" onclick="syncWithGitHub(false, true)">🔄 Sincronizar Ahora</button>
+                            <button class="btn-small" onclick="syncWithGitHub(true, true)">🔄 Subir y Sincronizar Ahora</button>
                             <button class="btn-small" style="border-color:var(--danger); color:var(--danger);" onclick="disconnectGitHub()">Desconectar</button>
                         </div>
                     </div>
@@ -1998,7 +2143,6 @@
             return;
         }
 
-        // VISTA C: LISTADO DE ARTÍCULOS EN 3 COLUMNAS COMPACTAS (ESTILO IMAGEN 2)
         if (currentTab === 'catalogo') {
             container.innerHTML = `<div class="articles-3col-grid">` + data.map(item => {
                 const imgs = item.imagenes && item.imagenes.length > 0 ? item.imagenes : (item.imgData ? [item.imgData] : ['Logo.jpg']);
@@ -2021,7 +2165,6 @@
             return;
         }
 
-        // VISTA D: FICHAS DE ARTÍCULOS EN 3 COLUMNAS
         if (currentTab === 'fichas') {
             container.innerHTML = `<div class="articles-3col-grid">` + data.map(item => {
                 const img = item.imagenFicha || (item.fotos && item.fotos[0]) || 'Logo.jpg';
@@ -2043,7 +2186,6 @@
             return;
         }
 
-        // VISTA E: RESTO DE PESTAÑAS EN FORMATO DE LISTADO
         container.innerHTML = `<div class="list-container">` + data.map(item => {
             let fieldsHTML = '', extraBoxHTML = '', headerTitle = '';
             let pdfButtonLabel = currentTab === 'ventas' ? '🧾 Factura PDF' : '🖨️ PDF';
@@ -2136,9 +2278,9 @@
         }
     }
 
-    // Ventana de detalle con todos los campos de la plantilla Excel y Descripción Completa
     function openArticleDetailModal(index) {
         const item = db.catalogo[index];
+        if (!item) return;
         const imgs = item.imagenes && item.imagenes.length > 0 ? item.imagenes : (item.imgData ? [item.imgData] : ['Logo.jpg']);
         document.getElementById('det-title').innerText = `${item.nombre} (${item.ref})`;
 
@@ -2166,13 +2308,18 @@
             <div class="full-desc-box"><strong>Descripción Completa:</strong>\n${item.desc || 'Sin descripción registrada.'}</div>
             ${item.vendido === 'Vendido' ? `<div class="sub-items-box" style="margin-top:8px; color:var(--gold-light);">📦 Factura: ${item.factura || '-'} (${item.impFactura || 0}€) | Transporte: ${item.transp || '-'} [${item.localizador || '-'}] | Entregado: ${item.entregado || 'No'}</div>` : ''}
             <div class="card-actions" style="margin-top:15px;">
-                <button class="btn-primary" onclick="document.getElementById('detail-modal').style.display='none'; openFormModal(${index});">✏️ Editar</button>
+                <button class="btn-primary" onclick="editFromDetailModal(${index})">✏️ Editar Artículo</button>
                 <button class="btn-small" onclick="exportToExcelXLSX(${index})">📊 Excel (.xlsx)</button>
                 <button class="btn-small" onclick="printSinglePDF(${index})">🖨️ PDF</button>
                 <button class="btn-small" style="border-color:var(--danger); color:var(--danger);" onclick="document.getElementById('detail-modal').style.display='none'; deleteRecord(${index});">🗑️ Borrar</button>
             </div>
         `;
         document.getElementById('detail-modal').style.display = 'flex';
+    }
+
+    function editFromDetailModal(index) {
+        document.getElementById('detail-modal').style.display = 'none';
+        openFormModal(index);
     }
 
     function scanToSearchCatalog() {
@@ -2182,7 +2329,7 @@
     }
 
     /* ==========================================================
-       8. GESTIÓN DE FORMULARIOS Y CÁLCULO DE TOTAL COSTE CON ITP
+       8. GESTIÓN DE FORMULARIOS CON BLOQUEO DE ÍNDICE Y ID EXACTO
        ========================================================== */
     function calcTotalCosteForm() {
         const coste = parseFloat(document.getElementById('cat-coste').value) || 0;
@@ -2357,17 +2504,21 @@
 
     function openFormModal(index = null) {
         if (currentTab === 'menu' || currentTab === 'ajustes') currentTab = 'catalogo';
-        editIndex = index;
+        editIndex = (index !== undefined && index !== null) ? Number(index) : null;
+        editingRecordId = (editIndex !== null && db[currentTab][editIndex]) ? db[currentTab][editIndex]._id : null;
+
         tempImagesArray = []; tempFichaMainImg = ''; tempFichaFotos = []; tempAyudaDataUrl = '';
         tempCompraItems = []; tempVentaItems = [];
 
-        populateSelects();
+        const currentItem = editIndex !== null ? db[currentTab][editIndex] : null;
+        populateSelects(currentItem?.prov || '', currentItem?.cliente || '');
+
         document.querySelectorAll('.tab-form').forEach(f => { f.style.display = 'none'; f.reset(); });
 
         const activeForm = document.getElementById('form-' + currentTab);
         if (!activeForm) return;
         activeForm.style.display = 'block';
-        document.getElementById('modal-title').innerText = index === null ? `➕ Añadir (${tabTitles[currentTab]})` : `✏️ Editar (${tabTitles[currentTab]})`;
+        document.getElementById('modal-title').innerText = editIndex === null ? `➕ Añadir (${tabTitles[currentTab]})` : `✏️ Editar (${tabTitles[currentTab]})`;
 
         if (currentTab === 'ventas') {
             document.getElementById('ven-select-cat').innerHTML = '<option value="">-- Seleccionar artículo --</option>' +
@@ -2375,21 +2526,21 @@
             renderVentaItems();
         }
         if (currentTab === 'compras') renderCompraItems();
-        if (currentTab === 'catalogo') { renderImagePreviews(); toggleVendidoCat(); }
+        if (currentTab === 'catalogo') { renderImagePreviews(); toggleVendidoCat(); calcTotalCosteForm(); }
         if (currentTab === 'fichas') renderFichaPreviews();
 
-        if (index !== null) {
-            const item = db[currentTab][index];
+        if (editIndex !== null && currentItem) {
+            const item = currentItem;
             if (currentTab === 'catalogo') {
                 document.getElementById('cat-ref').value = item.ref || '';
                 document.getElementById('cat-sku').value = item.sku || '';
                 document.getElementById('cat-nombre').value = item.nombre || '';
                 document.getElementById('cat-barcode').value = item.barcode || '';
                 document.getElementById('cat-desc').value = item.desc || '';
-                const m = (item.medidas || '0x0x0').replace(' cm','').split('x');
-                document.getElementById('cat-m1').value = m[0] || 0;
-                document.getElementById('cat-m2').value = m[1] || 0;
-                document.getElementById('cat-m3').value = m[2] || 0;
+                const m = String(item.medidas || '0x0x0').replace(' cm','').split('x');
+                document.getElementById('cat-m1').value = parseFloat(m[0]) || 0;
+                document.getElementById('cat-m2').value = parseFloat(m[1]) || 0;
+                document.getElementById('cat-m3').value = parseFloat(m[2]) || 0;
                 document.getElementById('cat-coste').value = item.coste || 0;
                 document.getElementById('cat-itp').value = item.itp !== undefined ? item.itp : 4;
                 calcTotalCosteForm();
@@ -2484,14 +2635,23 @@
     function closeFormModal() {
         document.getElementById('form-modal').style.display = 'none';
         editIndex = null;
+        editingRecordId = null;
     }
 
-    function saveRecord(e, tab) {
+    async function saveRecord(e, tab) {
         e.preventDefault();
         let record = {};
         const now = Date.now();
         const today = new Date().toISOString().split('T')[0];
-        const existingId = editIndex !== null && db[tab][editIndex] ? db[tab][editIndex]._id : `${tab}_${now}_${Math.random().toString(36).substr(2, 5)}`;
+
+        // Buscamos la posición exacta del registro por su ID único por si había filtros activos
+        let targetIdx = editIndex;
+        if (editingRecordId) {
+            const foundById = db[tab].findIndex(x => x._id === editingRecordId);
+            if (foundById !== -1) targetIdx = foundById;
+        }
+
+        const existingId = editingRecordId || (targetIdx !== null && db[tab][targetIdx] ? db[tab][targetIdx]._id : `${tab}_${now}_${Math.random().toString(36).substr(2, 5)}`);
 
         if (tab === 'catalogo') {
             const entregadoVal = document.getElementById('cat-entregado').value;
@@ -2499,26 +2659,27 @@
             const costeVal = parseFloat(document.getElementById('cat-coste').value) || 0;
             const itpVal = parseFloat(document.getElementById('cat-itp').value) || 0;
             const totalCosteVal = +(costeVal * (1 + itpVal / 100)).toFixed(4);
-            const skuVal = document.getElementById('cat-sku').value;
+            const skuVal = document.getElementById('cat-sku').value.trim();
+            const refVal = document.getElementById('cat-ref').value.trim();
 
             record = {
                 _id: existingId, _updatedAt: now,
-                ref: document.getElementById('cat-ref').value,
+                ref: refVal,
                 sku: skuVal,
                 sku2: skuVal,
-                nombre: document.getElementById('cat-nombre').value,
-                barcode: document.getElementById('cat-barcode').value,
+                nombre: document.getElementById('cat-nombre').value.trim(),
+                barcode: document.getElementById('cat-barcode').value.trim(),
                 desc: document.getElementById('cat-desc').value,
                 medidas: `${document.getElementById('cat-m1').value || 0}x${document.getElementById('cat-m2').value || 0}x${document.getElementById('cat-m3').value || 0} cm`,
                 coste: costeVal,
                 itp: itpVal,
                 totalCoste: totalCosteVal,
-                venta: document.getElementById('cat-venta').value,
+                venta: parseFloat(document.getElementById('cat-venta').value) || 0,
                 prov: document.getElementById('cat-prov').value,
-                justificante: document.getElementById('cat-justificante').value,
+                justificante: document.getElementById('cat-justificante').value.trim(),
                 stock: parseFloat(document.getElementById('cat-stock').value) || 0,
                 fecha: document.getElementById('cat-fecha').value || today,
-                imagenes: tempImagesArray,
+                imagenes: [...tempImagesArray],
                 vendido: document.getElementById('cat-vendido').value,
                 factura: document.getElementById('cat-factura').value,
                 impFactura: document.getElementById('cat-imp-factura').value,
@@ -2537,7 +2698,7 @@
                 estilo: document.getElementById('fic-estilo').value,
                 fecha: document.getElementById('fic-fecha').value || today,
                 imagenFicha: tempFichaMainImg,
-                fotos: tempFichaFotos
+                fotos: [...tempFichaFotos]
             };
         } else if (tab === 'empresa') {
             record = {
@@ -2561,7 +2722,7 @@
                 email: document.getElementById('prov-email').value,
                 web: document.getElementById('prov-web').value,
                 fecha: document.getElementById('prov-fecha').value || today,
-                docs: docs || (editIndex !== null ? db.proveedores[editIndex].docs : 'Ninguno')
+                docs: docs || (targetIdx !== null && db.proveedores[targetIdx] ? db.proveedores[targetIdx].docs : 'Ninguno')
             };
         } else if (tab === 'clientes') {
             const docs = Array.from(document.getElementById('cli-docs').files).map(f => f.name).join(', ');
@@ -2574,7 +2735,7 @@
                 email: document.getElementById('cli-email').value,
                 web: document.getElementById('cli-web').value,
                 fecha: document.getElementById('cli-fecha').value || today,
-                docs: docs || (editIndex !== null ? db.clientes[editIndex].docs : 'Ninguno')
+                docs: docs || (targetIdx !== null && db.clientes[targetIdx] ? db.clientes[targetIdx].docs : 'Ninguno')
             };
         } else if (tab === 'compras') {
             if (tempCompraItems.length === 0 && document.getElementById('c-item-ref').value.trim() !== '') addCompraItem();
@@ -2588,15 +2749,15 @@
                 pagado: document.getElementById('comp-pagado').value,
                 contab: document.getElementById('comp-contab').value,
                 total: document.getElementById('comp-total').value,
-                items: tempCompraItems,
+                items: [...tempCompraItems],
                 ref: tempCompraItems[0].ref,
                 sku: tempCompraItems[0].sku
             };
 
-            if (editIndex === null) {
+            if (targetIdx === null) {
                 tempCompraItems.forEach((it, idx) => {
                     db.catalogo.push({
-                        _id: `catalogo_${now}_${idx}`, _updatedAt: now,
+                        _id: `cat_${String(it.ref).toUpperCase().replace(/\s+/g, '_')}_${now}_${idx}`, _updatedAt: now,
                         ref: it.ref, sku: it.sku, sku2: it.sku, nombre: it.nombre, barcode: it.barcode,
                         desc: '', medidas: '0x0x0 cm', coste: it.precio, itp: 4, totalCoste: +(it.precio * 1.04).toFixed(4), venta: 0,
                         prov: record.prov, justificante: record.just, stock: it.uds || 1, fecha: record.fecha, imagenes: [],
@@ -2630,13 +2791,13 @@
                 cobrado: document.getElementById('ven-cobrado').value,
                 fechaPago: document.getElementById('ven-fecha-pago').value,
                 contab: document.getElementById('ven-contab').value,
-                items: tempVentaItems,
+                items: [...tempVentaItems],
                 ref: tempVentaItems[0].ref,
                 sku: tempVentaItems[0].sku
             };
 
             tempVentaItems.forEach(vendidoItem => {
-                const catIdx = db.catalogo.findIndex(c => c.ref === vendidoItem.ref);
+                const catIdx = db.catalogo.findIndex(c => (c.ref || '').toLowerCase() === (vendidoItem.ref || '').toLowerCase());
                 if (catIdx !== -1) {
                     db.catalogo[catIdx]._updatedAt = now;
                     db.catalogo[catIdx].vendido = 'Vendido';
@@ -2659,7 +2820,7 @@
                 base: document.getElementById('gas-base').value,
                 iva: document.getElementById('gas-iva').value,
                 total: document.getElementById('gas-total').value,
-                file: file || (editIndex !== null ? db.gastos[editIndex].file : 'Sin archivo')
+                file: file || (targetIdx !== null && db.gastos[targetIdx] ? db.gastos[targetIdx].file : 'Sin archivo')
             };
         } else if (tab === 'ayuda') {
             const fileName = document.getElementById('ayu-file').files[0]?.name;
@@ -2669,21 +2830,24 @@
                 titulo: document.getElementById('ayu-titulo').value,
                 tipo: document.getElementById('ayu-tipo').value,
                 url: document.getElementById('ayu-url').value,
-                file: fileName || (editIndex !== null ? db.ayuda[editIndex].file : 'Sin archivo'),
+                file: fileName || (targetIdx !== null && db.ayuda[targetIdx] ? db.ayuda[targetIdx].file : 'Sin archivo'),
                 fileData: tempAyudaDataUrl,
                 desc: document.getElementById('ayu-desc').value,
                 fecha: today
             };
         }
 
-        if (editIndex === null) db[tab].push(record);
-        else db[tab][editIndex] = record;
+        if (targetIdx === null || targetIdx < 0) {
+            db[tab].push(record);
+        } else {
+            db[tab][targetIdx] = record;
+        }
 
         closeFormModal();
-        saveDB();
+        await saveDB();
     }
 
-    function deleteRecord(index) {
+    async function deleteRecord(index) {
         if (confirm("¿Seguro que deseas borrar este registro?")) {
             const item = db[currentTab][index];
             if (item && item._id) {
@@ -2691,7 +2855,7 @@
                 db._deletedIds.push(item._id);
             }
             db[currentTab].splice(index, 1);
-            saveDB();
+            await saveDB();
         }
     }
 
@@ -2948,20 +3112,29 @@
         const file = event.target.files[0];
         if (!file) return;
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = async function(e) {
             try {
                 const imported = normalizeDB(JSON.parse(e.target.result));
                 db = mergeDatabases(db, imported);
-                saveDB();
+                await saveDB();
                 alert("¡Copia restaurada y sincronizada!");
             } catch (err) { alert("Archivo inválido."); }
         };
         reader.readAsText(file);
     }
 
-    renderCurrentTab();
-    syncWithGitHub(false, false);
-    startAutoSyncTimer();
+    // Arranque inteligente: carga la versión más reciente entre IndexedDB y localStorage antes de sincronizar con GitHub
+    async function initApp() {
+        const idbData = await loadFromIndexedDB();
+        if (idbData && (idbData._lastModified || 0) >= (db._lastModified || 0)) {
+            db = normalizeDB(idbData);
+        }
+        renderCurrentTab();
+        await syncWithGitHub(false, false);
+        startAutoSyncTimer();
+    }
+
+    initApp();
 </script>
 </body>
 </html>
