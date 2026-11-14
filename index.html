@@ -17,6 +17,9 @@
 
     <!-- LIBRERÍA PARA ESCANEAR CÓDIGOS DE BARRAS Y QR -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
+    <!-- LIBRERÍA OFICIAL SHEETJS PARA IMPORTAR Y EXPORTAR ARCHIVOS EXCEL (.XLSX) -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     
     <title>CirCA by RB - Gestión Empresarial</title>
     <style>
@@ -30,8 +33,6 @@
             --gold-main: #C5A059;
             --gold-light: #EED9A4;
             --gold-dark: #8C6D32;
-            --accent-cyan: #5bc0be;
-            --accent-purple: #7b4397;
             --text-light: #F5F5F5;
             --text-muted: #AAAAAA;
             --border-color: #383020;
@@ -54,7 +55,7 @@
         }
 
         /* ==========================================
-           2. BARRA SUPERIOR ESTILO APP MÓVIL (IMAGEN 2)
+           2. BARRA SUPERIOR ESTILO APP MÓVIL
            ========================================== */
         .app-topbar {
             background-color: #181818;
@@ -72,28 +73,28 @@
         .topbar-left {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
         }
 
         .icon-btn {
             background: #252525;
             border: 1px solid #383838;
             color: var(--text-light);
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
             border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.2rem;
+            font-size: 1.15rem;
             cursor: pointer;
             transition: 0.2s;
         }
         .icon-btn:hover { border-color: var(--gold-main); color: var(--gold-light); }
 
         .topbar-logo {
-            width: 42px;
-            height: 42px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
             object-fit: cover;
             border: 1.5px solid var(--gold-main);
@@ -106,19 +107,19 @@
         }
 
         .topbar-title {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             font-weight: 600;
             color: var(--text-light);
         }
 
         .topbar-pill-select {
-            margin-top: 3px;
+            margin-top: 2px;
             background-color: #2c2c2c;
             color: #ddd;
             border: none;
             border-radius: 15px;
             padding: 3px 10px;
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             outline: none;
             cursor: pointer;
         }
@@ -126,16 +127,16 @@
         .topbar-right {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
         }
 
         .sort-az-btn {
             color: var(--gold-main);
             font-weight: bold;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             background: transparent;
             border: none;
-            padding: 6px 8px;
+            padding: 6px;
             cursor: pointer;
         }
 
@@ -319,8 +320,8 @@
             text-overflow: ellipsis;
         }
 
-        .cost-color { color: #7e57c2; } /* Tono violeta/azulado para el coste como en Imagen 2 */
-        .sale-color { color: var(--gold-main); } /* Dorado/verde para el precio de venta */
+        .cost-color { color: #8c6bc8; }
+        .sale-color { color: var(--gold-main); }
 
         .art-desc-preview {
             color: #9e9e9e;
@@ -342,7 +343,7 @@
         }
 
         /* ==========================================
-           5. BOTONES FLOTANTES (FAB) Y BARRA INFERIOR FIJA (IMAGEN 2)
+           5. BOTONES FLOTANTES (FAB) Y BARRA INFERIOR FIJA
            ========================================== */
         .fab-group {
             position: fixed;
@@ -407,9 +408,7 @@
             z-index: 110;
         }
 
-        .bottom-totals-bar span.divider {
-            color: #444;
-        }
+        .bottom-totals-bar span.divider { color: #444; }
 
         /* ==========================================
            6. MENÚ LATERAL IZQUIERDO OCULTO (DRAWER)
@@ -449,7 +448,6 @@
         }
 
         .sidebar-header h3 { color: var(--gold-light); font-family: 'Georgia', serif; font-size: 1rem; }
-
         .sidebar-nav { display: flex; flex-direction: column; padding: 10px 0; }
 
         .sidebar-nav button {
@@ -474,12 +472,31 @@
         }
 
         /* ==========================================
-           7. CONTENEDOR, FILTROS DESPLEGABLES Y LISTADOS
+           7. BARRA EXCEL, FILTROS Y LISTADOS
            ========================================== */
         .container {
             max-width: 1200px;
             margin: 10px auto;
             padding: 0 10px;
+        }
+
+        .excel-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 10px;
+            background-color: #181818;
+            border: 1px solid var(--border-color);
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+
+        .excel-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
         }
 
         .collapsible-filters {
@@ -512,7 +529,6 @@
         .subtabs-bar {
             display: flex;
             gap: 8px;
-            margin-bottom: 10px;
         }
 
         .subtab-btn {
@@ -547,9 +563,11 @@
             border: 1px solid var(--gold-main);
             padding: 6px 12px;
             border-radius: 4px;
-            font-size: 0.75rem;
+            font-size: 0.76rem;
             cursor: pointer;
+            transition: 0.2s;
         }
+        .btn-small:hover { background-color: var(--gold-main); color: #000; }
 
         .full-desc-box {
             background-color: rgba(0,0,0,0.4);
@@ -675,7 +693,7 @@
 
         .form-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(195px, 1fr));
             gap: 12px;
             margin-bottom: 15px;
         }
@@ -723,6 +741,9 @@
 </head>
 <body>
 
+<!-- INPUT OCULTO PARA SUBIR ARCHIVOS EXCEL (.XLSX) -->
+<input type="file" id="excel-upload-input" style="display:none" accept=".xlsx,.xls,.csv" onchange="importFromExcelXLSX(event)">
+
 <!-- MENÚ LATERAL IZQUIERDO OCULTO -->
 <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar(false)"></div>
 <aside id="sidebar" class="sidebar">
@@ -745,7 +766,7 @@
     </div>
 </aside>
 
-<!-- CABECERA ESTILO IMAGEN 2 (CON LOGO PARA VOLVER A ARTÍCULOS Y BOTÓN DE MENÚ) -->
+<!-- CABECERA ESTILO APP MÓVIL -->
 <header class="app-topbar">
     <div class="topbar-left">
         <button class="icon-btn" onclick="toggleSidebar(true)" title="Abrir Menú Lateral">☰</button>
@@ -753,28 +774,40 @@
         <div class="topbar-title-group">
             <span id="section-title" class="topbar-title">Artículos</span>
             <select id="quick-status-filter" class="topbar-pill-select" onchange="renderCurrentTab()">
-                <option value="ALL">- Todos los Artículos -</option>
-                <option value="Disponible">Disponibles en tienda</option>
-                <option value="Vendido">Artículos Vendidos</option>
+                <option value="ALL">- Todos los Almacenes / Artículos -</option>
+                <option value="Disponible">Disponibles</option>
+                <option value="Vendido">Vendidos</option>
             </select>
         </div>
     </div>
     <div class="topbar-right">
-        <button class="icon-btn" onclick="switchTab('menu')" title="Ver Panel de Menú Principal (Cuadrícula)">⊞</button>
+        <button class="icon-btn" onclick="switchTab('menu')" title="Ver Panel de Menú Principal">⊞</button>
         <button class="icon-btn" onclick="toggleFilterPanel()" title="Buscar y Filtrar">🔍</button>
-        <button class="sort-az-btn" onclick="quickCycleSort()" title="Cambiar Orden Ascendente/Descendente">↓A-Z</button>
-        <button class="icon-btn" onclick="showExportMenu()" title="Exportar a Excel o PDF">⋮</button>
+        <button class="sort-az-btn" onclick="quickCycleSort()" title="Cambiar Orden A-Z / Z-A">↓A-Z</button>
+        <button class="icon-btn" onclick="printSectionPDF()" title="Imprimir / PDF del Listado">🖨️</button>
     </div>
 </header>
 
 <div class="container">
+
+    <!-- BARRA RÁPIDA DE SUBPESTAÑAS Y BOTONES DE EXCEL (.XLSX) -->
+    <div id="excel-action-bar" class="excel-bar">
+        <div id="articulos-subtabs" class="subtabs-bar">
+            <button id="subtab-catalogo" class="subtab-btn active" onclick="switchTab('catalogo')">📦 Artículos</button>
+            <button id="subtab-fichas" class="subtab-btn" onclick="switchTab('fichas')">📋 Fichas</button>
+        </div>
+        <div class="excel-actions">
+            <button class="btn-small" style="border-color:var(--success); color:var(--success); font-weight:bold;" onclick="triggerExcelImport()">📥 Importar Excel (.xlsx)</button>
+            <button class="btn-small" style="font-weight:bold;" onclick="exportToExcelXLSX()">📤 Exportar Excel (.xlsx)</button>
+        </div>
+    </div>
 
     <!-- PANEL DESPLEGABLE DE BÚSQUEDA Y FILTROS (SE ABRE CON LA LUPA 🔍) -->
     <div id="collapsible-filters" class="collapsible-filters">
         <div class="filters-grid">
             <div class="filter-item">
                 <label>🔍 Buscar texto, SKU o Código</label>
-                <input type="text" id="filter-search" placeholder="Escribe SKU, ref, nombre..." oninput="renderCurrentTab()">
+                <input type="text" id="filter-search" placeholder="Escribe SKU, ref, nombre, proveedor..." oninput="renderCurrentTab()">
             </div>
             <div class="filter-item">
                 <label>📅 Fecha Desde</label>
@@ -801,20 +834,12 @@
                 </select>
             </div>
             <div class="filter-item" style="justify-content: flex-end; gap:5px; flex-direction:row; align-items:flex-end;">
-                <button class="btn-small" onclick="exportSectionCSV()">📊 Excel</button>
-                <button class="btn-small" onclick="printSectionPDF()">🖨️ PDF</button>
-                <button class="btn-small" onclick="clearFilters()">🧹 Limpiar</button>
+                <button class="btn-small" onclick="clearFilters()">🧹 Limpiar Filtros</button>
             </div>
         </div>
     </div>
 
-    <!-- SUBPESTAÑAS RÁPIDAS DENTRO DE ARTÍCULOS / FICHAS -->
-    <div id="articulos-subtabs" class="subtabs-bar">
-        <button id="subtab-catalogo" class="subtab-btn active" onclick="switchTab('catalogo')">📦 Artículos</button>
-        <button id="subtab-fichas" class="subtab-btn" onclick="switchTab('fichas')">📋 Fichas</button>
-    </div>
-
-    <!-- CONTENEDOR DINÁMICO DONDE SE PINTA EL MENÚ DE LA IMAGEN 1 O LOS ARTÍCULOS DE LA IMAGEN 2 -->
+    <!-- CONTENEDOR DINÁMICO DE VISTAS -->
     <div id="main-list-view"></div>
 
 </div>
@@ -826,7 +851,7 @@
     <button class="fab-btn fab-add" onclick="openFormModal()" title="Añadir Nuevo Registro">+</button>
 </div>
 
-<!-- BARRA INFERIOR DE TOTALES FIJA (COMO EN LA IMAGEN 2: Cant. | Total Coste / Venta) -->
+<!-- BARRA INFERIOR DE TOTALES FIJA (Cant. | Total Coste / Venta) -->
 <div id="bottom-summary-bar" class="bottom-totals-bar">
     <span id="summary-cant">Cant.: 0,00</span>
     <span class="divider">|</span>
@@ -837,7 +862,7 @@
      MODAL DE DETALLE COMPLETO DEL ARTÍCULO AL PULSAR SU TARJETA
      ========================================== -->
 <div id="detail-modal" class="modal-overlay">
-    <div class="modal-box" style="max-width: 550px;">
+    <div class="modal-box" style="max-width: 560px;">
         <div class="modal-header">
             <h3 id="det-title">Detalle del Artículo</h3>
             <button class="btn-close" onclick="document.getElementById('detail-modal').style.display='none'">✖</button>
@@ -856,34 +881,37 @@
             <button class="btn-close" onclick="closeFormModal()">✖</button>
         </div>
 
-        <!-- 1. FORMULARIO ARTÍCULOS -->
+        <!-- 1. FORMULARIO ARTÍCULOS (ADAPTADO CON TODOS LOS CAMPOS DE TU PLANTILLA EXCEL) -->
         <form id="form-catalogo" class="tab-form" onsubmit="saveRecord(event, 'catalogo')" style="display:none;">
             <div class="form-grid">
-                <div class="form-group"><label>Referencia *</label><input type="text" id="cat-ref" required></div>
-                <div class="form-group"><label>SKU *</label><input type="text" id="cat-sku" placeholder="Ej: 001 23 100 21 171"></div>
-                <div class="form-group"><label>Nombre del Artículo *</label><input type="text" id="cat-nombre" required placeholder="Ej: Lamp/Techo/Pop-Art 001"></div>
+                <div class="form-group"><label>Referencia (Col. A) *</label><input type="text" id="cat-ref" required placeholder="Ej: ART00001"></div>
+                <div class="form-group"><label>SKU (Col. B) *</label><input type="text" id="cat-sku" placeholder="Ej: 001 23 100 21 171"></div>
+                <div class="form-group"><label>Nombre Artículo (Col. C) *</label><input type="text" id="cat-nombre" required placeholder="Ej: Lámpara de Techo Pop Art"></div>
                 <div class="form-group">
-                    <label>Código de Barras / QR</label>
+                    <label>Código de Barras / QR (Col. E)</label>
                     <div class="input-with-scanner">
-                        <input type="text" id="cat-barcode">
+                        <input type="text" id="cat-barcode" placeholder="Ej: 0012310021171">
                         <button type="button" class="btn-small" onclick="startScanner('cat-barcode')">📷</button>
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Medidas (cm x cm x cm)</label>
+                    <label>Medidas (cm x cm x cm) (Col. F)</label>
                     <div class="measures-group">
                         <input type="number" step="0.1" id="cat-m1" placeholder="L"> x
                         <input type="number" step="0.1" id="cat-m2" placeholder="A"> x
                         <input type="number" step="0.1" id="cat-m3" placeholder="Al">
                     </div>
                 </div>
-                <div class="form-group"><label>Precio de Coste (€) *</label><input type="number" step="0.01" id="cat-coste" required></div>
-                <div class="form-group"><label>Precio de Venta (€) *</label><input type="number" step="0.01" id="cat-venta" required></div>
+                <div class="form-group"><label>Precio Coste (€) (Col. G) *</label><input type="number" step="0.001" id="cat-coste" required oninput="calcTotalCosteForm()"></div>
+                <div class="form-group"><label>ITP (%) (Col. H)</label><input type="number" step="0.1" id="cat-itp" value="4" oninput="calcTotalCosteForm()"></div>
+                <div class="form-group"><label>Total Coste (€) (Col. I) [Auto]</label><input type="number" step="0.001" id="cat-total-coste" readonly></div>
+                <div class="form-group"><label>Precio de Venta (€) (Col. J)</label><input type="number" step="0.01" id="cat-venta" value="0"></div>
                 <div class="form-group">
-                    <label>Proveedor (Seleccionar)</label>
+                    <label>Proveedor (Col. K)</label>
                     <select id="cat-prov" class="provider-select"></select>
                 </div>
-                <div class="form-group"><label>Núm. Justificante Compra</label><input type="text" id="cat-justificante"></div>
+                <div class="form-group"><label>Ref. / Justificante Compra (Col. L)</label><input type="text" id="cat-justificante" placeholder="Ej: FC2026/00002"></div>
+                <div class="form-group"><label>Stock (Col. M)</label><input type="number" step="1" id="cat-stock" value="1"></div>
                 <div class="form-group"><label>Fecha Alta</label><input type="date" id="cat-fecha"></div>
                 <div class="form-group">
                     <label>Estado del Artículo</label>
@@ -894,7 +922,7 @@
                 </div>
 
                 <div class="form-group" style="grid-column: 1 / -1;">
-                    <label>Descripción Completa del Artículo</label>
+                    <label>Descripción Completa del Artículo (Col. N)</label>
                     <textarea id="cat-desc" placeholder="Escribe aquí la descripción completa del artículo..."></textarea>
                 </div>
 
@@ -927,7 +955,7 @@
             <div class="form-grid">
                 <div class="form-group" style="grid-column: 1 / -1;">
                     <label>Título de la Ficha *</label>
-                    <input type="text" id="fic-titulo" required placeholder="Ej: Lámpara Colgante Pop-Art 001">
+                    <input type="text" id="fic-titulo" required placeholder="Ej: Lámpara de Techo Pop Art">
                 </div>
                 <div class="form-group"><label>Referencia *</label><input type="text" id="fic-ref" required></div>
                 <div class="form-group"><label>Materiales</label><input type="text" id="fic-materiales"></div>
@@ -1216,7 +1244,7 @@
        2. INICIALIZACIÓN DE DATOS
        ========================================================== */
     const COLLECTIONS = ['empresa', 'catalogo', 'fichas', 'proveedores', 'clientes', 'compras', 'ventas', 'gastos', 'ayuda'];
-    let currentTab = 'catalogo'; // Inicia en el listado de artículos (puedes cambiarlo a 'menu' si prefieres iniciar en el Dashboard)
+    let currentTab = 'catalogo';
     let editIndex = null;
     let tempImagesArray = [];
     let tempFichaMainImg = '';
@@ -1235,7 +1263,7 @@
         ventas: [],
         gastos: [],
         ayuda: [
-            { _id: 'ayu_default_1', _updatedAt: 1, ref: 'AYU-01', titulo: 'Manual de Usuario Oficial - CirCA by RB', tipo: 'Documento PDF', url: 'manual_usuario.html', file: 'manual_usuario.html', desc: 'Guía paso a paso de todas las pantallas, REBU, fichas e instalación.' }
+            { _id: 'ayu_default_1', _updatedAt: 1, ref: 'AYU-01', titulo: 'Manual de Usuario Oficial - CirCA by RB', tipo: 'Documento PDF', url: 'manual_usuario.html', file: 'manual_usuario.html', desc: 'Guía paso a paso de todas las pantallas, importación de Excel .xlsx, REBU y fichas.' }
         ],
         _deletedIds: []
     };
@@ -1271,7 +1299,226 @@
     };
 
     /* ==========================================================
-       3. NAVEGACIÓN, MENÚ DASHBOARD Y CONTROLES DE CABECERA
+       3. IMPORTACIÓN Y EXPORTACIÓN EXCEL (.XLSX) CON PLANTILLA OFICIAL
+       ========================================================== */
+    function triggerExcelImport() {
+        const input = document.getElementById('excel-upload-input');
+        input.value = '';
+        input.click();
+    }
+
+    // Lee el archivo Excel (.xlsx) respetando exactamente las 14 columnas de Inventario (1).xlsx
+    function importFromExcelXLSX(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+
+                // Si estamos en Catálogo (o si el Excel tiene la estructura de Inventario con REFERENCIA y SKU)
+                const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: '' });
+                if (rows.length < 2) return alert("El archivo Excel está vacío.");
+
+                const headerRow = rows[0].map(h => String(h || '').trim().toUpperCase());
+                const isInventoryTemplate = headerRow.includes('NOMBRE ARTÍCULO') || (headerRow[0] === 'REFERENCIA' && headerRow[1] === 'SKU');
+
+                const now = Date.now();
+                const today = new Date().toISOString().split('T')[0];
+
+                if (isInventoryTemplate || currentTab === 'catalogo') {
+                    let addedCount = 0;
+                    let updatedCount = 0;
+
+                    for (let i = 1; i < rows.length; i++) {
+                        const r = rows[i];
+                        if (!r || r.length === 0) continue;
+
+                        // Mapeo posicional exacto de las 14 columnas de tu archivo Inventario (1).xlsx
+                        const ref = String(r[0] ?? '').trim();
+                        const sku = String(r[1] ?? '').trim();
+                        const nombre = String(r[2] ?? '').trim();
+                        const sku2 = String(r[3] ?? '').trim();
+                        const barcode = String(r[4] ?? '').trim();
+                        const medidasRaw = String(r[5] ?? '').trim();
+                        const coste = parseFloat(String(r[6] ?? '0').replace(',', '.')) || 0;
+                        const itp = r[7] !== '' && r[7] !== null && r[7] !== undefined ? (parseFloat(String(r[7]).replace(',', '.')) || 0) : 4;
+                        const totalCoste = r[8] !== '' && r[8] !== null && r[8] !== undefined ? (parseFloat(String(r[8]).replace(',', '.')) || 0) : +(coste * (1 + itp / 100)).toFixed(4);
+                        const venta = parseFloat(String(r[9] ?? '0').replace(',', '.')) || 0;
+                        const prov = String(r[10] ?? '').trim();
+                        const justificante = String(r[11] ?? '').trim();
+                        const stock = r[12] !== '' && r[12] !== null && r[12] !== undefined ? (parseFloat(String(r[12]).replace(',', '.')) || 0) : 0;
+                        const desc = String(r[13] ?? '').trim();
+
+                        // Ignorar filas en blanco (como las 3 últimas filas vacías de Hoja1)
+                        if (!ref && !nombre && !sku) continue;
+
+                        // Dar de alta automáticamente al Proveedor en la pestaña Proveedores si no existe todavía
+                        if (prov) {
+                            const provExists = db.proveedores.some(p => (p.nombre || '').toLowerCase() === prov.toLowerCase());
+                            if (!provExists) {
+                                db.proveedores.push({
+                                    _id: `proveedores_${now}_${db.proveedores.length}`,
+                                    _updatedAt: now,
+                                    ref: `PROV-${String(db.proveedores.length + 1).padStart(3, '0')}`,
+                                    nombre: prov,
+                                    dir: '', tel: '', email: '', web: '', fecha: today, docs: 'Creado desde Excel'
+                                });
+                            }
+                        }
+
+                        // Comprobar si la Referencia ya existe en el catálogo para actualizarla o crearla nueva
+                        const existingIdx = db.catalogo.findIndex(item => (item.ref || '').toLowerCase() === ref.toLowerCase());
+
+                        if (existingIdx !== -1) {
+                            const old = db.catalogo[existingIdx];
+                            db.catalogo[existingIdx] = {
+                                ...old,
+                                _updatedAt: now,
+                                ref: ref || old.ref,
+                                sku: sku || old.sku,
+                                sku2: sku2 || sku || old.sku2,
+                                nombre: nombre || old.nombre,
+                                barcode: barcode || old.barcode,
+                                medidas: medidasRaw || old.medidas || '0x0x0 cm',
+                                coste: coste,
+                                itp: itp,
+                                totalCoste: totalCoste,
+                                venta: venta || old.venta || 0,
+                                prov: prov || old.prov,
+                                justificante: justificante || old.justificante,
+                                stock: stock,
+                                desc: desc || old.desc
+                            };
+                            updatedCount++;
+                        } else {
+                            db.catalogo.push({
+                                _id: `catalogo_${now}_${i}_${Math.random().toString(36).substr(2, 4)}`,
+                                _updatedAt: now,
+                                ref: ref || `ART-${i}`,
+                                sku: sku,
+                                sku2: sku2 || sku,
+                                nombre: nombre || 'Artículo sin nombre',
+                                barcode: barcode,
+                                medidas: medidasRaw || '0x0x0 cm',
+                                coste: coste,
+                                itp: itp,
+                                totalCoste: totalCoste,
+                                venta: venta,
+                                prov: prov,
+                                justificante: justificante,
+                                stock: stock,
+                                desc: desc,
+                                fecha: today,
+                                imagenes: [],
+                                vendido: 'Disponible',
+                                factura: '', impFactura: '', transp: '', localizador: '', entregado: 'No'
+                            });
+                            addedCount++;
+                        }
+                    }
+
+                    saveDB();
+                    alert(`✅ ¡Importación de Inventario Excel (.xlsx) completada!\n\n• Artículos nuevos añadidos: ${addedCount}\n• Artículos existentes actualizados: ${updatedCount}\n• Total en tu catálogo: ${db.catalogo.length} artículos.`);
+                } else {
+                    // Importación genérica para el resto de pestañas (Proveedores, Clientes, Gastos, etc.)
+                    const jsonObjects = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+                    let count = 0;
+                    jsonObjects.forEach((obj, idx) => {
+                        db[currentTab].push({
+                            _id: `${currentTab}_${now}_${idx}`,
+                            _updatedAt: now,
+                            ...obj
+                        });
+                        count++;
+                    });
+                    saveDB();
+                    alert(`✅ Se han importado ${count} registros en ${tabTitles[currentTab]}.`);
+                }
+            } catch (err) {
+                console.error("Error al importar Excel:", err);
+                alert("Error al leer el archivo Excel (.xlsx). Asegúrate de que sea un archivo válido.");
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    }
+
+    // Exporta los datos a un archivo Excel (.xlsx) real con las 14 columnas exactas de tu plantilla
+    function exportToExcelXLSX(singleIndex = null) {
+        const targetTab = (currentTab === 'menu' || currentTab === 'ajustes') ? 'catalogo' : currentTab;
+        const rawList = singleIndex !== null ? [db[targetTab][singleIndex]] : (targetTab === currentTab ? getFilteredAndSortedData() : db[targetTab]);
+
+        if (!rawList || rawList.length === 0) {
+            return alert("No hay datos para exportar a Excel.");
+        }
+
+        let worksheet;
+        let sheetName = "Hoja1";
+
+        if (targetTab === 'catalogo') {
+            // Cabecera exacta de 14 columnas idéntica a tu archivo Inventario (1).xlsx
+            const headers = [
+                'REFERENCIA', 'SKU', 'NOMBRE ARTÍCULO', 'SKU', 'CÓDIGO DE BARRAS/QR',
+                'MEDIDAS', 'PRECIO COSTE', 'ITP (%)', 'TOTAL COSTE', 'PRECIO DE VENTA',
+                'PROVEEDOR', 'REFERENCIA', 'STOCK', 'DESCRIPCIÓN'
+            ];
+
+            const aoa = [headers];
+            rawList.forEach(item => {
+                const costeNum = parseFloat(item.coste) || 0;
+                const itpNum = item.itp !== undefined && item.itp !== '' ? parseFloat(item.itp) : 4;
+                const totalCosteNum = item.totalCoste !== undefined && item.totalCoste !== '' ? parseFloat(item.totalCoste) : +(costeNum * (1 + itpNum / 100)).toFixed(4);
+                const ventaNum = item.venta && parseFloat(item.venta) > 0 ? parseFloat(item.venta) : '';
+                const medidasClean = (item.medidas && item.medidas !== '0x0x0 cm') ? item.medidas : '';
+
+                aoa.push([
+                    item.ref || '',
+                    item.sku || '',
+                    item.nombre || '',
+                    item.sku2 || item.sku || '',
+                    item.barcode || '',
+                    medidasClean,
+                    costeNum,
+                    itpNum,
+                    totalCosteNum,
+                    ventaNum,
+                    item.prov || '',
+                    item.justificante || '',
+                    item.stock !== undefined ? Number(item.stock) : 0,
+                    item.desc || ''
+                ]);
+            });
+
+            worksheet = XLSX.utils.aoa_to_sheet(aoa);
+        } else {
+            // Exportación limpia a .xlsx para cualquiera de las demás pestañas
+            const cleanData = rawList.map(r => {
+                const copy = { ...r };
+                delete copy.imagenes; delete copy.imgData; delete copy.imagenFicha;
+                delete copy.fotos; delete copy.fileData; delete copy._idx;
+                delete copy._id; delete copy._updatedAt;
+                if (copy.items) copy.items = copy.items.map(i => `${i.ref}(${i.nombre}:${i.precio}€)`).join(' | ');
+                return copy;
+            });
+            worksheet = XLSX.utils.json_to_sheet(cleanData);
+            sheetName = targetTab.toUpperCase();
+        }
+
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+        const fileName = singleIndex !== null
+            ? `CirCA_${targetTab}_${rawList[0].ref || singleIndex}.xlsx`
+            : (targetTab === 'catalogo' ? `Inventario_CirCA_by_RB.xlsx` : `CirCA_${targetTab}.xlsx`);
+
+        XLSX.writeFile(workbook, fileName);
+    }
+
+    /* ==========================================================
+       4. NAVEGACIÓN Y CONTROLES DE CABECERA
        ========================================================== */
     function toggleSidebar(open) {
         document.getElementById('sidebar').classList.toggle('open', open);
@@ -1296,13 +1543,6 @@
         renderCurrentTab();
     }
 
-    function showExportMenu() {
-        const opcion = prompt("Opciones de listado:\nEscribe 1 para Exportar a EXCEL (.csv)\nEscribe 2 para Imprimir / Guardar en PDF", "1");
-        if (opcion === "1") exportSectionCSV();
-        else if (opcion === "2") printSectionPDF();
-    }
-
-    // Al pulsar el Logo vuelve siempre a la pantalla principal de Artículos (Requisito 6)
     function goHome() {
         switchTab('catalogo');
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1328,8 +1568,8 @@
             subtabsBar.style.display = 'none';
         }
 
-        // Mostrar u ocultar botones flotantes y barra inferior según la vista
         const isMenuOrSettings = (tab === 'menu' || tab === 'ajustes');
+        document.getElementById('excel-action-bar').style.display = isMenuOrSettings ? 'none' : 'flex';
         document.getElementById('fab-container').style.display = isMenuOrSettings ? 'none' : 'flex';
         document.getElementById('bottom-summary-bar').style.display = isMenuOrSettings ? 'none' : 'flex';
 
@@ -1337,7 +1577,7 @@
     }
 
     /* ==========================================================
-       4. MOTOR DE SINCRONIZACIÓN MULTI-DISPOSITIVO CON GITHUB
+       5. MOTOR DE SINCRONIZACIÓN MULTI-DISPOSITIVO CON GITHUB
        ========================================================== */
     let githubFileSha = null;
     let githubPollTimer = null;
@@ -1532,7 +1772,7 @@
     }
 
     /* ==========================================================
-       5. SALDOS AUTOMÁTICOS Y FILTRADO
+       6. SALDOS AUTOMÁTICOS Y FILTRADO
        ========================================================== */
     function getProveedorTotals(provName) {
         let facturado = 0, pagado = 0;
@@ -1614,12 +1854,12 @@
     }
 
     /* ==========================================================
-       6. RENDERIZADO DE PANTALLAS (IMAGEN 1 E IMAGEN 2)
+       7. RENDERIZADO DE PANTALLAS (IMAGEN 1 E IMAGEN 2)
        ========================================================== */
     function renderCurrentTab() {
         const container = document.getElementById('main-list-view');
 
-        // VISTA A: MENÚ PRINCIPAL ESTILO IMAGEN 1 (DASHBOARD DE TARJETAS)
+        // VISTA A: MENÚ PRINCIPAL ESTILO IMAGEN 1
         if (currentTab === 'menu') {
             const totalArts = db.catalogo.length;
             const totalCosteArts = db.catalogo.reduce((acc, x) => acc + (parseFloat(x.coste) || 0), 0);
@@ -1636,62 +1876,54 @@
                     </div>
 
                     <div class="dashboard-grid">
-                        <!-- 1. Artículos -->
                         <div class="dash-tile" onclick="switchTab('catalogo')">
                             <svg viewBox="0 0 24 24"><path d="M21 16.5C21 16.88 20.79 17.21 20.47 17.38L12.57 21.82C12.41 21.94 12.21 22 12 22C11.79 22 11.59 21.94 11.43 21.82L3.53 17.38C3.21 17.21 3 16.88 3 16.5V7.5C3 7.12 3.21 6.79 3.53 6.62L11.43 2.18C11.59 2.06 11.79 2 12 2C12.21 2 12.41 2.06 12.57 2.18L20.47 6.62C20.79 6.79 21 7.12 21 7.5V16.5M12 4.15L6.04 7.5L12 10.85L17.96 7.5L12 4.15M5 15.91L11 19.29V12.58L5 9.21V15.91M19 15.91V9.21L13 12.58V19.29L19 15.91Z"/></svg>
                             <div class="dash-tile-title">Artículos</div>
                             <div class="dash-tile-sub">${formatEuro(totalArts)} / ${formatEuro(totalCosteArts)}€</div>
                         </div>
 
-                        <!-- 2. Fichas / Documentos -->
                         <div class="dash-tile" onclick="switchTab('fichas')">
                             <svg viewBox="0 0 24 24"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20M9,13V11H15V13H9M9,17V15H15V17H9Z"/></svg>
                             <div class="dash-tile-title">Fichas</div>
                             <div class="dash-tile-sub">${totalFichas}</div>
                         </div>
 
-                        <!-- 3. Empresa -->
                         <div class="dash-tile" onclick="switchTab('empresa')">
                             <svg viewBox="0 0 24 24"><path d="M3,21V19H21V21H3M5,17V9H7V17H5M11,17V9H13V17H11M17,17V9H19V17H17M12,2L21,7V8H3V7L12,2Z"/></svg>
                             <div class="dash-tile-title">Empresa</div>
                             <div class="dash-tile-sub">${db.empresa[db.empresa.length - 1]?.nombre || 'CirCA'}</div>
                         </div>
 
-                        <!-- 4. Gastos -->
                         <div class="dash-tile" onclick="switchTab('gastos')">
                             <svg viewBox="0 0 24 24"><path d="M19,3H14.82C14.4,1.84 13.3,1 12,1C10.7,1 9.6,1.84 9.18,3H5A2,2 0 0,0 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5A2,2 0 0,0 19,3M12,3A1,1 0 0,1 13,4A1,1 0 0,1 12,5A1,1 0 0,1 11,4A1,1 0 0,1 12,3M13,17H11V16H9V14H13V13H10A1,1 0 0,1 9,12V9A1,1 0 0,1 10,8H11V7H13V8H15V10H11V11H14A1,1 0 0,1 15,12V15A1,1 0 0,1 14,16H13V17Z"/></svg>
                             <div class="dash-tile-title">Gastos</div>
                             <div class="dash-tile-sub">${formatEuro(totalGastos)}€</div>
                         </div>
 
-                        <!-- 5. Compras (Nueva entrada) -->
                         <div class="dash-tile" onclick="switchTab('compras')">
                             <svg viewBox="0 0 24 24"><path d="M12,3L2,8L12,13L22,8L12,3M4,10.5V16.5L11,20V14L4,10.5M18,13V16H15V18H18V21H20V18H23V16H20V13H18Z"/></svg>
                             <div class="dash-tile-title">Compras (Entrada)</div>
                             <div class="dash-tile-sub">${totalCompras} reg.</div>
                         </div>
 
-                        <!-- 6. Ventas (Nueva salida) -->
                         <div class="dash-tile" onclick="switchTab('ventas')">
                             <svg viewBox="0 0 24 24"><path d="M12,3L2,8L12,13L22,8L12,3M4,10.5V16.5L11,20V14L4,10.5M15,16V18H23V16H15Z"/></svg>
                             <div class="dash-tile-title">Ventas (Salida)</div>
                             <div class="dash-tile-sub">${totalVentas} fact.</div>
                         </div>
 
-                        <!-- 7. Escanear código de barras -->
                         <div class="dash-tile" onclick="scanToSearchCatalog()">
                             <svg viewBox="0 0 24 24"><path d="M2,6H4V18H2V6M5,6H6V18H5V6M7,6H10V18H7V6M11,6H12V18H11V6M14,6H16V18H14V6M17,6H20V18H17V6M21,6H22V18H21V6Z"/></svg>
                             <div class="dash-tile-title">Escanear código de barras</div>
                         </div>
 
-                        <!-- 8. ¿Busca soporte? / Manual -->
-                        <div class="dash-tile" onclick="switchTab('ayuda')">
-                            <svg viewBox="0 0 24 24"><path d="M20,2H4A2,2 0 0,0 2,4V22L6,18H20A2,2 0 0,0 22,16V4A2,2 0 0,0 20,2M7,9H9V11H7V9M11,9H13V11H11V9M15,9H17V11H15V9Z"/></svg>
-                            <div class="dash-tile-title">¿Busca soporte?</div>
+                        <div class="dash-tile" onclick="triggerExcelImport()">
+                            <svg viewBox="0 0 24 24"><path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M15.8,20H14L12,16.6L10,20H8.2L11.1,15.5L8.2,11H10L12,14.4L14,11H15.8L12.9,15.5L15.8,20M13,9V3.5L18.5,9H13Z"/></svg>
+                            <div class="dash-tile-title">Importar Excel (.xlsx)</div>
+                            <div class="dash-tile-sub">Plantilla Inventario</div>
                         </div>
                     </div>
 
-                    <!-- FILA INFERIOR DE 4 ICONOS (PROVEEDORES, CLIENTES, AJUSTES, AYUDA) -->
                     <div class="dashboard-bottom-row">
                         <div class="dash-small-tile" onclick="switchTab('proveedores')" title="Proveedores">
                             <svg viewBox="0 0 24 24"><path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/></svg>
@@ -1715,11 +1947,20 @@
             return;
         }
 
-        // VISTA B: PESTAÑA AJUSTES
+        // VISTA B: PESTAÑA AJUSTES (CON IMPORTACIÓN/EXPORTACIÓN EXCEL Y GITHUB)
         if (currentTab === 'ajustes') {
             const cfg = JSON.parse(localStorage.getItem('circa_gh_config') || '{}');
             container.innerHTML = `
                 <div class="settings-grid">
+                    <div class="settings-card">
+                        <h3>📊 Importar y Exportar Inventario Excel (.xlsx)</h3>
+                        <p style="font-size:0.82rem; color:var(--text-muted); line-height:1.4;">
+                            Importa directamente tu plantilla oficial <strong>Inventario (1).xlsx</strong> con sus 14 columnas (Referencia, SKU, Nombre, Código de barras, Medidas, Precio Coste, ITP %, Total Coste, PVP, Proveedor, Justificante, Stock y Descripción) o exporta todo tu inventario a Excel.
+                        </p>
+                        <button class="btn-primary" onclick="triggerExcelImport()">📥 Importar Archivo Excel (.xlsx)</button>
+                        <button class="btn-small" style="padding:12px; font-weight:bold;" onclick="exportToExcelXLSX()">📤 Exportar Inventario a Excel (.xlsx)</button>
+                    </div>
+
                     <div class="settings-card">
                         <h3>🐙 Sincronización Multi-Dispositivo con GitHub</h3>
                         <div class="form-group"><label>Usuario de GitHub *</label><input type="text" id="gh-owner" value="${cfg.owner || 'PinyPunK'}"></div>
@@ -1736,16 +1977,13 @@
                     </div>
 
                     <div class="settings-card">
-                        <h3>💾 Copia de Seguridad y Restauración</h3>
-                        <button class="btn-primary" onclick="exportarDatos()">📥 Descargar Copia de Seguridad (JSON)</button>
-                        <button class="btn-small" style="padding:12px; font-weight:bold;" onclick="document.getElementById('import-file').click()">📤 Restaurar Copia de Seguridad</button>
+                        <h3>💾 Copia de Seguridad Completa (JSON) y APP</h3>
+                        <button class="btn-primary" onclick="exportarDatos()">📥 Descargar Copia Completa (JSON)</button>
+                        <button class="btn-small" style="padding:10px; font-weight:bold;" onclick="document.getElementById('import-file').click()">📤 Restaurar Copia (JSON)</button>
                         <input type="file" id="import-file" style="display:none" accept=".json" onchange="importarDatos(event)">
-                    </div>
-
-                    <div class="settings-card">
-                        <h3>📱 Instalar y Desinstalar la APP</h3>
-                        <button class="btn-primary" onclick="installAppPWA()">📲 Instalar APP en este Dispositivo</button>
-                        <button class="btn-small" style="border-color:var(--danger); color:var(--danger); padding:10px;" onclick="uninstallAppPWA()">🗑️ Desinstalar / Limpiar Datos Locales</button>
+                        <hr style="border:none; border-top:1px solid var(--border-color); margin:4px 0;">
+                        <button class="btn-small" style="padding:10px;" onclick="installAppPWA()">📲 Instalar APP en este Dispositivo</button>
+                        <button class="btn-small" style="border-color:var(--danger); color:var(--danger); padding:8px;" onclick="uninstallAppPWA()">🗑️ Reiniciar Datos Locales</button>
                     </div>
                 </div>
             `;
@@ -1756,7 +1994,7 @@
         updateBottomSummaryBar(data);
 
         if (data.length === 0) {
-            container.innerHTML = `<div class="empty-msg">No hay registros en esta vista. Pulsa el botón circular dorado (+) abajo a la derecha para añadir el primero.</div>`;
+            container.innerHTML = `<div class="empty-msg">No hay registros todavía. Pulsa "📥 Importar Excel (.xlsx)" arriba a la derecha para cargar tu plantilla de inventario o pulsa (+) para añadir uno nuevo.</div>`;
             return;
         }
 
@@ -1764,18 +2002,18 @@
         if (currentTab === 'catalogo') {
             container.innerHTML = `<div class="articles-3col-grid">` + data.map(item => {
                 const imgs = item.imagenes && item.imagenes.length > 0 ? item.imagenes : (item.imgData ? [item.imgData] : ['Logo.jpg']);
-                const qty = item.vendido === 'Vendido' ? '0,00' : '1,00';
+                const qty = item.vendido === 'Vendido' ? '0,00' : formatEuro(item.stock !== undefined && Number(item.stock) > 0 ? item.stock : 1);
                 return `
                 <div class="art-card-compact" onclick="openArticleDetailModal(${item._idx})">
                     <img src="${imgs[0]}" class="art-img-square" alt="${item.nombre}">
                     <div class="art-info-compact">
                         <div class="art-title-center">${item.nombre}<br>${item.ref}</div>
-                        <div class="art-sku-line">${item.sku || item.barcode || item.ref}</div>
+                        <div class="art-sku-line">${item.sku || item.ref}</div>
                         <div class="art-qty-right">${qty}</div>
                         <div class="art-price-dual">
                             <span class="cost-color">${formatEuro(item.coste)}€</span> / <span class="sale-color">${formatEuro(item.venta)}€</span>
                         </div>
-                        <div class="art-desc-preview">${item.desc || ''}</div>
+                        <div class="art-desc-preview">${item.desc || item.nombre || ''}</div>
                         <div class="art-sku-line">${item.barcode || item.sku || ''}</div>
                     </div>
                 </div>`;
@@ -1870,7 +2108,7 @@
                 ${extraBoxHTML}
                 <div class="card-actions">
                     <button class="btn-small" onclick="openFormModal(${item._idx})">✏️ Editar</button>
-                    <button class="btn-small" onclick="exportSingleCSV(${item._idx})">📊 Excel</button>
+                    <button class="btn-small" onclick="exportToExcelXLSX(${item._idx})">📊 Excel (.xlsx)</button>
                     <button class="btn-small" onclick="printSinglePDF(${item._idx})">${pdfButtonLabel}</button>
                     <button class="btn-small" style="border-color:var(--danger); color:var(--danger);" onclick="deleteRecord(${item._idx})">🗑️ Borrar</button>
                 </div>
@@ -1878,7 +2116,6 @@
         }).join('') + `</div>`;
     }
 
-    // Actualiza la barra inferior con el formato exacto de la Imagen 2: Cant.: X | Total: Coste€ / Venta€
     function updateBottomSummaryBar(data) {
         const cantEl = document.getElementById('summary-cant');
         const totEl = document.getElementById('summary-totals');
@@ -1899,34 +2136,38 @@
         }
     }
 
-    // Abre la ficha del artículo al tocar su tarjeta en la cuadrícula de 3 columnas (permite leer toda la descripción completa)
+    // Ventana de detalle con todos los campos de la plantilla Excel y Descripción Completa
     function openArticleDetailModal(index) {
         const item = db.catalogo[index];
         const imgs = item.imagenes && item.imagenes.length > 0 ? item.imagenes : (item.imgData ? [item.imgData] : ['Logo.jpg']);
         document.getElementById('det-title').innerText = `${item.nombre} (${item.ref})`;
 
         const thumbs = imgs.map(src => `<img src="${src}" style="width:65px; height:65px; object-fit:cover; border-radius:6px; border:1px solid var(--gold-main); cursor:pointer;" onclick="document.getElementById('det-main-img').src='${src}'">`).join('');
+        const itpVal = item.itp !== undefined ? item.itp : 4;
+        const totCosteVal = item.totalCoste !== undefined ? item.totalCoste : ((parseFloat(item.coste)||0) * (1 + itpVal/100));
 
         document.getElementById('det-body').innerHTML = `
             <div style="text-align:center; margin-bottom:12px;">
-                <img id="det-main-img" src="${imgs[0]}" style="max-width:100%; max-height:260px; border-radius:8px; border:1px solid var(--gold-main);">
+                <img id="det-main-img" src="${imgs[0]}" style="max-width:100%; max-height:250px; border-radius:8px; border:1px solid var(--gold-main);">
                 <div style="display:flex; gap:6px; justify-content:center; margin-top:8px; overflow-x:auto;">${thumbs}</div>
             </div>
             <div class="list-card-grid" style="margin-bottom:10px;">
-                <div class="field-item"><strong>Referencia</strong>${item.ref}</div>
-                <div class="field-item"><strong>SKU</strong>${item.sku || '-'}</div>
-                <div class="field-item"><strong>Código de Barras</strong>${item.barcode || '-'}</div>
+                <div class="field-item"><strong>Referencia (Col. A)</strong>${item.ref}</div>
+                <div class="field-item"><strong>SKU (Col. B / D)</strong>${item.sku || '-'}</div>
+                <div class="field-item"><strong>Código de Barras / QR</strong>${item.barcode || '-'}</div>
                 <div class="field-item"><strong>Medidas</strong>${item.medidas || '-'}</div>
-                <div class="field-item"><strong>Precio de Coste</strong><span class="cost-color" style="font-weight:bold;">${formatEuro(item.coste)} €</span></div>
-                <div class="field-item"><strong>Precio de Venta</strong><span class="sale-color" style="font-weight:bold;">${formatEuro(item.venta)} €</span></div>
-                <div class="field-item"><strong>Proveedor</strong>${item.prov || '-'} (Just: ${item.justificante || '-'})</div>
-                <div class="field-item"><strong>Estado</strong>${item.vendido || 'Disponible'}</div>
+                <div class="field-item"><strong>Precio Coste</strong><span class="cost-color" style="font-weight:bold;">${formatEuro(item.coste)} €</span></div>
+                <div class="field-item"><strong>ITP (%) / Total Coste</strong>${itpVal}% ➔ <strong>${formatEuro(totCosteVal)} €</strong></div>
+                <div class="field-item"><strong>Precio de Venta (PVP)</strong><span class="sale-color" style="font-weight:bold;">${formatEuro(item.venta)} €</span></div>
+                <div class="field-item"><strong>Proveedor</strong>${item.prov || '-'}</div>
+                <div class="field-item"><strong>Ref. / Justificante Compra</strong>${item.justificante || '-'}</div>
+                <div class="field-item"><strong>Stock / Estado</strong>Stock: ${item.stock ?? 0} (${item.vendido || 'Disponible'})</div>
             </div>
             <div class="full-desc-box"><strong>Descripción Completa:</strong>\n${item.desc || 'Sin descripción registrada.'}</div>
             ${item.vendido === 'Vendido' ? `<div class="sub-items-box" style="margin-top:8px; color:var(--gold-light);">📦 Factura: ${item.factura || '-'} (${item.impFactura || 0}€) | Transporte: ${item.transp || '-'} [${item.localizador || '-'}] | Entregado: ${item.entregado || 'No'}</div>` : ''}
             <div class="card-actions" style="margin-top:15px;">
-                <button class="btn-primary" onclick="document.getElementById('detail-modal').style.display='none'; openFormModal(${index});">✏️ Editar Artículo</button>
-                <button class="btn-small" onclick="exportSingleCSV(${index})">📊 Excel</button>
+                <button class="btn-primary" onclick="document.getElementById('detail-modal').style.display='none'; openFormModal(${index});">✏️ Editar</button>
+                <button class="btn-small" onclick="exportToExcelXLSX(${index})">📊 Excel (.xlsx)</button>
                 <button class="btn-small" onclick="printSinglePDF(${index})">🖨️ PDF</button>
                 <button class="btn-small" style="border-color:var(--danger); color:var(--danger);" onclick="document.getElementById('detail-modal').style.display='none'; deleteRecord(${index});">🗑️ Borrar</button>
             </div>
@@ -1941,8 +2182,15 @@
     }
 
     /* ==========================================================
-       7. GESTIÓN DE IMÁGENES Y SUB-LISTAS
+       8. GESTIÓN DE FORMULARIOS Y CÁLCULO DE TOTAL COSTE CON ITP
        ========================================================== */
+    function calcTotalCosteForm() {
+        const coste = parseFloat(document.getElementById('cat-coste').value) || 0;
+        const itp = parseFloat(document.getElementById('cat-itp').value) || 0;
+        const totalCoste = coste * (1 + itp / 100);
+        document.getElementById('cat-total-coste').value = totalCoste.toFixed(3);
+    }
+
     function toggleVendidoCat() {
         const val = document.getElementById('cat-vendido').value;
         document.getElementById('box-cat-vendido').style.display = val === 'Vendido' ? 'block' : 'none';
@@ -2107,9 +2355,6 @@
         }
     }
 
-    /* ==========================================================
-       8. ABRIR Y GUARDAR FORMULARIOS
-       ========================================================== */
     function openFormModal(index = null) {
         if (currentTab === 'menu' || currentTab === 'ajustes') currentTab = 'catalogo';
         editIndex = index;
@@ -2146,9 +2391,12 @@
                 document.getElementById('cat-m2').value = m[1] || 0;
                 document.getElementById('cat-m3').value = m[2] || 0;
                 document.getElementById('cat-coste').value = item.coste || 0;
+                document.getElementById('cat-itp').value = item.itp !== undefined ? item.itp : 4;
+                calcTotalCosteForm();
                 document.getElementById('cat-venta').value = item.venta || 0;
                 document.getElementById('cat-prov').value = item.prov || '';
                 document.getElementById('cat-justificante').value = item.justificante || '';
+                document.getElementById('cat-stock').value = item.stock !== undefined ? item.stock : 0;
                 document.getElementById('cat-fecha').value = item.fecha || '';
                 document.getElementById('cat-vendido').value = item.vendido || 'Disponible';
                 toggleVendidoCat();
@@ -2248,18 +2496,27 @@
         if (tab === 'catalogo') {
             const entregadoVal = document.getElementById('cat-entregado').value;
             const fechaEnt = document.getElementById('cat-fecha-entrega').value;
+            const costeVal = parseFloat(document.getElementById('cat-coste').value) || 0;
+            const itpVal = parseFloat(document.getElementById('cat-itp').value) || 0;
+            const totalCosteVal = +(costeVal * (1 + itpVal / 100)).toFixed(4);
+            const skuVal = document.getElementById('cat-sku').value;
+
             record = {
                 _id: existingId, _updatedAt: now,
                 ref: document.getElementById('cat-ref').value,
-                sku: document.getElementById('cat-sku').value,
+                sku: skuVal,
+                sku2: skuVal,
                 nombre: document.getElementById('cat-nombre').value,
                 barcode: document.getElementById('cat-barcode').value,
                 desc: document.getElementById('cat-desc').value,
                 medidas: `${document.getElementById('cat-m1').value || 0}x${document.getElementById('cat-m2').value || 0}x${document.getElementById('cat-m3').value || 0} cm`,
-                coste: document.getElementById('cat-coste').value,
+                coste: costeVal,
+                itp: itpVal,
+                totalCoste: totalCosteVal,
                 venta: document.getElementById('cat-venta').value,
                 prov: document.getElementById('cat-prov').value,
                 justificante: document.getElementById('cat-justificante').value,
+                stock: parseFloat(document.getElementById('cat-stock').value) || 0,
                 fecha: document.getElementById('cat-fecha').value || today,
                 imagenes: tempImagesArray,
                 vendido: document.getElementById('cat-vendido').value,
@@ -2340,9 +2597,9 @@
                 tempCompraItems.forEach((it, idx) => {
                     db.catalogo.push({
                         _id: `catalogo_${now}_${idx}`, _updatedAt: now,
-                        ref: it.ref, sku: it.sku, nombre: it.nombre, barcode: it.barcode,
-                        desc: 'Añadido desde Compras', medidas: '0x0x0 cm', coste: it.precio, venta: 0,
-                        prov: record.prov, justificante: record.just, fecha: record.fecha, imagenes: [],
+                        ref: it.ref, sku: it.sku, sku2: it.sku, nombre: it.nombre, barcode: it.barcode,
+                        desc: '', medidas: '0x0x0 cm', coste: it.precio, itp: 4, totalCoste: +(it.precio * 1.04).toFixed(4), venta: 0,
+                        prov: record.prov, justificante: record.just, stock: it.uds || 1, fecha: record.fecha, imagenes: [],
                         vendido: 'Disponible', factura: '', impFactura: '', transp: '', localizador: '', entregado: 'No'
                     });
                 });
@@ -2383,6 +2640,7 @@
                 if (catIdx !== -1) {
                     db.catalogo[catIdx]._updatedAt = now;
                     db.catalogo[catIdx].vendido = 'Vendido';
+                    db.catalogo[catIdx].stock = 0;
                     db.catalogo[catIdx].factura = record.factura;
                     db.catalogo[catIdx].impFactura = record.total;
                     db.catalogo[catIdx].transp = record.transp;
@@ -2477,7 +2735,7 @@
     }
 
     /* ==========================================================
-       10. IMPRESIÓN DE FICHA ELEGANTE CIRCA, FACTURA PDF Y EXCEL
+       10. IMPRESIÓN DE FICHA ELEGANTE CIRCA Y FACTURA PDF
        ========================================================== */
     function printFichaPDF(index) {
         const f = db.fichas[index];
@@ -2494,8 +2752,7 @@
             <!DOCTYPE html>
             <html lang="es">
             <head>
-                <meta charset="UTF-8">
-                <title>Ficha_${f.ref}</title>
+                <meta charset="UTF-8"><title>Ficha_${f.ref}</title>
                 <style>
                     @page { margin: 15mm; }
                     body { font-family: 'Georgia', serif; background-color: #121212; color: #F5F5F5; margin: 0; padding: 25px; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
@@ -2548,34 +2805,6 @@
         win.document.close();
     }
 
-    function downloadCSV(rows, filename) {
-        if (!rows || rows.length === 0) return alert("No hay datos para exportar.");
-        const cleanRows = rows.map(r => {
-            const copy = { ...r };
-            delete copy.imagenes; delete copy.imgData; delete copy.imagenFicha;
-            delete copy.fotos; delete copy.fileData; delete copy._idx;
-            delete copy._id; delete copy._updatedAt;
-            if (copy.items) copy.items = copy.items.map(i => `${i.ref}(${i.nombre}:${i.precio}€)`).join(' | ');
-            return copy;
-        });
-        const keys = Object.keys(cleanRows[0]);
-        const csvContent = "\uFEFF" + [
-            keys.join(";"),
-            ...cleanRows.map(r => keys.map(k => `"${String(r[k] ?? '').replace(/"/g, '""')}"`).join(";"))
-        ].join("\n");
-
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = filename;
-        link.click();
-    }
-
-    function exportSectionCSV() { downloadCSV(getFilteredAndSortedData(), `CirCA_${currentTab}.csv`); }
-    function exportSingleCSV(index) {
-        const item = db[currentTab][index];
-        downloadCSV([item], `CirCA_${currentTab}_${item.ref || index}.csv`);
-    }
     function printSectionPDF() { openPrintWindow(tabTitles[currentTab], getFilteredAndSortedData()); }
     function printSinglePDF(index) {
         const item = db[currentTab][index];
