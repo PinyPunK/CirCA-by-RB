@@ -647,13 +647,17 @@
             border-radius: 5px;
             padding: 10px;
             font-size: 0.8rem;
+            max-height: 260px;
+            overflow-y: auto;
         }
 
         .sub-item-row {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             padding: 4px 0;
             border-bottom: 1px dashed #2c2c2c;
+            gap: 8px;
         }
 
         .card-actions {
@@ -750,6 +754,25 @@
             background-color: rgba(197, 160, 89, 0.06);
             border: 1px solid var(--gold-dark);
             padding: 14px;
+            border-radius: 6px;
+        }
+
+        .multi-item-panel h4 {
+            color: var(--gold-light);
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+        }
+
+        .bulk-actions-bar {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.35);
+            border: 1px dashed var(--gold-main);
             border-radius: 6px;
         }
 
@@ -1054,17 +1077,17 @@
             <button type="submit" class="btn-primary" style="width:100%">💾 Guardar Cliente</button>
         </form>
 
-        <!-- 5. FORMULARIO COMPRAS -->
+        <!-- 5. FORMULARIO COMPRAS (CON DESPLEGABLE DE ARTÍCULOS Y CARGA MASIVA DE 240 ARTÍCULOS) -->
         <form id="form-compras" class="tab-form" onsubmit="saveRecord(event, 'compras')" style="display:none;">
             <div class="form-grid">
-                <div class="form-group"><label>Núm. Justificante Compra *</label><input type="text" id="comp-just" required></div>
+                <div class="form-group"><label>Núm. Justificante Compra *</label><input type="text" id="comp-just" required placeholder="Ej: FC2026/00002"></div>
                 <div class="form-group"><label>Fecha de Compra *</label><input type="date" id="comp-fecha" required></div>
                 <div class="form-group">
                     <label>Proveedor *</label>
                     <select id="comp-prov" class="provider-select" required></select>
                 </div>
                 <div class="form-group">
-                    <label>Pagado</label>
+                    <label>Pagado (Suma al proveedor)</label>
                     <select id="comp-pagado"><option value="No">No</option><option value="Sí">Sí</option></select>
                 </div>
                 <div class="form-group">
@@ -1077,8 +1100,35 @@
                 </div>
 
                 <div class="multi-item-panel">
-                    <h4>📦 Añadir Artículos a esta Compra</h4>
+                    <h4>📦 Añadir Artículos a esta Compra (Individual o Lote Masivo)</h4>
+
+                    <!-- Barra de Carga Masiva para no meter 240 artículos uno a uno -->
+                    <div class="bulk-actions-bar">
+                        <div style="width:100%; font-size:0.78rem; color:var(--gold-light); margin-bottom:4px;">
+                            ⚡ <strong>Atajo para compras grandes (ej. tus 240 artículos):</strong> Rellena arriba el Justificante o Proveedor y pulsa uno de estos botones:
+                        </div>
+                        <button type="button" class="btn-primary" style="font-size:0.8rem; padding:8px 12px;" onclick="addMatchingCatalogToCompra(false)">
+                            ⚡ Cargar todos los del Justificante / Proveedor (Coste Base)
+                        </button>
+                        <button type="button" class="btn-small" style="border-color:var(--gold-light);" onclick="addMatchingCatalogToCompra(true)">
+                            ⚡ Cargar con Total Coste (+ITP 4%)
+                        </button>
+                        <button type="button" class="btn-small" onclick="addAllCatalogToCompra()">
+                            📦 Cargar TODO el Catálogo (${db?.catalogo?.length || 0})
+                        </button>
+                        <button type="button" class="btn-small" style="border-color:var(--danger); color:var(--danger);" onclick="clearCompraItemsList()">
+                            🗑️ Vaciar lista
+                        </button>
+                    </div>
+
                     <div class="form-grid">
+                        <!-- NUEVO DESPLEGABLE CON TODOS LOS ARTÍCULOS REGISTRADOS -->
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Seleccionar Artículo Registrado del Catálogo (Autorrellena todos los campos)</label>
+                            <select id="comp-select-cat" onchange="autofillCompraItem()">
+                                <option value="">-- Seleccionar artículo del catálogo --</option>
+                            </select>
+                        </div>
                         <div class="form-group"><label>Referencia</label><input type="text" id="c-item-ref"></div>
                         <div class="form-group"><label>Nombre Artículo</label><input type="text" id="c-item-nombre"></div>
                         <div class="form-group"><label>SKU</label><input type="text" id="c-item-sku"></div>
@@ -1089,10 +1139,10 @@
                                 <button type="button" class="btn-small" onclick="startScanner('c-item-barcode')">📷</button>
                             </div>
                         </div>
-                        <div class="form-group"><label>Precio Coste (€)</label><input type="number" step="0.01" id="c-item-precio" value="0"></div>
+                        <div class="form-group"><label>Precio Coste Unitario (€)</label><input type="number" step="0.001" id="c-item-precio" value="0"></div>
                         <div class="form-group"><label>Unidades</label><input type="number" id="c-item-uds" value="1"></div>
                     </div>
-                    <button type="button" class="btn-small" style="width:100%; padding:10px; font-weight:bold;" onclick="addCompraItem()">➕ Añadir Artículo a la Compra</button>
+                    <button type="button" class="btn-small" style="width:100%; padding:10px; font-weight:bold;" onclick="addCompraItem()">➕ Añadir este Artículo a la Compra</button>
                     <div id="compra-items-list" class="sub-items-box" style="margin-top:10px;"></div>
                 </div>
             </div>
@@ -1279,7 +1329,7 @@
     const COLLECTIONS = ['empresa', 'catalogo', 'fichas', 'proveedores', 'clientes', 'compras', 'ventas', 'gastos', 'ayuda'];
     let currentTab = 'catalogo';
     let editIndex = null;
-    let editingRecordId = null; // Garantiza que siempre editemos el registro exacto aunque haya filtros activos
+    let editingRecordId = null;
     let tempImagesArray = [];
     let tempFichaMainImg = '';
     let tempFichaFotos = [];
@@ -1305,7 +1355,6 @@
 
     let db = JSON.parse(localStorage.getItem('circa_db_v2') || 'null') || defaultDB;
 
-    // Funciones de base de datos IndexedDB (soporta cientos de megabytes sin límite de fotos)
     function openIDB() {
         return new Promise((resolve, reject) => {
             const req = indexedDB.open('CirCA_Enterprise_DB', 1);
@@ -1356,7 +1405,6 @@
         } catch (e) {}
     }
 
-    // Normaliza la base de datos asegurando que cada artículo tenga un _id único y permanente
     function normalizeDB(database) {
         if (!database) database = { ...defaultDB };
         if (!database._deletedIds) database._deletedIds = [];
@@ -1489,7 +1537,6 @@
                             };
                             updatedCount++;
                         } else {
-                            // ID determinista basado en la Referencia para que nunca se duplique entre dispositivos
                             const stableId = ref ? `cat_${ref.toUpperCase().replace(/\s+/g, '_')}` : `catalogo_${now}_${i}`;
                             db.catalogo.push({
                                 _id: stableId,
@@ -1702,7 +1749,6 @@
         return new TextDecoder('utf-8').decode(bytes);
     }
 
-    // Fusión Inteligente por _id y por Referencia (evita que GitHub sobrescriba una edición local reciente)
     function mergeDatabases(local, remote) {
         local = normalizeDB(local);
         remote = normalizeDB(remote);
@@ -1715,7 +1761,6 @@
         COLLECTIONS.forEach(col => {
             const map = new Map();
 
-            // Función auxiliar para generar clave única (en catálogo usa la Referencia para no duplicar nunca un artículo editado)
             const getItemKey = (item) => {
                 if (col === 'catalogo' && item.ref) return `REF_${String(item.ref).trim().toUpperCase()}`;
                 return item._id;
@@ -1731,7 +1776,6 @@
                 if (!deletedSet.has(item._id)) {
                     const key = getItemKey(item);
                     const existing = map.get(key);
-                    // Gana siempre el registro que tenga la marca de tiempo (_updatedAt) más reciente
                     if (!existing || (Number(item._updatedAt) || 0) >= (Number(existing._updatedAt) || 0)) {
                         map.set(key, item);
                     }
@@ -1805,7 +1849,6 @@
         const cfg = JSON.parse(localStorage.getItem('circa_gh_config') || 'null');
         if (!cfg || !cfg.token) return;
 
-        // Si había cambios locales pendientes de subir porque cerraste la app rápido antes, forzamos subida
         if (localStorage.getItem('circa_unsaved_changes') === 'true') {
             pushChanges = true;
         }
@@ -1892,7 +1935,6 @@
         if (document.visibilityState === 'visible') syncWithGitHub(false, false);
     });
 
-    // Guarda en localStorage Y en IndexedDB simultáneamente para que jamás se pierda un cambio al salir
     async function persistLocalOnly() {
         try {
             localStorage.setItem('circa_db_v2', JSON.stringify(db));
@@ -1938,7 +1980,6 @@
         return { facturado: facturado.toFixed(2), cobrado: cobrado.toFixed(2) };
     }
 
-    // Rellena los desplegables de proveedores/clientes y añade dinámicamente el valor actual si no estaba en la lista
     function populateSelects(currentProvVal = '', currentCliVal = '') {
         const provNames = new Set((db.proveedores || []).map(p => p.nombre));
         if (currentProvVal && !provNames.has(currentProvVal)) provNames.add(currentProvVal);
@@ -2213,12 +2254,12 @@
                     <div class="field-item"><strong>Total Cobrado (Cobrado=Sí)</strong><span style="color:var(--success); font-weight:bold;">${totals.cobrado} €</span></div>`;
             } else if (currentTab === 'compras') {
                 const items = item.items || [{ ref: item.ref, nombre: item.nombre, sku: item.sku, precio: item.precio, uds: item.uds || 1 }];
-                headerTitle = `Justificante: ${item.just || '-'} | Prov: ${item.prov || '-'}`;
+                headerTitle = `Justificante: ${item.just || '-'} | Prov: ${item.prov || '-'} (${items.length} art.)`;
                 fieldsHTML = `
                     <div class="field-item"><strong>Fecha</strong>${item.fecha || '-'}</div>
-                    <div class="field-item"><strong>Total Compra</strong><strong style="color:var(--gold-light)">${item.total || item.precio} €</strong></div>
+                    <div class="field-item"><strong>Total Compra</strong><strong style="color:var(--gold-light)">${formatEuro(item.total || item.precio)} €</strong></div>
                     <div class="field-item"><strong>Pagado / Contab.</strong>Pagado: ${item.pagado || 'No'} | Contab: ${item.contab || 'No'}</div>`;
-                extraBoxHTML = `<div class="sub-items-box">` + items.map(it => `<div class="sub-item-row"><span>REF: ${it.ref} | SKU: ${it.sku || '-'} - <strong>${it.nombre}</strong> (x${it.uds})</span><span>${it.precio} €</span></div>`).join('') + `</div>`;
+                extraBoxHTML = `<div class="sub-items-box">` + items.map(it => `<div class="sub-item-row"><span><strong>${it.ref}</strong> | ${it.sku || '-'} - ${it.nombre} (x${it.uds})</span><span>${formatEuro(it.precio)} €</span></div>`).join('') + `</div>`;
             } else if (currentTab === 'ventas') {
                 const items = item.items || [{ ref: item.ref, sku: item.sku, nombre: item.nombre, precio: item.precio, coste: item.coste }];
                 headerTitle = `Factura: ${item.factura} | Cliente: ${item.cliente}`;
@@ -2329,7 +2370,7 @@
     }
 
     /* ==========================================================
-       8. GESTIÓN DE FORMULARIOS CON BLOQUEO DE ÍNDICE Y ID EXACTO
+       8. DESPLEGABLE DE ARTÍCULOS Y CARGA MASIVA EN COMPRAS
        ========================================================== */
     function calcTotalCosteForm() {
         const coste = parseFloat(document.getElementById('cat-coste').value) || 0;
@@ -2406,6 +2447,99 @@
         reader.readAsDataURL(file);
     }
 
+    // NUEVA FUNCIÓN: Autorrellena los campos de Compra al elegir un artículo del desplegable
+    function autofillCompraItem() {
+        const index = document.getElementById('comp-select-cat').value;
+        if (index === "") return;
+        const item = db.catalogo[index];
+        if (!item) return;
+
+        document.getElementById('c-item-ref').value = item.ref || '';
+        document.getElementById('c-item-nombre').value = item.nombre || '';
+        document.getElementById('c-item-sku').value = item.sku || '';
+        document.getElementById('c-item-barcode').value = item.barcode || '';
+        document.getElementById('c-item-precio').value = item.coste || 0;
+        document.getElementById('c-item-uds').value = item.stock && Number(item.stock) > 0 ? item.stock : 1;
+
+        // Si en la cabecera de la compra aún no habían puesto el Justificante o el Proveedor, los rellena también automáticamente
+        if (!document.getElementById('comp-just').value && item.justificante) {
+            document.getElementById('comp-just').value = item.justificante;
+        }
+        if (!document.getElementById('comp-prov').value && item.prov) {
+            document.getElementById('comp-prov').value = item.prov;
+        }
+    }
+
+    // NUEVA FUNCIÓN MASIVA: Añade de golpe todos los artículos que coincidan con el Justificante o Proveedor (ej. los 239 de FC2026/00002)
+    function addMatchingCatalogToCompra(useTotalCosteWithItp = false) {
+        const justVal = document.getElementById('comp-just').value.trim().toLowerCase();
+        const provVal = document.getElementById('comp-prov').value.trim().toLowerCase();
+
+        if (!justVal && !provVal) {
+            return alert("Escribe primero arriba el 'Núm. Justificante Compra' (ej: FC2026/00002) o selecciona el 'Proveedor' para cargar todos sus artículos de golpe.");
+        }
+
+        const matches = db.catalogo.filter(item => {
+            const matchJust = justVal ? String(item.justificante || '').trim().toLowerCase() === justVal : true;
+            const matchProv = provVal ? String(item.prov || '').trim().toLowerCase() === provVal : true;
+            return matchJust && matchProv;
+        });
+
+        if (matches.length === 0) {
+            return alert("No se encontraron artículos en el Catálogo con ese Justificante o Proveedor.");
+        }
+
+        let added = 0;
+        matches.forEach(item => {
+            const alreadyInList = tempCompraItems.some(x => x.ref === item.ref);
+            if (!alreadyInList) {
+                const unitPrice = useTotalCosteWithItp
+                    ? (parseFloat(item.totalCoste) || parseFloat(item.coste) || 0)
+                    : (parseFloat(item.coste) || 0);
+                tempCompraItems.push({
+                    ref: item.ref || '',
+                    nombre: item.nombre || '',
+                    sku: item.sku || '',
+                    barcode: item.barcode || '',
+                    precio: unitPrice,
+                    uds: 1
+                });
+                added++;
+            }
+        });
+
+        renderCompraItems();
+        showSaveToast(`⚡ ¡${added} artículos añadidos de golpe a la compra!`);
+    }
+
+    // NUEVA FUNCIÓN MASIVA: Añade absolutamente todos los artículos del catálogo a la compra actual
+    function addAllCatalogToCompra() {
+        if (!db.catalogo || db.catalogo.length === 0) {
+            return alert("El catálogo está vacío. Importa primero tu Excel en la pestaña Artículos.");
+        }
+        let added = 0;
+        db.catalogo.forEach(item => {
+            if (!tempCompraItems.some(x => x.ref === item.ref)) {
+                tempCompraItems.push({
+                    ref: item.ref || '',
+                    nombre: item.nombre || '',
+                    sku: item.sku || '',
+                    barcode: item.barcode || '',
+                    precio: parseFloat(item.coste) || 0,
+                    uds: 1
+                });
+                added++;
+            }
+        });
+        renderCompraItems();
+        showSaveToast(`📦 ¡${added} artículos cargados en la compra!`);
+    }
+
+    function clearCompraItemsList() {
+        tempCompraItems = [];
+        renderCompraItems();
+    }
+
     function addCompraItem() {
         const ref = document.getElementById('c-item-ref').value.trim();
         const nombre = document.getElementById('c-item-nombre').value.trim();
@@ -2413,9 +2547,10 @@
         const barcode = document.getElementById('c-item-barcode').value.trim();
         const precio = parseFloat(document.getElementById('c-item-precio').value) || 0;
         const uds = parseInt(document.getElementById('c-item-uds').value) || 1;
-        if (!ref || !nombre) return alert("Introduce Referencia y Nombre.");
+        if (!ref || !nombre) return alert("Selecciona un artículo del desplegable o introduce su Referencia y Nombre.");
 
         tempCompraItems.push({ ref, nombre, sku, barcode, precio, uds });
+        document.getElementById('comp-select-cat').value = '';
         document.getElementById('c-item-ref').value = '';
         document.getElementById('c-item-nombre').value = '';
         document.getElementById('c-item-sku').value = '';
@@ -2428,16 +2563,21 @@
     function renderCompraItems() {
         const box = document.getElementById('compra-items-list');
         if (tempCompraItems.length === 0) {
-            box.innerHTML = `<em>Sin artículos añadidos.</em>`;
+            box.innerHTML = `<em>Sin artículos añadidos todavía. Usa el desplegable o los botones de carga rápida de arriba.</em>`;
             document.getElementById('comp-total').value = '0.00';
             return;
         }
         let total = 0;
-        box.innerHTML = tempCompraItems.map((it, i) => {
-            const sub = it.precio * it.uds;
+        const rowsHtml = tempCompraItems.map((it, i) => {
+            const sub = (parseFloat(it.precio) || 0) * (parseInt(it.uds) || 1);
             total += sub;
-            return `<div class="sub-item-row"><span><strong>${it.ref}</strong> - ${it.nombre} (${it.uds}x${it.precio}€)</span><button type="button" class="btn-small" onclick="tempCompraItems.splice(${i},1); renderCompraItems();">✖</button></div>`;
+            return `<div class="sub-item-row">
+                <span><strong>${it.ref}</strong> | ${it.sku || '-'} - ${it.nombre} (${it.uds} x ${formatEuro(it.precio)}€ = <strong>${formatEuro(sub)}€</strong>)</span>
+                <button type="button" class="btn-small" style="border-color:var(--danger); color:var(--danger); padding:2px 6px;" onclick="tempCompraItems.splice(${i},1); renderCompraItems();">✖</button>
+            </div>`;
         }).join('');
+
+        box.innerHTML = `<div style="margin-bottom:6px; color:var(--gold-light); font-weight:bold;">Total artículos en esta compra: ${tempCompraItems.length}</div>` + rowsHtml;
         document.getElementById('comp-total').value = total.toFixed(2);
     }
 
@@ -2520,12 +2660,18 @@
         activeForm.style.display = 'block';
         document.getElementById('modal-title').innerText = editIndex === null ? `➕ Añadir (${tabTitles[currentTab]})` : `✏️ Editar (${tabTitles[currentTab]})`;
 
+        // Poblar el desplegable de artículos tanto en Ventas como en Compras
+        const catalogOptionsHtml = `<option value="">-- Seleccionar artículo registrado (${db.catalogo.length} disponibles) --</option>` +
+            db.catalogo.map((x, i) => `<option value="${i}">${x.ref} | ${x.sku || '-'} - ${x.nombre} (Coste: ${formatEuro(x.coste)}€)</option>`).join('');
+
         if (currentTab === 'ventas') {
-            document.getElementById('ven-select-cat').innerHTML = '<option value="">-- Seleccionar artículo --</option>' +
-                db.catalogo.map((x, i) => `<option value="${i}">${x.ref} - ${x.nombre} (${x.venta}€)</option>`).join('');
+            document.getElementById('ven-select-cat').innerHTML = catalogOptionsHtml;
             renderVentaItems();
         }
-        if (currentTab === 'compras') renderCompraItems();
+        if (currentTab === 'compras') {
+            document.getElementById('comp-select-cat').innerHTML = catalogOptionsHtml;
+            renderCompraItems();
+        }
         if (currentTab === 'catalogo') { renderImagePreviews(); toggleVendidoCat(); calcTotalCosteForm(); }
         if (currentTab === 'fichas') renderFichaPreviews();
 
@@ -2644,7 +2790,6 @@
         const now = Date.now();
         const today = new Date().toISOString().split('T')[0];
 
-        // Buscamos la posición exacta del registro por su ID único por si había filtros activos
         let targetIdx = editIndex;
         if (editingRecordId) {
             const foundById = db[tab].findIndex(x => x._id === editingRecordId);
@@ -2754,8 +2899,14 @@
                 sku: tempCompraItems[0].sku
             };
 
-            if (targetIdx === null) {
-                tempCompraItems.forEach((it, idx) => {
+            // Sincronizar con el Catálogo sin duplicar si el artículo ya existía
+            tempCompraItems.forEach((it, idx) => {
+                const existingCatIdx = db.catalogo.findIndex(c => (c.ref || '').toLowerCase() === (it.ref || '').toLowerCase());
+                if (existingCatIdx !== -1) {
+                    db.catalogo[existingCatIdx]._updatedAt = now;
+                    if (record.prov) db.catalogo[existingCatIdx].prov = record.prov;
+                    if (record.just) db.catalogo[existingCatIdx].justificante = record.just;
+                } else {
                     db.catalogo.push({
                         _id: `cat_${String(it.ref).toUpperCase().replace(/\s+/g, '_')}_${now}_${idx}`, _updatedAt: now,
                         ref: it.ref, sku: it.sku, sku2: it.sku, nombre: it.nombre, barcode: it.barcode,
@@ -2763,8 +2914,8 @@
                         prov: record.prov, justificante: record.just, stock: it.uds || 1, fecha: record.fecha, imagenes: [],
                         vendido: 'Disponible', factura: '', impFactura: '', transp: '', localizador: '', entregado: 'No'
                     });
-                });
-            }
+                }
+            });
         } else if (tab === 'ventas') {
             if (tempVentaItems.length === 0 && document.getElementById('v-item-ref').value.trim() !== '') addVentaItem();
             if (tempVentaItems.length === 0) return alert("Añade al menos un artículo a la venta.");
@@ -3123,7 +3274,6 @@
         reader.readAsText(file);
     }
 
-    // Arranque inteligente: carga la versión más reciente entre IndexedDB y localStorage antes de sincronizar con GitHub
     async function initApp() {
         const idbData = await loadFromIndexedDB();
         if (idbData && (idbData._lastModified || 0) >= (db._lastModified || 0)) {
