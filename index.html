@@ -174,7 +174,7 @@
         }
 
         /* ==========================================
-           3. MENÚ PRINCIPAL TIPO DASHBOARD (IMAGEN 1)
+           3. MENÚ PRINCIPAL TIPO DASHBOARD
            ========================================== */
         .dashboard-wrapper {
             max-width: 650px;
@@ -276,7 +276,7 @@
         .dash-small-tile span { font-size: 0.7rem; color: var(--text-muted); }
 
         /* ==========================================
-           4. CUADRÍCULA DE 3 COLUMNAS PARA ARTÍCULOS (IMAGEN 2)
+           4. CUADRÍCULA DE 3 COLUMNAS PARA ARTÍCULOS
            ========================================== */
         .articles-3col-grid {
             display: grid;
@@ -777,6 +777,11 @@
             font-size: 0.95rem;
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .bulk-actions-bar {
@@ -874,8 +879,8 @@
     <div id="collapsible-filters" class="collapsible-filters">
         <div class="filters-grid">
             <div class="filter-item">
-                <label>🔍 Buscar texto, SKU o Código</label>
-                <input type="text" id="filter-search" placeholder="Escribe SKU, ref, nombre, proveedor..." oninput="renderCurrentTab()">
+                <label>🔍 Buscar texto, SKU, Cuenta o Ref.</label>
+                <input type="text" id="filter-search" placeholder="Escribe SKU, ref, pedido, proveedor..." oninput="renderCurrentTab()">
             </div>
             <div class="filter-item">
                 <label>📅 Fecha Desde</label>
@@ -1091,7 +1096,7 @@
             <button type="submit" class="btn-primary" style="width:100%">💾 Guardar Cliente</button>
         </form>
 
-        <!-- 5. FORMULARIO COMPRAS -->
+        <!-- 5. FORMULARIO COMPRAS (CON REF. PROVEEDOR Y CUENTA CONTABLE) -->
         <form id="form-compras" class="tab-form" onsubmit="saveRecord(event, 'compras')" style="display:none;">
             <div class="form-grid">
                 <div class="form-group"><label>Núm. Justificante Compra *</label><input type="text" id="comp-just" required placeholder="Ej: FC2026/00002"></div>
@@ -1100,6 +1105,8 @@
                     <label>Proveedor *</label>
                     <select id="comp-prov" class="provider-select" required></select>
                 </div>
+                <div class="form-group"><label>Ref. Proveedor (Nº Ref / Fact. Prov.)</label><input type="text" id="comp-ref-prov" placeholder="Ej: INV-99482"></div>
+                <div class="form-group"><label>Cuenta Contable (8 dígitos)</label><input type="text" id="comp-cuenta" placeholder="Ej: 60000001"></div>
                 <div class="form-group">
                     <label>Pagado (Suma al proveedor)</label>
                     <select id="comp-pagado"><option value="No">No</option><option value="Sí">Sí</option></select>
@@ -1161,15 +1168,17 @@
             <button type="submit" class="btn-primary" style="width:100%">💾 Guardar Compra Completa</button>
         </form>
 
-        <!-- 6. FORMULARIO VENTAS -->
+        <!-- 6. FORMULARIO VENTAS (CON REF. CLIENTE, DATOS DE ENTREGA Y CUENTA CONTABLE) -->
         <form id="form-ventas" class="tab-form" onsubmit="saveRecord(event, 'ventas')" style="display:none;">
             <div class="form-grid">
                 <div class="form-group"><label>Núm. Factura *</label><input type="text" id="ven-factura" required placeholder="Ej: FV/2026/00001"></div>
                 <div class="form-group"><label>Fecha Venta *</label><input type="date" id="ven-fecha" required></div>
                 <div class="form-group">
                     <label>Cliente *</label>
-                    <select id="ven-cliente" class="client-select" required></select>
+                    <select id="ven-cliente" class="client-select" required onchange="autofillClienteEntrega()"></select>
                 </div>
+                <div class="form-group"><label>Ref. Cliente (Nº Pedido Cliente)</label><input type="text" id="ven-ref-cliente" placeholder="Ej: PED-384920"></div>
+                <div class="form-group"><label>Cuenta Contable (8 dígitos)</label><input type="text" id="ven-cuenta" placeholder="Ej: 70000001"></div>
                 <div class="form-group">
                     <label>Destino</label>
                     <select id="ven-destino" onchange="recalcVentaTotals()">
@@ -1178,6 +1187,20 @@
                     </select>
                 </div>
 
+                <!-- BLOQUE DE DATOS DE ENTREGA DEBAJO DE LA INFORMACIÓN DEL CLIENTE -->
+                <div class="multi-item-panel">
+                    <h4>
+                        <span>📍 Datos de Entrega (Destinatario del Envío)</span>
+                        <button type="button" class="btn-small" onclick="autofillClienteEntrega(true)">📋 Copiar datos del Cliente</button>
+                    </h4>
+                    <div class="form-grid" style="margin-bottom: 0;">
+                        <div class="form-group"><label>Nombre y Apellidos</label><input type="text" id="ven-entrega-nombre" placeholder="Nombre completo del destinatario"></div>
+                        <div class="form-group"><label>Dirección de Envío</label><input type="text" id="ven-entrega-dir" placeholder="Calle, número, piso, CP, ciudad"></div>
+                        <div class="form-group"><label>País</label><input type="text" id="ven-entrega-pais" placeholder="Ej: España, Francia, Alemania..."></div>
+                    </div>
+                </div>
+
+                <!-- BLOQUE DE ARTÍCULOS DE LA FACTURA -->
                 <div class="multi-item-panel">
                     <h4>🛒 Añadir Artículos a esta Factura de Venta (El Código de Barras se generará en el PDF)</h4>
                     <div class="form-grid">
@@ -1232,20 +1255,56 @@
             <button type="submit" class="btn-primary" style="width:100%">💾 Guardar Factura de Venta</button>
         </form>
 
-        <!-- 7. FORMULARIO GASTOS -->
+        <!-- 7. FORMULARIO GASTOS (CON REF. PROVEEDOR Y RÉGIMEN FISCAL IVA / ISP / REBU) -->
         <form id="form-gastos" class="tab-form" onsubmit="saveRecord(event, 'gastos')" style="display:none;">
             <div class="form-grid">
-                <div class="form-group"><label>Núm. Gasto / Ref *</label><input type="text" id="gas-ref" required></div>
+                <div class="form-group"><label>Núm. Gasto *</label><input type="text" id="gas-ref" required placeholder="Ej: GAS-2026-001"></div>
                 <div class="form-group"><label>Fecha *</label><input type="date" id="gas-fecha" required></div>
                 <div class="form-group">
                     <label>Proveedor</label>
                     <select id="gas-prov" class="provider-select"></select>
                 </div>
+                <div class="form-group"><label>Ref. Proveedor (Nº Factura Prov.)</label><input type="text" id="gas-ref-prov" placeholder="Ej: F-849201"></div>
+                <div class="form-group"><label>Cuenta Contable (8 dígitos)</label><input type="text" id="gas-cuenta" placeholder="Ej: 62900001"></div>
                 <div class="form-group"><label>Descripción *</label><input type="text" id="gas-nombre" required></div>
-                <div class="form-group"><label>Base Imponible (€)</label><input type="number" step="0.01" id="gas-base" value="0"></div>
-                <div class="form-group"><label>IVA (€)</label><input type="number" step="0.01" id="gas-iva" value="0"></div>
-                <div class="form-group"><label>Importe Total (€) *</label><input type="number" step="0.01" id="gas-total" required></div>
+                <div class="form-group"><label>Importe Total Factura (€) *</label><input type="number" step="0.01" id="gas-total" required oninput="calcGastoFiscal()"></div>
+                <div class="form-group">
+                    <label>¿Lleva IVA, ISP o REBU?</label>
+                    <select id="gas-tiene-impuesto" onchange="toggleGastoFiscalBox()">
+                        <option value="No">No</option>
+                        <option value="Sí">Sí</option>
+                    </select>
+                </div>
                 <div class="form-group"><label>Justificante del Gasto</label><input type="file" id="gas-file"></div>
+
+                <!-- PANEL CONDICIONAL SI SE CONTESTA "SÍ" A IVA / ISP / REBU -->
+                <div id="box-gas-fiscal" class="multi-item-panel" style="display:none;">
+                    <h4>🧾 Datos Fiscales de la Factura de Gasto (IVA / ISP / REBU)</h4>
+                    <div class="form-grid" style="margin-bottom:0;">
+                        <div class="form-group">
+                            <label>Régimen Aplicable *</label>
+                            <select id="gas-regimen" onchange="updateGastoRegimenUI()">
+                                <option value="IVA">IVA (Régimen General)</option>
+                                <option value="ISP">ISP (Inversión del Sujeto Pasivo)</option>
+                                <option value="REBU">REBU (Régimen Especial Bienes Usados)</option>
+                            </select>
+                        </div>
+
+                        <!-- Campos para IVA General -->
+                        <div class="form-group gas-reg-iva"><label>Tipo de IVA (%)</label><input type="number" step="0.1" id="gas-iva-pct" value="21" oninput="calcGastoFiscal()"></div>
+                        <div class="form-group gas-reg-iva"><label>Base Imponible (€)</label><input type="number" step="0.01" id="gas-base" value="0" oninput="calcGastoFiscal(true)"></div>
+                        <div class="form-group gas-reg-iva"><label>Cuota IVA (€)</label><input type="number" step="0.01" id="gas-iva" value="0"></div>
+
+                        <!-- Campos para Inversión del Sujeto Pasivo (ISP) -->
+                        <div class="form-group gas-reg-isp" style="display:none;"><label>Base Imponible ISP (€)</label><input type="number" step="0.01" id="gas-isp-base" value="0" oninput="calcGastoFiscal()"></div>
+                        <div class="form-group gas-reg-isp" style="display:none;"><label>% IVA Autorrepercutido</label><input type="number" step="0.1" id="gas-isp-pct" value="21" oninput="calcGastoFiscal()"></div>
+                        <div class="form-group gas-reg-isp" style="display:none;"><label>Cuota IVA Autorrepercutido (€)</label><input type="number" step="0.01" id="gas-isp-cuota" value="0" readonly></div>
+
+                        <!-- Campos para REBU -->
+                        <div class="form-group gas-reg-rebu" style="display:none;"><label>Importe Compra REBU (IVA incl.) (€)</label><input type="number" step="0.01" id="gas-rebu-importe" value="0"></div>
+                        <div class="form-group gas-reg-rebu" style="display:none; grid-column: span 2;"><label>Notas / Detalle REBU</label><input type="text" id="gas-rebu-nota" placeholder="Factura en régimen REBU sin cuota de IVA deducible"></div>
+                    </div>
+                </div>
             </div>
             <button type="submit" class="btn-primary" style="width:100%">💾 Guardar Gasto</button>
         </form>
@@ -2271,25 +2330,45 @@
                 headerTitle = `Justificante: ${item.just || '-'} | Prov: ${item.prov || '-'} (${items.length} art.)`;
                 fieldsHTML = `
                     <div class="field-item"><strong>Fecha</strong>${item.fecha || '-'}</div>
+                    <div class="field-item"><strong>Ref. Proveedor</strong>${item.refProv || '-'}</div>
+                    <div class="field-item"><strong>Cuenta Contable</strong>${item.cuenta || '-'}</div>
                     <div class="field-item"><strong>Total Compra</strong><strong style="color:var(--gold-light)">${formatEuro(item.total || item.precio)} €</strong></div>
                     <div class="field-item"><strong>Pagado / Contab.</strong>Pagado: ${item.pagado || 'No'} | Contab: ${item.contab || 'No'}</div>`;
                 extraBoxHTML = `<div class="sub-items-box">` + items.map(it => `<div class="sub-item-row"><span><strong>${it.ref}</strong> | ${it.sku || '-'} - ${it.nombre} (x${it.uds})</span><span>${formatEuro(it.precio)} €</span></div>`).join('') + `</div>`;
             } else if (currentTab === 'ventas') {
                 const items = item.items || [{ ref: item.ref, sku: item.sku, nombre: item.nombre, barcode: item.barcode, precio: item.precio, coste: item.coste }];
+                const entregaStr = (item.entregaNombre || item.entregaDir || item.entregaPais)
+                    ? `${item.entregaNombre || ''} | ${item.entregaDir || ''} (${item.entregaPais || ''})`
+                    : '-';
                 headerTitle = `Factura: ${item.factura} | Cliente: ${item.cliente}`;
                 fieldsHTML = `
                     <div class="field-item"><strong>Fecha</strong>${item.fecha || '-'}</div>
+                    <div class="field-item"><strong>Ref. Cliente (Pedido)</strong>${item.refCliente || '-'}</div>
+                    <div class="field-item"><strong>Cuenta Contable</strong>${item.cuenta || '-'}</div>
                     <div class="field-item"><strong>Total Factura</strong><strong style="color:var(--gold-light)">${item.total} €</strong> (Envío: ${item.envio || 0}€)</div>
+                    <div class="field-item"><strong>Datos de Entrega</strong>${entregaStr}</div>
                     <div class="field-item"><strong>REBU Interno (${item.destino})</strong>Base: ${item.baseRebu} | IVA: ${item.ivaRebu}</div>
-                    <div class="field-item"><strong>Transporte y Entrega</strong>${item.transp || '-'} [${item.localizador || '-'}] | Entregado: ${item.entregado || 'No'}</div>
+                    <div class="field-item"><strong>Transporte y Estado</strong>${item.transp || '-'} [${item.localizador || '-'}] | Entregado: ${item.entregado || 'No'}</div>
                     <div class="field-item"><strong>Cobrado / Contab.</strong>Cobrado: ${item.cobrado || 'No'} | Contab: ${item.contab || 'No'}</div>`;
                 extraBoxHTML = `<div class="sub-items-box">` + items.map(it => `<div class="sub-item-row"><span>REF: ${it.ref} | SKU: ${it.sku || '-'} | Cód. Barras: ${it.barcode || it.ref} - <strong>${it.nombre}</strong></span><span>PVP: ${it.precio} €</span></div>`).join('') + `</div>`;
             } else if (currentTab === 'gastos') {
+                let fiscalDetalle = 'Sin impuestos (No)';
+                if (item.tieneImpuesto === 'Sí') {
+                    if (item.regimen === 'IVA') {
+                        fiscalDetalle = `IVA (${item.ivaPct || 21}%): Base ${formatEuro(item.base)}€ + Cuota ${formatEuro(item.iva)}€`;
+                    } else if (item.regimen === 'ISP') {
+                        fiscalDetalle = `ISP (Inv. Sujeto Pasivo): Base ${formatEuro(item.ispBase)}€ | Autorrep. ${item.ispPct || 21}% (${formatEuro(item.ispCuota)}€)`;
+                    } else if (item.regimen === 'REBU') {
+                        fiscalDetalle = `REBU: ${formatEuro(item.rebuImporte || item.total)}€ ${item.rebuNota ? '(' + item.rebuNota + ')' : ''}`;
+                    }
+                }
                 headerTitle = `Gasto Nº ${item.ref} - ${item.nombre}`;
                 fieldsHTML = `
                     <div class="field-item"><strong>Fecha / Proveedor</strong>${item.fecha || '-'} | ${item.prov || '-'}</div>
-                    <div class="field-item"><strong>Base + IVA</strong>${item.base}€ + ${item.iva}€</div>
-                    <div class="field-item"><strong>Total</strong><strong style="color:var(--gold-light)">${item.total} €</strong></div>`;
+                    <div class="field-item"><strong>Ref. Proveedor</strong>${item.refProv || '-'}</div>
+                    <div class="field-item"><strong>Cuenta Contable</strong>${item.cuenta || '-'}</div>
+                    <div class="field-item"><strong>Fiscalidad (IVA/ISP/REBU)</strong>${fiscalDetalle}</div>
+                    <div class="field-item"><strong>Importe Total</strong><strong style="color:var(--gold-light)">${formatEuro(item.total)} €</strong></div>`;
             } else if (currentTab === 'ayuda') {
                 headerTitle = `${item.tipo === 'Vídeo Tutorial' ? '🎬' : '📄'} ${item.titulo}`;
                 fieldsHTML = `
@@ -2441,8 +2520,79 @@
     }
 
     /* ==========================================================
-       8. DESPLEGABLE DE ARTÍCULOS Y CARGA MASIVA EN COMPRAS Y VENTAS
+       8. LÓGICA DE FORMULARIOS (VENTAS ENTREGA, COMPRAS Y GASTOS FISCALES)
        ========================================================== */
+    function autofillClienteEntrega(forceOverwrite = false) {
+        const cliName = document.getElementById('ven-cliente').value;
+        if (!cliName) return;
+        const cli = db.clientes.find(c => (c.nombre || '').toLowerCase() === cliName.toLowerCase());
+        if (!cli) return;
+
+        const nomInput = document.getElementById('ven-entrega-nombre');
+        const dirInput = document.getElementById('ven-entrega-dir');
+        const paisInput = document.getElementById('ven-entrega-pais');
+
+        if (forceOverwrite || !nomInput.value) nomInput.value = cli.nombre || '';
+        if (forceOverwrite || !dirInput.value) dirInput.value = cli.dir || '';
+        if (forceOverwrite || !paisInput.value) {
+            paisInput.value = (cli.web && !cli.web.includes('http') && !cli.web.includes('www')) ? cli.web : 'España';
+        }
+    }
+
+    // Lógica condicional y cálculos fiscales en Gastos (IVA, ISP, REBU)
+    function toggleGastoFiscalBox() {
+        const val = document.getElementById('gas-tiene-impuesto').value;
+        const box = document.getElementById('box-gas-fiscal');
+        box.style.display = val === 'Sí' ? 'block' : 'none';
+        if (val === 'Sí') {
+            updateGastoRegimenUI();
+            calcGastoFiscal();
+        }
+    }
+
+    function updateGastoRegimenUI() {
+        const reg = document.getElementById('gas-regimen').value;
+        document.querySelectorAll('.gas-reg-iva').forEach(el => el.style.display = reg === 'IVA' ? 'flex' : 'none');
+        document.querySelectorAll('.gas-reg-isp').forEach(el => el.style.display = reg === 'ISP' ? 'flex' : 'none');
+        document.querySelectorAll('.gas-reg-rebu').forEach(el => el.style.display = reg === 'REBU' ? 'flex' : 'none');
+        calcGastoFiscal();
+    }
+
+    function calcGastoFiscal(fromBaseInput = false) {
+        if (document.getElementById('gas-tiene-impuesto').value !== 'Sí') return;
+        const reg = document.getElementById('gas-regimen').value;
+        const total = parseFloat(document.getElementById('gas-total').value) || 0;
+
+        if (reg === 'IVA') {
+            const pct = parseFloat(document.getElementById('gas-iva-pct').value) || 0;
+            if (fromBaseInput) {
+                const base = parseFloat(document.getElementById('gas-base').value) || 0;
+                const cuota = base * (pct / 100);
+                document.getElementById('gas-iva').value = cuota.toFixed(2);
+                document.getElementById('gas-total').value = (base + cuota).toFixed(2);
+            } else if (total > 0) {
+                const base = total / (1 + pct / 100);
+                const cuota = total - base;
+                document.getElementById('gas-base').value = base.toFixed(2);
+                document.getElementById('gas-iva').value = cuota.toFixed(2);
+            }
+        } else if (reg === 'ISP') {
+            const baseInput = document.getElementById('gas-isp-base');
+            if (!baseInput.value || parseFloat(baseInput.value) === 0) {
+                baseInput.value = total.toFixed(2);
+            }
+            const baseIsp = parseFloat(baseInput.value) || total;
+            const pctIsp = parseFloat(document.getElementById('gas-isp-pct').value) || 21;
+            const cuotaIsp = baseIsp * (pctIsp / 100);
+            document.getElementById('gas-isp-cuota').value = cuotaIsp.toFixed(2);
+        } else if (reg === 'REBU') {
+            const rebuInput = document.getElementById('gas-rebu-importe');
+            if (!rebuInput.value || parseFloat(rebuInput.value) === 0) {
+                rebuInput.value = total.toFixed(2);
+            }
+        }
+    }
+
     function calcTotalCosteForm() {
         const coste = parseFloat(document.getElementById('cat-coste').value) || 0;
         const itp = parseFloat(document.getElementById('cat-itp').value) || 0;
@@ -2740,6 +2890,7 @@
         }
         if (currentTab === 'catalogo') { renderImagePreviews(); toggleVendidoCat(); calcTotalCosteForm(); }
         if (currentTab === 'fichas') renderFichaPreviews();
+        if (currentTab === 'gastos') toggleGastoFiscalBox();
 
         if (editIndex !== null && currentItem) {
             const item = currentItem;
@@ -2808,6 +2959,8 @@
                 document.getElementById('comp-just').value = item.just || '';
                 document.getElementById('comp-fecha').value = item.fecha || '';
                 document.getElementById('comp-prov').value = item.prov || '';
+                document.getElementById('comp-ref-prov').value = item.refProv || '';
+                document.getElementById('comp-cuenta').value = item.cuenta || '';
                 document.getElementById('comp-pagado').value = item.pagado || 'No';
                 document.getElementById('comp-contab').value = item.contab || 'No';
                 tempCompraItems = item.items ? [...item.items] : [{ ref: item.ref, nombre: item.nombre, sku: item.sku, barcode: item.barcode, precio: parseFloat(item.precio)||0, uds: parseInt(item.uds)||1 }];
@@ -2816,6 +2969,11 @@
                 document.getElementById('ven-factura').value = item.factura || '';
                 document.getElementById('ven-fecha').value = item.fecha || '';
                 document.getElementById('ven-cliente').value = item.cliente || '';
+                document.getElementById('ven-ref-cliente').value = item.refCliente || '';
+                document.getElementById('ven-cuenta').value = item.cuenta || '';
+                document.getElementById('ven-entrega-nombre').value = item.entregaNombre || '';
+                document.getElementById('ven-entrega-dir').value = item.entregaDir || '';
+                document.getElementById('ven-entrega-pais').value = item.entregaPais || '';
                 document.getElementById('ven-destino').value = item.destino || 'UE';
                 document.getElementById('ven-envio').value = item.envio || 0;
                 document.getElementById('ven-transp').value = item.transp || '';
@@ -2829,10 +2987,24 @@
                 document.getElementById('gas-ref').value = item.ref || '';
                 document.getElementById('gas-fecha').value = item.fecha || '';
                 document.getElementById('gas-prov').value = item.prov || '';
+                document.getElementById('gas-ref-prov').value = item.refProv || '';
+                document.getElementById('gas-cuenta').value = item.cuenta || '';
                 document.getElementById('gas-nombre').value = item.nombre || '';
-                document.getElementById('gas-base').value = item.base || 0;
-                document.getElementById('gas-iva').value = item.iva || 0;
                 document.getElementById('gas-total').value = item.total || 0;
+                document.getElementById('gas-tiene-impuesto').value = item.tieneImpuesto || 'No';
+                toggleGastoFiscalBox();
+                if (item.tieneImpuesto === 'Sí') {
+                    document.getElementById('gas-regimen').value = item.regimen || 'IVA';
+                    updateGastoRegimenUI();
+                    document.getElementById('gas-iva-pct').value = item.ivaPct !== undefined ? item.ivaPct : 21;
+                    document.getElementById('gas-base').value = item.base || 0;
+                    document.getElementById('gas-iva').value = item.iva || 0;
+                    document.getElementById('gas-isp-base').value = item.ispBase || 0;
+                    document.getElementById('gas-isp-pct').value = item.ispPct !== undefined ? item.ispPct : 21;
+                    document.getElementById('gas-isp-cuota').value = item.ispCuota || 0;
+                    document.getElementById('gas-rebu-importe').value = item.rebuImporte || 0;
+                    document.getElementById('gas-rebu-nota').value = item.rebuNota || '';
+                }
             } else if (currentTab === 'ayuda') {
                 document.getElementById('ayu-titulo').value = item.titulo || '';
                 document.getElementById('ayu-tipo').value = item.tipo || 'Documento PDF';
@@ -2954,9 +3126,11 @@
 
             record = {
                 _id: existingId, _updatedAt: now,
-                just: document.getElementById('comp-just').value,
+                just: document.getElementById('comp-just').value.trim(),
                 fecha: document.getElementById('comp-fecha').value || today,
                 prov: document.getElementById('comp-prov').value,
+                refProv: document.getElementById('comp-ref-prov').value.trim(),
+                cuenta: document.getElementById('comp-cuenta').value.trim(),
                 pagado: document.getElementById('comp-pagado').value,
                 contab: document.getElementById('comp-contab').value,
                 total: document.getElementById('comp-total').value,
@@ -2991,9 +3165,14 @@
 
             record = {
                 _id: existingId, _updatedAt: now,
-                factura: document.getElementById('ven-factura').value,
+                factura: document.getElementById('ven-factura').value.trim(),
                 fecha: document.getElementById('ven-fecha').value || today,
                 cliente: document.getElementById('ven-cliente').value,
+                refCliente: document.getElementById('ven-ref-cliente').value.trim(),
+                cuenta: document.getElementById('ven-cuenta').value.trim(),
+                entregaNombre: document.getElementById('ven-entrega-nombre').value.trim(),
+                entregaDir: document.getElementById('ven-entrega-dir').value.trim(),
+                entregaPais: document.getElementById('ven-entrega-pais').value.trim(),
                 destino: document.getElementById('ven-destino').value,
                 subtotal: document.getElementById('ven-subtotal').value,
                 envio: document.getElementById('ven-envio').value,
@@ -3028,15 +3207,28 @@
             });
         } else if (tab === 'gastos') {
             const file = document.getElementById('gas-file').files[0]?.name;
+            const tieneImp = document.getElementById('gas-tiene-impuesto').value;
+            const reg = document.getElementById('gas-regimen').value;
+
             record = {
                 _id: existingId, _updatedAt: now,
-                ref: document.getElementById('gas-ref').value,
+                ref: document.getElementById('gas-ref').value.trim(),
                 fecha: document.getElementById('gas-fecha').value,
                 prov: document.getElementById('gas-prov').value,
-                nombre: document.getElementById('gas-nombre').value,
-                base: document.getElementById('gas-base').value,
-                iva: document.getElementById('gas-iva').value,
-                total: document.getElementById('gas-total').value,
+                refProv: document.getElementById('gas-ref-prov').value.trim(),
+                cuenta: document.getElementById('gas-cuenta').value.trim(),
+                nombre: document.getElementById('gas-nombre').value.trim(),
+                total: parseFloat(document.getElementById('gas-total').value) || 0,
+                tieneImpuesto: tieneImp,
+                regimen: tieneImp === 'Sí' ? reg : 'Ninguno',
+                ivaPct: tieneImp === 'Sí' && reg === 'IVA' ? (parseFloat(document.getElementById('gas-iva-pct').value) || 0) : 0,
+                base: tieneImp === 'Sí' && reg === 'IVA' ? (parseFloat(document.getElementById('gas-base').value) || 0) : 0,
+                iva: tieneImp === 'Sí' && reg === 'IVA' ? (parseFloat(document.getElementById('gas-iva').value) || 0) : 0,
+                ispBase: tieneImp === 'Sí' && reg === 'ISP' ? (parseFloat(document.getElementById('gas-isp-base').value) || 0) : 0,
+                ispPct: tieneImp === 'Sí' && reg === 'ISP' ? (parseFloat(document.getElementById('gas-isp-pct').value) || 0) : 0,
+                ispCuota: tieneImp === 'Sí' && reg === 'ISP' ? (parseFloat(document.getElementById('gas-isp-cuota').value) || 0) : 0,
+                rebuImporte: tieneImp === 'Sí' && reg === 'REBU' ? (parseFloat(document.getElementById('gas-rebu-importe').value) || 0) : 0,
+                rebuNota: tieneImp === 'Sí' && reg === 'REBU' ? document.getElementById('gas-rebu-nota').value.trim() : '',
                 file: file || (targetIdx !== null && db.gastos[targetIdx] ? db.gastos[targetIdx].file : 'Sin archivo')
             };
         } else if (tab === 'ayuda') {
@@ -3116,7 +3308,7 @@
     }
 
     /* ==========================================================
-       10. IMPRESIÓN DE FICHA, FACTURA DE VENTA Y JUSTIFICANTE DE COMPRA TIPO FACTURA
+       10. IMPRESIÓN DE FICHA, FACTURA DE VENTA Y JUSTIFICANTE DE COMPRA
        ========================================================== */
     function printFichaPDF(index) {
         const f = db.fichas[index];
@@ -3188,7 +3380,6 @@
 
     function printSectionPDF() { openPrintWindow(tabTitles[currentTab], getFilteredAndSortedData()); }
 
-    // Enrutador de impresión individual según la pestaña activa
     function printSinglePDF(index) {
         const item = db[currentTab][index];
         if (currentTab === 'ventas') printInvoicePDF(item);
@@ -3197,18 +3388,14 @@
         else openPrintWindow(`Ficha - ${tabTitles[currentTab]}`, [item]);
     }
 
-    // NUEVA FUNCIÓN: GENERADOR DE JUSTIFICANTE DE COMPRA TIPO FACTURA (MISMO DISEÑO Y COLORES QUE VENTAS)
+    // GENERADOR DE JUSTIFICANTE DE COMPRA TIPO FACTURA (CON REF. PROVEEDOR Y CUENTA CONTABLE)
     function printCompraPDF(compra) {
-        // 1. Obtener datos de nuestra empresa activa (Comprador / Receptor)
         const emp = db.empresa[db.empresa.length - 1] || { nombre: 'CirCA by RB', nif: '', dir: '', tel: '', email: '' };
-
-        // 2. Buscar datos completos del Proveedor en la pestaña Proveedores
         const prov = db.proveedores.find(p =>
             (p.nombre || '').toLowerCase() === (compra.prov || '').toLowerCase() ||
             (p.ref || '').toLowerCase() === (compra.prov || '').toLowerCase()
         ) || { nombre: compra.prov || '-', ref: '-', dir: '-', tel: '-', email: '-', web: '-' };
 
-        // 3. Obtener el listado de artículos de esta compra
         const items = compra.items || [{
             ref: compra.ref,
             sku: compra.sku,
@@ -3219,8 +3406,6 @@
         }];
 
         const logoUrl = new URL("Logo.jpg", window.location.href).href;
-
-        // Parámetro ajustable: cambia a true si deseas mostrar una línea adicional con el 4% de ITP desglosado
         const mostrarDesgloseITP = false;
 
         let sumaUnidades = 0;
@@ -3311,6 +3496,7 @@
                             <h2>JUSTIFICANTE DE COMPRA</h2>
                             <p><strong>Nº Justificante:</strong> ${compra.just || compra.ref || '-'}</p>
                             <p><strong>Fecha de Compra:</strong> ${compra.fecha || '-'}</p>
+                            ${compra.cuenta ? `<p><strong>Cuenta Contable:</strong> ${compra.cuenta}</p>` : ''}
                         </div>
                     </div>
 
@@ -3319,6 +3505,7 @@
                             <h3>Datos del Proveedor / Vendedor</h3>
                             <p><strong>Nombre / Razón Social:</strong> ${prov.nombre}</p>
                             <p><strong>Código / NIF:</strong> ${prov.ref || '-'}</p>
+                            <p><strong>Ref. Proveedor:</strong> ${compra.refProv || '-'}</p>
                             <p><strong>Dirección:</strong> ${prov.dir || '-'}</p>
                             <p><strong>Contacto:</strong> ${prov.tel || '-'} ${prov.email ? '| ' + prov.email : ''}</p>
                         </div>
@@ -3326,8 +3513,8 @@
                             <h3>Resumen y Estado de la Compra</h3>
                             <p><strong>Estado de Pago:</strong> ${compra.pagado || 'No'}</p>
                             <p><strong>Contabilizado:</strong> ${compra.contab || 'No'}</p>
-                            <p><strong>Líneas de Artículos:</strong> ${items.length}</p>
-                            <p><strong>Total Unidades:</strong> ${sumaUnidades}</p>
+                            <p><strong>Cuenta Contable:</strong> ${compra.cuenta || '-'}</p>
+                            <p><strong>Líneas de Artículos:</strong> ${items.length} (${sumaUnidades} uds.)</p>
                         </div>
                     </div>
 
@@ -3389,6 +3576,7 @@
         win.document.close();
     }
 
+    // GENERADOR DE FACTURA OFICIAL DE VENTA (CON REF. CLIENTE, DATOS DE ENTREGA Y CÓDIGOS DE BARRAS)
     function printInvoicePDF(venta) {
         const emp = db.empresa[db.empresa.length - 1] || { nombre: 'CirCA by RB', nif: '', dir: '', tel: '', email: '' };
         const cli = db.clientes.find(c => c.nombre.toLowerCase() === (venta.cliente || '').toLowerCase()) || { nombre: venta.cliente, ref: '-', dir: '-', tel: '-', email: '-' };
@@ -3439,6 +3627,7 @@
                     .parties { display: flex; justify-content: space-between; gap: 20px; margin-bottom: 22px; font-family: 'Segoe UI', sans-serif; font-size: 13px; }
                     .party-box { flex: 1; background: #faf8f5; border: 1px solid #e2d5b5; padding: 14px; border-radius: 5px; }
                     .party-box h3 { margin: 0 0 8px 0; font-size: 13px; color: #8C6D32; text-transform: uppercase; border-bottom: 1px solid #e2d5b5; padding-bottom: 4px; }
+                    .party-box p { margin: 4px 0; }
                     table { width: 100%; border-collapse: collapse; margin-bottom: 22px; font-family: 'Segoe UI', sans-serif; font-size: 12.5px; }
                     th { background-color: #121212; color: #EED9A4; padding: 9px; text-align: left; }
                     td { padding: 8px 9px; border-bottom: 1px solid #ddd; vertical-align: middle; }
@@ -3467,6 +3656,7 @@
                             <h2>FACTURA</h2>
                             <p><strong>Nº Factura:</strong> ${venta.factura}</p>
                             <p><strong>Fecha:</strong> ${venta.fecha}</p>
+                            ${venta.refCliente ? `<p><strong>Ref. Cliente / Pedido:</strong> ${venta.refCliente}</p>` : ''}
                         </div>
                     </div>
                     <div class="parties">
@@ -3478,9 +3668,11 @@
                             <p><strong>Contacto:</strong> ${cli.tel || '-'} ${cli.email ? '| ' + cli.email : ''}</p>
                         </div>
                         <div class="party-box">
-                            <h3>Detalles de Envío</h3>
-                            <p><strong>Transporte:</strong> ${venta.transp || '-'}</p>
-                            <p><strong>Localizador:</strong> ${venta.localizador || '-'}</p>
+                            <h3>Datos de Entrega y Envío</h3>
+                            <p><strong>Destinatario:</strong> ${venta.entregaNombre || cli.nombre}</p>
+                            <p><strong>Dirección Envío:</strong> ${venta.entregaDir || cli.dir || '-'}</p>
+                            <p><strong>País:</strong> ${venta.entregaPais || '-'}</p>
+                            <p><strong>Transporte:</strong> ${venta.transp || '-'} ${venta.localizador ? '(' + venta.localizador + ')' : ''}</p>
                             <p><strong>Entregado:</strong> ${venta.entregado || 'No'}</p>
                         </div>
                     </div>
